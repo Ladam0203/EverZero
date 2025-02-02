@@ -8,9 +8,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B83A8F7D-9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{7DE52966-C7DD-4AD8-9260-E2EC705C7E78}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService", "deployable\AuthService\AuthService.csproj", "{ED48652A-DA07-4F71-BE00-09FD8FB89D13}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ED48652A-DA07-4F71-BE00-09FD8FB89D13} = {EFF97FA5-3C20-4631-B5D2-5BFF11C62D47}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED48652A-DA07-4F71-BE00-09FD8FB89D13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED48652A-DA07-4F71-BE00-09FD8FB89D13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED48652A-DA07-4F71-BE00-09FD8FB89D13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED48652A-DA07-4F71-BE00-09FD8FB89D13}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
