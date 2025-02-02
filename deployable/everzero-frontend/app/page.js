@@ -12,9 +12,9 @@ export default function Home() {
             <section className="hero min-h-screen bg-base-200">
                 <div className="hero-content text-center">
                     <div className="max-w-md">
-                        <h1 className="text-5xl font-bold">Carbon Emission Reporting Made Easy</h1>
+                        <h1 className="text-5xl font-bold">Carbon Emission Reports, Made Simple</h1>
                         <p className="py-6">
-                            Simple, affordable, and user-friendly carbon emission reporting for small companies and non-profits.
+                            Simple, affordable, and user-friendly carbon emission reporting software.
                         </p>
                         <div className="flex justify-center space-x-4">
                             <button className="btn btn-primary">Get Started</button>
