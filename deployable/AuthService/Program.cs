@@ -39,8 +39,10 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-// Services and Repositories
+// Services
 builder.Services.AddScoped<AuthService.Services.AuthService>();
+// Repositories
+builder.Services.AddScoped<AuthService.Repository.DbInitializer>();
 
 // Swagger
 builder.Services.AddControllers();
@@ -49,16 +51,27 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 //app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment() || args.Contains("swagger") || args.Contains("--swagger")) {
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+if (app.Environment.IsDevelopment() || args.Contains("db-init") || args.Contains("--db-init")) {
+    using var scope = app.Services.CreateScope();
+    var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
+    dbInitializer.Initialize();
+}
+
+if (app.Environment.IsDevelopment() || args.Contains("db-reinit") || args.Contains("--db-reinit")) {
+    using var scope = app.Services.CreateScope();
+    var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
+    dbInitializer.Reinitialize();
+}
 
 app.Run();

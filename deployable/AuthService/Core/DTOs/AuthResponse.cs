@@ -22,6 +22,11 @@ public class AuthResponse
     /// <summary>
     /// The token of the user.
     /// </summary>
+    public string TokenType => "Bearer";
+    
+    /// <summary>
+    /// The token of the user.
+    /// </summary>
     public string Token { get; set; }
 
     /// <summary>
