@@ -5,7 +5,7 @@ namespace AuthService.Controllers;
 
 using Services;
 
-[Route("api/auth")]
+[Route("auth")]
 [ApiController]
 public class AuthController : ControllerBase
 {
@@ -38,4 +38,29 @@ public class AuthController : ControllerBase
         return Ok(new { Token = token });
     }
     */
+    
+    [HttpGet("authorize")]
+    public async Task<IActionResult> Authorize()
+    {
+        if (!Request.Headers.ContainsKey("Authorization"))
+            return Unauthorized("Missing Authorization header.");
+
+        var authHeader = Request.Headers["Authorization"].ToString();
+        if (!authHeader.StartsWith("Bearer "))
+            return Unauthorized("Invalid Authorization header.");
+
+        var token = authHeader.Replace("Bearer ", "");
+
+        // Validate token and extract claims
+        var userClaims = _authService.ValidateTokenAsync(token);
+        if (userClaims == null)
+            return Unauthorized("Invalid token.");
+
+        return Ok(new
+        {
+            IsAuthenticated = true,
+            Claims = userClaims.Claims.Select(c => new { c.Type, c.Value })
+        });
+    }
+
 }

@@ -76,4 +76,28 @@ public class AuthService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+    
+    public ClaimsPrincipal? ValidateTokenAsync(string token) {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Secret"]));
+        var validationParameters = new TokenValidationParameters {
+            ValidateIssuer = true,  // Ensure issuer is validated
+            ValidateAudience = true,  // Ensure audience is validated
+            ValidateLifetime = true,  // Ensure token expiration is checked
+            ValidateIssuerSigningKey = true,  // Ensure the signing key is validated
+            ValidIssuer = _config["Jwt:Issuer"],  // Valid issuer from settings
+            ValidAudience = _config["Jwt:Audience"],  // Valid audience from settings
+            IssuerSigningKey = key,  // The key used to sign the token
+            ClockSkew = TimeSpan.Zero  // No clock skew (for precise expiration time matching)
+        };
+
+        try {
+            // Validate the token and return the ClaimsPrincipal if valid
+            var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
+            return principal;
+        } catch {
+            // Return null if token validation fails
+            return null;
+        }
+    }
 }
