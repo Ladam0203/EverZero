@@ -23,11 +23,10 @@ public class RemoteAuthenticationHandler : AuthenticationHandler<RemoteAuthentic
         ILoggerFactory logger,
         UrlEncoder encoder,
         ISystemClock clock,
-        IConfiguration config,
-        HttpClient httpClient) : base(options, logger, encoder, clock)
+        IConfiguration config) : base(options, logger, encoder, clock)
     {
        _config = config;
-        _httpClient = httpClient;
+        _httpClient = new HttpClient(); // TODO: Design for testability
     }
     
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()

@@ -8,7 +8,7 @@ export async function register(dto) {
 
     try {
         // Make the API request
-        const response = await axios.post(`${API_URL}/api/auth/register`, dto, {
+        const response = await axios.post(`${API_URL}/api/register`, dto, {
             headers: {
                 "Content-Type": "application/json",
             },

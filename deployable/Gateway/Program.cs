@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddJsonFile("appsettings.json", true, true);
 builder.Configuration.AddJsonFile("appsettings.Development.json", true, true);
-builder.Configuration.AddJsonFile("ocelot.json", false, false);
+
+builder.Configuration.AddJsonFile(builder.Environment.IsDevelopment() ? "ocelot.local.json" : "ocelot.json", true, true);
 
 // Add services to the container.
 builder.Services
