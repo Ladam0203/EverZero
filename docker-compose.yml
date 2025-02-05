@@ -6,26 +6,29 @@ services:
       context: ./everzero-frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"  # Assuming your frontend runs on port 3000
+      - "3000:3000"  # Exposed frontend port
     depends_on:
       - gateway
     environment:
-      - API_URL=http://gateway  # Update this URL to match the backend service
+      - API_URL=http://gateway  # URL to reach the gateway
     networks:
-      - everzero_network
-  
+      - extranet  # Accessible externally
+
   gateway:
     build:
-        context: ./deployable
-        dockerfile: Gateway/Dockerfile
+      context: ./deployable
+      dockerfile: Gateway/Dockerfile
     ports:
-        - "1000:80"
-        - "1001:443"
+      - "1000:80"
+      - "1001:443"
     depends_on:
       - auth-service
     environment:
-        - ASPNETCORE_ENVIRONMENT=Production
-          
+      - ASPNETCORE_ENVIRONMENT=Production
+    networks:
+      - extranet  # Exposed externally
+      - intranet  # Connects to internal services
+
   auth-service:
     build:
       context: ./deployable
@@ -43,10 +46,8 @@ services:
       - Jwt__Audience=everzero.co.uk
       - Jwt__ExpirationMinutes=1440
     networks:
-      - everzero_network
-      
-  
-  # Dependencies
+      - intranet  # Internal-only access
+
   postgres:
     image: postgres:17
     environment:
@@ -58,11 +59,14 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - everzero_network
+      - intranet  # Internal-only access
 
 networks:
-  everzero_network:
+  intranet:
     driver: bridge
+    internal: true  # Restrict external access
+  extranet:
+    driver: bridge  # Public-facing network
 
 volumes:
   postgres_data:
