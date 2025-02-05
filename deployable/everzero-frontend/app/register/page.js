@@ -75,7 +75,7 @@ export default function Register() {
                 id: data.id,
                 email: data.email,
                 username: data.username,
-                roles: data.roles,
+                //roles: data.roles,
             },
             token: data.token,
         });
