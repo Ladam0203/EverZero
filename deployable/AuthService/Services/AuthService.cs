@@ -27,6 +27,14 @@ public class AuthService
 
     public async Task<Result<AuthResponse>> RegisterUserAsync(RegisterRequest request)
     {
+        if (string.IsNullOrWhiteSpace(request.Email) 
+            || string.IsNullOrWhiteSpace(request.Username)
+            || string.IsNullOrWhiteSpace(request.Password))
+        {
+            return Result<AuthResponse>.Failure(new[] { "Email, username, and password are required." });
+        }
+        // Identity validates the rest of the fields in-depth (password complexity, email format, etc.)
+        
         var user = new User
         {
             Email = request.Email,
