@@ -11,6 +11,18 @@
           "Port": 5278
         }
       ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/login",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/auth/login",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5278
+        }
+      ]
     }
   ],
   "GlobalConfiguration": {
