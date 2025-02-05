@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using RegisterRequest = AuthService.Core.DTOs.RegisterRequest;
+using LoginRequest = AuthService.Core.DTOs.LoginRequest;
 
 namespace AuthService.Controllers;
 
@@ -27,17 +29,18 @@ public class AuthController : ControllerBase
         }
         return Ok(result.Value);
     }
-
-    /*
+    
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] AuthRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var token = await _authService.LoginUserAsync(request.Email, request.Password);
-        if (token == null) return Unauthorized("Invalid credentials.");
-
-        return Ok(new { Token = token });
+        var result = await _authService.LoginUserAsync(request);
+        
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result.Errors);
+        }
+        return Ok(result.Value);
     }
-    */
     
     [HttpGet("authorize")]
     public async Task<IActionResult> Authorize()

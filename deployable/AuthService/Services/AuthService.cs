@@ -6,18 +6,22 @@ using AuthService.Core.DTOs;
 using AuthService.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using RegisterRequest = Microsoft.AspNetCore.Identity.Data.RegisterRequest;
+using RegisterRequest = AuthService.Core.DTOs.RegisterRequest;
 
 namespace AuthService.Services;
 
 public class AuthService
 {
     private readonly UserManager<User> _userManager;
+    private readonly SignInManager<User> _signInManager;
     private readonly IConfiguration _config;
 
-    public AuthService(UserManager<User> userManager, IConfiguration config)
+    public AuthService(UserManager<User> userManager, 
+        SignInManager<User> signInManager,
+        IConfiguration config)
     {
         _userManager = userManager;
+        _signInManager = signInManager;
         _config = config;
     }
 
@@ -26,15 +30,51 @@ public class AuthService
         var user = new User
         {
             Email = request.Email,
-            UserName = request.Email,
+            UserName = request.Username,
             EmailConfirmed = true, // for simplicity, we're confirming the email automatically
             IsActive = true // user is active by default
         };
         var result = await _userManager.CreateAsync(user, request.Password);
-        
+
         if (!result.Succeeded)
         {
             return Result<AuthResponse>.Failure(result.Errors.Select(e => e.Description));
+        }
+
+        return Result<AuthResponse>.Success(new AuthResponse(
+            user.Id,
+            user.Email,
+            user.UserName,
+            GenerateToken(user)
+        ));
+    }
+
+    public async Task<Result<AuthResponse>> LoginUserAsync(LoginRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+        {
+            return Result<AuthResponse>.Failure(new[] { "Invalid email or password." });
+        }
+        
+        var user = await _userManager.FindByEmailAsync(request.Email);
+        if (user == null)
+        {
+            return Result<AuthResponse>.Failure(new[] { "Invalid email or password." });
+        }
+        if (!user.IsActive)
+        {
+            return Result<AuthResponse>.Failure(new[] { "User is inactive." });
+        }
+        
+        // No roles
+        
+        var error = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+        
+        // No 2FA
+        
+        if (!error.Succeeded)
+        {
+            return Result<AuthResponse>.Failure(new[] { "Invalid email or password." });
         }
         
         return Result<AuthResponse>.Success(new AuthResponse(
@@ -45,18 +85,7 @@ public class AuthService
         ));
     }
 
-    /*
-    public async Task<string?> LoginUserAsync(string email, string password)
-    {
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user == null || !await _userManager.CheckPasswordAsync(user, password))
-            return null;
-
-        return GenerateToken(user);
-    }
-    */
-
-    private string GenerateToken(User user)
+private string GenerateToken(User user)
     {
         var claims = new[]
         {
@@ -71,7 +100,7 @@ public class AuthService
             _config["Jwt:Issuer"],
             _config["Jwt:Audience"],
             claims,
-            expires: DateTime.UtcNow.AddMinutes(60),
+            expires: DateTime.UtcNow.AddMinutes(_config.GetValue<int>("Jwt:ExpirationInMinutes")),
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
