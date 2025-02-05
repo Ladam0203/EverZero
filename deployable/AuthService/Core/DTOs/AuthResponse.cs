@@ -18,6 +18,12 @@ public class AuthResponse
     /// </summary>
     /// <example>john.doe</example>
     public string Username { get; set; } = default!;
+    
+    /// <summary>
+    /// The roles of the user (User, Admin).
+    /// </summary>
+    /// <example>["User"]</example>
+    public IList<string>? Roles { get; set; }
 
     /// <summary>
     /// The token of the user.
@@ -37,10 +43,11 @@ public class AuthResponse
     /// <param name="email">The email of the user.</param>
     /// <param name="roles">The roles of the user.</param>
     /// <param name="token">The token of the user.</param>
-    public AuthResponse(Guid id, string email, string username, string token) {
+    public AuthResponse(Guid id, string email, string username, IList<string> roles, string token) {
         Id = id;
         Email = email;
         Username = username;
+        Roles = roles;
         Token = token;
     }
 }

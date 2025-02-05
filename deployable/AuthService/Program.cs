@@ -1,4 +1,5 @@
 using System.Text;
+using AuthService.Core;
 using AuthService.Identity;
 using AuthService.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,7 +14,11 @@ builder.Services.AddDbContext<AppDbContext>(db => {
     db.UseNpgsql(builder.Configuration.GetConnectionString("NpsqlConnection"));
 });
 
-builder.Services.AddIdentity<User, IdentityRole<Guid>>()
+builder.Services.AddIdentityCore<User>()
+    .AddRoles<Role>()
+    .AddRoleManager<RoleManager<Role>>()
+    .AddUserManager<UserManager<User>>()
+    .AddSignInManager<SignInManager<User>>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
@@ -64,13 +69,13 @@ if (app.Environment.IsDevelopment() || args.Contains("swagger") || args.Contains
 if (app.Environment.IsDevelopment() || args.Contains("db-init") || args.Contains("--db-init")) {
     using var scope = app.Services.CreateScope();
     var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
-    dbInitializer.Initialize();
+    await dbInitializer.Initialize();
 }
 
 if (app.Environment.IsDevelopment() || args.Contains("db-reinit") || args.Contains("--db-reinit")) {
     using var scope = app.Services.CreateScope();
     var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
-    dbInitializer.Reinitialize();
+    await dbInitializer.Reinitialize();
 }
 
 app.Run();

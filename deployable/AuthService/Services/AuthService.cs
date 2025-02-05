@@ -48,12 +48,18 @@ public class AuthService
         {
             return Result<AuthResponse>.Failure(result.Errors.Select(e => e.Description));
         }
+        
+        // Add to role
+        _userManager.AddToRoleAsync(user, "User").Wait();
+        
+        var roles = await _userManager.GetRolesAsync(user);
 
         return Result<AuthResponse>.Success(new AuthResponse(
             user.Id,
             user.Email,
             user.UserName,
-            GenerateToken(user)
+            roles,
+            GenerateToken(user, roles)
         ));
     }
 
@@ -74,7 +80,7 @@ public class AuthService
             return Result<AuthResponse>.Failure(new[] { "User is inactive." });
         }
         
-        // No roles
+        var roles = await _userManager.GetRolesAsync(user);
         
         var error = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
         
@@ -89,27 +95,32 @@ public class AuthService
             user.Id,
             user.Email,
             user.UserName,
-            GenerateToken(user)
+            roles,
+            GenerateToken(user, roles)
         ));
     }
 
-private string GenerateToken(User user)
+private string GenerateToken(User user, IList<string> roles)
     {
-        var claims = new[]
+        var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Email, user.Email!),
         };
+        
+        claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Secret"]));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var expires = DateTime.UtcNow.AddMinutes(_config.GetValue<int>("Jwt:ExpirationInMinutes"));
 
         var token = new JwtSecurityToken(
             _config["Jwt:Issuer"],
             _config["Jwt:Audience"],
             claims,
-            expires: DateTime.UtcNow.AddMinutes(_config.GetValue<int>("Jwt:ExpirationInMinutes")),
-            signingCredentials: credentials);
+            expires: expires,
+            signingCredentials: signingCredentials
+        );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
