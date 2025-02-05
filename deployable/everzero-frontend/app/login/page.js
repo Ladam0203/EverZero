@@ -43,7 +43,6 @@ export default function Login() {
 
         console.log("Logged in user:", data)
         console.info("User logged in successfully!")
-        router.push("/notes")
     }
 
     return (
