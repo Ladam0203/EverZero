@@ -22,6 +22,9 @@ builder.Services
     )
     .AddScheme<RemoteAuthenticationOptions, RemoteAuthenticationHandler>("RemoteAuthentication", null);
 
+// Inject HttpClient, for RemoteAuthenticationHandler
+builder.Services.AddScoped<HttpClient>();
+
 builder.Services.AddOcelot(builder.Configuration);
 builder.Services.AddControllers();
 
