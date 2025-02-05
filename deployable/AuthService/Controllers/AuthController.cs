@@ -1,3 +1,4 @@
+using AuthService.Services.Interfaces;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using RegisterRequest = AuthService.Core.DTOs.RegisterRequest;
@@ -11,11 +12,13 @@ using Services;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly AuthService _authService;
-
-    public AuthController(AuthService authService)
+    private readonly IAuthService _authService;
+    private readonly IJwtService _jwtService;
+    
+    public AuthController(IAuthService authService, IJwtService jwtService)
     {
         _authService = authService;
+        _jwtService = jwtService;
     }
 
     [HttpPost("register")]
@@ -55,7 +58,7 @@ public class AuthController : ControllerBase
         var token = authHeader.Replace("Bearer ", "");
 
         // Validate token and extract claims
-        var userClaims = _authService.ValidateTokenAsync(token);
+        var userClaims = _jwtService.ValidateTokenAsync(token);
         if (userClaims == null)
             return Unauthorized("Invalid token.");
 

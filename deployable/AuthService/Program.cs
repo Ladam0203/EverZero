@@ -2,6 +2,8 @@ using System.Text;
 using AuthService.Core;
 using AuthService.Identity;
 using AuthService.Repository;
+using AuthService.Services;
+using AuthService.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -45,7 +47,8 @@ builder.Services.AddAuthentication(options =>
     });
 
 // Services
-builder.Services.AddScoped<AuthService.Services.AuthService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IAuthService, AuthService.Services.AuthService>();
 // Repositories
 builder.Services.AddScoped<AuthService.Repository.DbInitializer>();
 
