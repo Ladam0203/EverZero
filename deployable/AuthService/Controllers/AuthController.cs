@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using RegisterRequest = AuthService.Core.DTOs.RegisterRequest;
 using LoginRequest = AuthService.Core.DTOs.LoginRequest;
+using Messages;
 
 namespace AuthService.Controllers;
-
-using Services;
 
 [Route("auth")]
 [ApiController]
@@ -58,15 +57,13 @@ public class AuthController : ControllerBase
         var token = authHeader.Replace("Bearer ", "");
 
         // Validate token and extract claims
-        var userClaims = _jwtService.ValidateTokenAsync(token);
-        if (userClaims == null)
+        var claimsPrincipal = _jwtService.ValidateTokenAsync(token);
+        if (claimsPrincipal == null)
             return Unauthorized("Invalid token.");
-
-        return Ok(new
-        {
-            IsAuthenticated = true,
-            Claims = userClaims.Claims.Select(c => new { c.Type, c.Value })
-        });
+        
+        var claimDtos = claimsPrincipal.Claims.Select(c => new ClaimDto(c.Type, c.Value));
+        
+        return Ok(new AuthorizationResponse(claimDtos));
     }
 
 }

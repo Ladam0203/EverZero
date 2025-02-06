@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using Messages;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
@@ -42,23 +43,17 @@ public class RemoteAuthenticationHandler : AuthenticationHandler<RemoteAuthentic
 
         var response = await _httpClient.SendAsync(requestMessage);
         if (!response.IsSuccessStatusCode)
-            return AuthenticateResult.Fail("Invalid token.");
+            return AuthenticateResult.Fail("Remote authentication failed with status code: " + response.StatusCode);
 
         var authResult = await response.Content.ReadFromJsonAsync<AuthorizationResponse>();
-        if (authResult == null || !authResult.IsAuthenticated)
+        if (authResult == null)
             return AuthenticateResult.Fail("Unauthorized.");
 
-        var claims = authResult.Claims.Select(c => new Claim(c.Type, c.Value)).ToArray();
+        var claims = authResult.ClaimDtos.Select(c => new Claim(c.Type, c.Value)).ToArray();
         var claimsIdentity = new ClaimsIdentity(claims, Scheme.Name);
         var claimPrincipal = new ClaimsPrincipal(claimsIdentity);
         var authenticationTicket = new AuthenticationTicket(claimPrincipal, Scheme.Name);
 
         return AuthenticateResult.Success(authenticationTicket);
     }
-}
-
-public class AuthorizationResponse
-{
-    public bool IsAuthenticated { get; set; }
-    public Claim[] Claims { get; set; }
 }

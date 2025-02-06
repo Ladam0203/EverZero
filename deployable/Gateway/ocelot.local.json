@@ -23,6 +23,22 @@
           "Port": 5278
         }
       ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/invoices",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/invoice/invoices",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5120
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
     }
   ],
   "GlobalConfiguration": {

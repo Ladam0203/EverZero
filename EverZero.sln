@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{201D7479-7
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvoiceService", "deployable\InvoiceService\InvoiceService.csproj", "{C3728949-1D4D-419C-B7B1-A3F55D934C10}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messages", "shared\Messages\Messages.csproj", "{AE5B90CC-FAA0-4780-A2D5-A7F545E7DC2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,7 @@ Global
 		{ED48652A-DA07-4F71-BE00-09FD8FB89D13} = {EFF97FA5-3C20-4631-B5D2-5BFF11C62D47}
 		{8BE86C27-A45A-4B9C-9C60-C816E4FBC4F9} = {EFF97FA5-3C20-4631-B5D2-5BFF11C62D47}
 		{C3728949-1D4D-419C-B7B1-A3F55D934C10} = {EFF97FA5-3C20-4631-B5D2-5BFF11C62D47}
+		{AE5B90CC-FAA0-4780-A2D5-A7F545E7DC2F} = {7DE52966-C7DD-4AD8-9260-E2EC705C7E78}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{ED48652A-DA07-4F71-BE00-09FD8FB89D13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -42,5 +45,9 @@ Global
 		{C3728949-1D4D-419C-B7B1-A3F55D934C10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3728949-1D4D-419C-B7B1-A3F55D934C10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3728949-1D4D-419C-B7B1-A3F55D934C10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE5B90CC-FAA0-4780-A2D5-A7F545E7DC2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE5B90CC-FAA0-4780-A2D5-A7F545E7DC2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE5B90CC-FAA0-4780-A2D5-A7F545E7DC2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE5B90CC-FAA0-4780-A2D5-A7F545E7DC2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
