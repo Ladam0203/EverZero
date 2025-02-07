@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 
@@ -18,7 +19,7 @@ public class RequestContext
     /// <summary>
     /// The Id of the user who made the current request, from the HttpContext.
     /// </summary>
-    public virtual Guid? UserId { get; set; }
+    public virtual Guid? UserId { get; private set; }
 
     /// <summary>
     /// List of roles associated with the current user from the HttpContext.
@@ -40,31 +41,42 @@ public class RequestContext
     /// Populates the CurrentContext properties based on the provided HttpContext.
     /// </summary>
     /// <param name="httpContext">The current HttpContext instance.</param>
-    public void Build(HttpContext httpContext) {
+    public void Build(HttpContext httpContext)
+    {
         HttpContext = httpContext;
         IpAddress = GetIpAddress(httpContext);
         UserAgent = GetUserAgent(httpContext);
 
-        SetUser(httpContext.User);
+        ExtractJwtClaims(httpContext);
     }
 
     /// <summary>
-    /// Extracts the user's unique identifier and role information from the <see cref="ClaimsPrincipal"/> instance, 
-    /// and assigns them to the corresponding properties of the CurrentContext.
+    /// Extracts user claims from the JWT token present in the Authorization header.
     /// </summary>
-    /// <param name="user">The <see cref="ClaimsPrincipal"/> representing the current user.</param>
-    private void SetUser(ClaimsPrincipal user) {
-        if (user.Identity is ClaimsIdentity identity) {
-            if (identity.Claims.Any()) {
-                var userId = identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                UserId = userId is null
-                    ? null
-                    : Guid.Parse(userId);
-                Roles = identity.Claims
-                    .Where(c => c.Type == ClaimTypes.Role)
-                    .Select(c => c.Value)
-                    .ToList();
+    /// <param name="httpContext">The current HttpContext instance.</param>
+    private void ExtractJwtClaims(HttpContext httpContext)
+    {
+        var authHeader = httpContext.Request.Headers["Authorization"].FirstOrDefault();
+        if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer ")) return;
+
+        var tokenString = authHeader["Bearer ".Length..]; // Extract token
+        var handler = new JwtSecurityTokenHandler();
+
+        try
+        {
+            var token = handler.ReadJwtToken(tokenString);
+
+            var userIdClaim = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (Guid.TryParse(userIdClaim, out var parsedUserId))
+            {
+                UserId = parsedUserId;
             }
+
+            Roles = token.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+        }
+        catch (Exception ex)
+        {
+            // TODO: Log exception
         }
     }
 
@@ -75,10 +87,13 @@ public class RequestContext
     /// </summary>
     /// <param name="httpContext">The current HttpContext instance.</param>
     /// <returns>The client's IP address, or null if it cannot be determined.</returns>
-    private static IPAddress? GetIpAddress(HttpContext httpContext) {
-        if (httpContext.Request.Headers.TryGetValue("X-Real-IP", out var header)) {
+    private static IPAddress? GetIpAddress(HttpContext httpContext)
+    {
+        if (httpContext.Request.Headers.TryGetValue("X-Real-IP", out var header))
+        {
             var ipString = header.ToString();
-            if (IPAddress.TryParse(ipString, out IPAddress? ip)) {
+            if (IPAddress.TryParse(ipString, out IPAddress? ip))
+            {
                 return ip;
             }
         }
@@ -92,8 +107,10 @@ public class RequestContext
     /// </summary>
     /// <param name="httpContext">The current HttpContext instance.</param>
     /// <returns>The UserAgent string, or null if it cannot be determined.</returns>
-    private static string? GetUserAgent(HttpContext httpContext) {
-        if (httpContext.Request.Headers.TryGetValue("User-Agent", out var header)) {
+    private static string? GetUserAgent(HttpContext httpContext)
+    {
+        if (httpContext.Request.Headers.TryGetValue("User-Agent", out var header))
+        {
             return header.ToString();
         }
 

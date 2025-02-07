@@ -15,7 +15,7 @@ public class RequestContextMiddleware
     /// Invokes the current context middleware.
     /// </summary>
     /// <param name="httpContext">The HTTP context received from the Http Request.</param>
-    /// <param name="currentContext">The current context to build.</param>
+    /// <param name="requestContext">The current context to build.</param>
     public async Task Invoke(HttpContext httpContext, RequestContext requestContext) {
         requestContext.Build(httpContext);
         await _next.Invoke(httpContext);

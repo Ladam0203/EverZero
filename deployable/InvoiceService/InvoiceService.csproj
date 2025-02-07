@@ -10,12 +10,19 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.4.0" />
     </ItemGroup>
 
     <ItemGroup>
       <Content Include="..\..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.AspNetCore.Authentication.JwtBearer">
+        <HintPath>..\..\..\..\.nuget\packages\microsoft.aspnetcore.authentication.jwtbearer\8.0.12\lib\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
