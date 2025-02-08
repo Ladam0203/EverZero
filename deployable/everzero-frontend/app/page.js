@@ -1,7 +1,7 @@
 "use client"
 
 import { FaLeaf, FaChartLine, FaUsers, FaCog } from "react-icons/fa"
-import Navbar from "./components/navbar"
+import Navbar from "./components/Navbar"
 
 export default function Home() {
     return (
