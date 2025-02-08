@@ -6,12 +6,22 @@ import { invoicesAtom } from "@/app/atoms/invoicesAtom"
 import { FaFileInvoiceDollar, FaSpinner, FaPlus, FaExclamationTriangle } from "react-icons/fa"
 import { format } from "date-fns"
 import { InvoiceForm } from "@/app/components/InvoiceForm"
+import {useRouter} from "next/navigation"
+import {authorize} from "@/app/server/auth/authorize";
 
 export default function Dashboard() {
+    const router = useRouter();
     const [invoices, setInvoices] = useAtom(invoicesAtom)
     const [isModalOpen, setIsModalOpen] = useState(false)
 
     useEffect(() => {
+        const doAuthorize = async () => {
+            const response = await authorize();
+            if (!response.authenticated) {
+                throw new Error("Unauthorized");
+            }
+        };
+
         const fetchInvoices = async (retryCount = 0) => {
             if (invoices.loading || invoices.loaded) {
                 return; // If invoices are already loading or already fetched, do nothing
@@ -55,7 +65,12 @@ export default function Dashboard() {
             }
         };
 
-        fetchInvoices();
+        doAuthorize()
+            .then(() => fetchInvoices())
+            .catch((error) => {
+                console.info("Authorization failed:", error.message);
+                router.push("/login");
+            });
     }, [invoices.loading, invoices.loaded, setInvoices]); // Now only depend on retryCount and loading/loaded states
 
 

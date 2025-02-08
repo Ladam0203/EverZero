@@ -25,6 +25,18 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/api/authorize",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/auth/authorize",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "auth-service",
+          "Port": 80
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/api/invoices",
       "UpstreamHttpMethod": [ "Get" ],
       "DownstreamPathTemplate": "/invoice/invoices",
