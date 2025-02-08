@@ -1,3 +1,5 @@
+using InvoiceService.Core;
+using InvoiceService.Core.DTOs;
 using InvoiceService.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +28,33 @@ public class InvoiceController : ControllerBase
         }
         
         var invoices = await _service.GetInvoicesByUserId((Guid) userId);
+        
+        //TODO: Remove this block when the service is implemented
+        if (!invoices.Any()) {
+            // Return a test invoice
+            var invoiceId = Guid.NewGuid();
+            return Ok(new List<GetInvoiceDTO> {
+                new () {
+                    Id = invoiceId,
+                    UserId = (Guid) userId,
+                    Subject = "Test Invoice",
+                    SupplierName = "Test Supplier",
+                    BuyerName = "Test Buyer",
+                    Date = DateTime.Now,
+                    
+                    Lines = new List<GetInvoiceLineDTO> {
+                        new () {
+                            Id = Guid.NewGuid(),
+                            InvoiceId = invoiceId,
+                            Description = "Test Description",
+                            Quantity = 1,
+                            Unit = "Test Unit"
+                        }
+                    }
+                }
+            });
+        }
+        
         return Ok(invoices);
     }
 }

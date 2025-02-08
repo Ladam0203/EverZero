@@ -12,6 +12,9 @@ builder.Services.AddDbContext<AppDbContext>(db => {
     db.UseNpgsql(builder.Configuration.GetConnectionString("NpsqlConnection"));
 });
 
+// DbInitializer
+builder.Services.AddScoped<DbInitializer>();
+
 //Repositories
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 
