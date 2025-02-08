@@ -41,4 +41,19 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllers();
 
+// Initialize the database
+if (args.Contains("db-init") || args.Contains("--db-init"))
+{
+    using var scope = app.Services.CreateScope();
+    var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
+    await dbInitializer.Initialize();
+}
+// Reinitialize the database (development default)
+else if (args.Contains("db-reinit") || args.Contains("--db-reinit") || app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
+    await dbInitializer.Reinitialize();
+}
+
 app.Run();
