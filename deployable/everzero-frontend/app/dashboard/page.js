@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { getAllInvoices } from "@/app/server/invoice/getAllInvoices"
 import { useAtom } from "jotai"
 import { invoicesAtom } from "@/app/atoms/invoicesAtom"
-import { FaFileInvoiceDollar, FaSpinner, FaPlus } from "react-icons/fa"
+import { FaFileInvoiceDollar, FaSpinner, FaPlus, FaExclamationTriangle } from "react-icons/fa"
 import { format } from "date-fns"
 import { InvoiceForm } from "@/app/components/InvoiceForm"
 
@@ -12,26 +12,52 @@ export default function Dashboard() {
     const [isModalOpen, setIsModalOpen] = useState(false)
 
     useEffect(() => {
-        const fetchInvoices = async () => {
-            if (invoices.loading || invoices.invoices.length > 0) {
-                return
+        const fetchInvoices = async (retryCount = 0) => {
+            if (invoices.loading || invoices.loaded) {
+                return; // If invoices are already loading or already fetched, do nothing
             }
 
-            setInvoices({ ...invoices, loading: true })
-            const result = await getAllInvoices()
+            setInvoices((prevInvoices) => ({
+                ...prevInvoices,
+                loading: true,
+            }));
 
-            if (!result.success) {
-                console.error("Failed to fetch invoices:", result.message)
-                setInvoices({ ...invoices, loading: false })
-                return
+            const retryDelay = 1000 * Math.pow(2, retryCount); // Exponential backoff
+
+            try {
+                const result = await getAllInvoices();
+
+                if (!result.success) {
+                    throw new Error(result.message);
+                }
+
+                console.log("Fetched invoices:", result.data);
+
+                setInvoices({
+                    invoices: result.data.length > 0 ? result.data : [],
+                    loading: false,
+                    loaded: true,
+                    error: null,
+                });
+            } catch (error) {
+                console.error("Failed to fetch invoices:", error.message);
+
+                if (retryCount < 3) {
+                    setTimeout(() => fetchInvoices(retryCount + 1), retryDelay);
+                } else {
+                    setInvoices({
+                        ...invoices,
+                        loading: false,
+                        error: "Failed to load invoices. Please try again later.",
+                        loaded: true,
+                    });
+                }
             }
+        };
 
-            console.log("Fetched invoices:", result.data)
-            setInvoices({ invoices: result.data, loading: false })
-        }
+        fetchInvoices();
+    }, [invoices.loading, invoices.loaded, setInvoices]); // Now only depend on retryCount and loading/loaded states
 
-        fetchInvoices()
-    }, [invoices, setInvoices])
 
     const handleSubmit = (newInvoice) => {
         console.log("New invoice to be sent to backend:", newInvoice)
@@ -46,9 +72,20 @@ export default function Dashboard() {
                     <FaPlus className="mr-2" /> Add Invoice
                 </button>
             </div>
-            {invoices.loading ? (
+
+            {!invoices.loaded ? (
                 <div className="flex justify-center items-center">
                     <FaSpinner className="animate-spin text-4xl text-primary" />
+                </div>
+            ) : invoices.error ? (
+                <div className="flex justify-center items-center text-red-600">
+                    <FaExclamationTriangle className="mr-2" />
+                    <span>{invoices.error}</span>
+                </div>
+            ) : invoices.invoices.length === 0 ? (
+                <div className="flex justify-center items-center text-yellow-600">
+                    <FaExclamationTriangle className="mr-2" />
+                    <span>No invoices found.</span>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -110,4 +147,3 @@ export default function Dashboard() {
         </div>
     )
 }
-
