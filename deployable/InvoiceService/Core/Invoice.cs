@@ -1,14 +1,14 @@
-namespace InvoiceService.Core;
+using InvoiceService.Core;
 
 public class Invoice
 {
-    // public string Number { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();  // Primary Key
     public string Subject { get; set; }
     public string SupplierName { get; set; }
-    // public string SupplierAddress { get; set; }
     public string BuyerName { get; set; }
-    // public string BuyerAddress { get; set; }
     public DateTime Date { get; set; }
-    
-    public List<InvoiceLine> Lines { get; set; }
+
+    public Guid UserId { get; set; }  // Associated User
+
+    public List<InvoiceLine> Lines { get; set; } = new();
 }

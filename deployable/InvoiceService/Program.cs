@@ -1,8 +1,24 @@
 using InvoiceService;
 using InvoiceService.Middleware;
+using InvoiceService.Repository;
+using InvoiceService.Repository.Interfaces;
+using InvoiceService.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// DbContext
+builder.Services.AddDbContext<AppDbContext>(db => {
+    db.UseNpgsql(builder.Configuration.GetConnectionString("NpsqlConnection"));
+});
+
+//Repositories
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+
+// Services
+builder.Services.AddScoped<IInvoiceService, InvoiceService.Services.InvoiceService>();
+
+// Middleware
 builder.Services.AddScoped<RequestContext>();
 
 // Add services to the container.
