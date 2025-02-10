@@ -51,6 +51,22 @@
         "AuthenticationProviderKey": "RemoteAuthentication",
         "AllowedScopes": []
       }
+    },
+    {
+      "UpstreamPathTemplate": "/api/invoices",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/invoice/invoices",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "invoice-service",
+          "Port": 80
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
     }
   ],
   "GlobalConfiguration": {

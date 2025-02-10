@@ -8,6 +8,7 @@ import { format } from "date-fns"
 import { InvoiceForm } from "@/app/components/InvoiceForm"
 import {useRouter} from "next/navigation"
 import {authorize} from "@/app/server/auth/authorize";
+import {postInvoice} from "@/app/server/invoice/postInvoice";
 
 export default function Dashboard() {
     const router = useRouter();
@@ -74,9 +75,22 @@ export default function Dashboard() {
     }, [invoices.loading, invoices.loaded, setInvoices]); // Now only depend on retryCount and loading/loaded states
 
 
-    const handleSubmit = (newInvoice) => {
+    const handleSubmit = async (newInvoice) => {
         console.log("New invoice to be sent to backend:", newInvoice)
         setIsModalOpen(false)
+        const result = await postInvoice(newInvoice)
+        console.log("Result of posting invoice:", result)
+        if (!result.success) {
+            // TODO: Display error (raise toast?)
+            console.error("Failed to post invoice:", result.message)
+            return
+        }
+
+        // Update the invoices list
+        setInvoices((prevInvoices) => ({
+            ...prevInvoices,
+            invoices: [...prevInvoices.invoices, result.data],
+        }))
     }
 
     return (

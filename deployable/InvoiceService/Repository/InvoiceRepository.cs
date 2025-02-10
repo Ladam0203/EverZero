@@ -15,13 +15,16 @@ public class InvoiceRepository : IInvoiceRepository
     
     public async Task<IEnumerable<Invoice>> GetAllByUserId(Guid userId)
     {
-        return await _context.Invoices.Where(i => i.UserId == userId).ToListAsync();
+        return await _context.Invoices
+            .Where(i => i.UserId == userId)
+            .Include(i => i.Lines)
+            .ToListAsync();
     }
     
     public Task<Invoice> Create(Invoice invoice)
     {
         _context.Invoices.Add(invoice);
-        _context.SaveChangesAsync();
+        _context.SaveChanges();
         return Task.FromResult(invoice);
     }
 }

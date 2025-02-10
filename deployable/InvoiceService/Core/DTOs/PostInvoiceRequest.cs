@@ -7,5 +7,5 @@ public class PostInvoiceRequest
     public string BuyerName { get; set; }
     public DateTime Date { get; set; }
     
-    public List<InvoiceLine> Lines { get; set; } = new();
+    public List<PostInvoiceLineRequest> Lines { get; set; } = new();
 }

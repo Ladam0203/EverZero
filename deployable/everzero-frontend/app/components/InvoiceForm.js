@@ -5,10 +5,10 @@ import { FaPlus, FaTrash } from "react-icons/fa"
 
 export const InvoiceForm = ({ onSubmit, onCancel }) => {
     const [invoice, setInvoice] = useState({
-        subject: "",
-        supplierName: "",
-        buyerName: "",
-        date: "",
+        subject: process.env.NODE_ENV === "development" ? "Test Invoice" : "",
+        supplierName: process.env.NODE_ENV === "development" ? "Test Supplier" : "",
+        buyerName: process.env.NODE_ENV === "development" ? "Test Buyer" : "",
+        date: process.env.NODE_ENV === "development" ? `${new Date().toISOString().split("T")[0]}` : "",
         lines: [],
     })
 
@@ -27,7 +27,10 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
     const addInvoiceLine = () => {
         setInvoice({
             ...invoice,
-            lines: [...invoice.lines, { description: "", quantity: 0, unit: "" }],
+            lines: [...invoice.lines, { description: process.env.NODE_ENV === "development" ? "Test Line" : "",
+                quantity: process.env.NODE_ENV === "development" ? 1 : 0,
+                unit: process.env.NODE_ENV === "development" ? "kWh" : ""
+            }],
         })
     }
 
@@ -37,6 +40,7 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
     }
 
     const handleSubmit = (e) => {
+        // TODO: Add validation for the invoice
         e.preventDefault()
         onSubmit(invoice)
     }
