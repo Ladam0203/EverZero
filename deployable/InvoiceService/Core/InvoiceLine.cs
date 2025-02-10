@@ -2,7 +2,7 @@ namespace InvoiceService.Core;
 
 public class InvoiceLine
 {
-    public Guid Id { get; set; } = Guid.NewGuid();  // Primary Key
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string Description { get; set; }
     public decimal Quantity { get; set; }
     public string Unit { get; set; }

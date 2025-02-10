@@ -27,8 +27,21 @@ public class InvoiceController : ControllerBase
             return Unauthorized("User not authenticated or authorized");
         }
         
-        var invoices = await _service.GetInvoicesByUserId((Guid) userId);
+        var invoices = await _service.GetAllByUserId((Guid) userId);
         
         return Ok(invoices);
+    }
+    
+    [HttpPost("invoices")]
+    public async Task<IActionResult> PostInvoice([FromBody] PostInvoiceRequest request)
+    {
+        var userId = _requestContext.UserId;
+        if (userId is null) {
+            return Unauthorized("User not authenticated or authorized");
+        }
+        
+        var response = await _service.Create((Guid) userId, request);
+        
+        return Ok(response);
     }
 }

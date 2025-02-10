@@ -1,14 +1,11 @@
-using InvoiceService.Core;
+namespace InvoiceService.Core.DTOs;
 
-public class Invoice
+public class PostInvoiceRequest
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
     public string Subject { get; set; }
     public string SupplierName { get; set; }
     public string BuyerName { get; set; }
     public DateTime Date { get; set; }
-
-    public Guid UserId { get; set; }  // Associated User
-
+    
     public List<InvoiceLine> Lines { get; set; } = new();
 }
