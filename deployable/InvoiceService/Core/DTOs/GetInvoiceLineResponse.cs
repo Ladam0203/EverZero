@@ -1,6 +1,6 @@
 namespace InvoiceService.Core.DTOs;
 
-public class GetInvoiceLineDTO
+public class GetInvoiceLineResponse
 {
     public Guid Id { get; set; }
     public Guid InvoiceId { get; set; }

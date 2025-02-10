@@ -1,6 +1,6 @@
 namespace InvoiceService.Core.DTOs;
 
-public class GetInvoiceDTO
+public class GetInvoiceResponse
 {
     public Guid Id { get; set; }
     public string Subject { get; set; }
@@ -9,5 +9,5 @@ public class GetInvoiceDTO
     public DateTime Date { get; set; }
     public Guid UserId { get; set; }
 
-    public List<GetInvoiceLineDTO> Lines { get; set; } = new();
+    public List<GetInvoiceLineResponse> Lines { get; set; } = new();
 }

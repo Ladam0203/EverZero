@@ -5,7 +5,7 @@ namespace InvoiceService.Services;
 
 public interface IInvoiceService
 {
-    Task<IEnumerable<GetInvoiceDTO>> GetInvoicesByUserId(Guid userId);
+    Task<IEnumerable<GetInvoiceResponse>> GetInvoicesByUserId(Guid userId);
     //Task<Invoice> GetInvoice(Guid id);
     //Task<Invoice> CreateInvoice(Invoice invoice);
     //Task<Invoice> UpdateInvoice(Invoice invoice);

@@ -13,12 +13,12 @@ public class InvoiceService : IInvoiceService
         _invoiceRepository = invoiceRepository;
     }
 
-    public async Task<IEnumerable<GetInvoiceDTO>> GetInvoicesByUserId(Guid userId)
+    public async Task<IEnumerable<GetInvoiceResponse>> GetInvoicesByUserId(Guid userId)
     {
         var invoices = await _invoiceRepository.GetInvoicesByUserId(userId);
         
         // TODO: Add AutoMapper
-        return invoices.Select(i => new GetInvoiceDTO
+        return invoices.Select(i => new GetInvoiceResponse
         {
             Id = i.Id,
             Subject = i.Subject,
@@ -26,7 +26,7 @@ public class InvoiceService : IInvoiceService
             BuyerName = i.BuyerName,
             Date = i.Date,
             UserId = i.UserId,
-            Lines = i.Lines.Select(l => new GetInvoiceLineDTO
+            Lines = i.Lines.Select(l => new GetInvoiceLineResponse
             {
                 Id = l.Id,
                 InvoiceId = l.InvoiceId,
