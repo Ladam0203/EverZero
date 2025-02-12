@@ -8,7 +8,7 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
         subject: "MCA60043-MOGY-0424",
         supplierName: "Community Utilities",
         buyerName: "Mira Mogyin",
-        date: "18.04.2024",
+        date: "2024-04-18",
         lines: [
             {
                 description: "Heat Consumption",

@@ -1,12 +1,12 @@
 "use client"
 
 import { FaLeaf, FaChartLine, FaUsers, FaCog } from "react-icons/fa"
-import Navbar from "./components/Navbar"
+import LandingNavbar from "./components/LandingNavbar"
 
 export default function Home() {
     return (
         <main className="min-h-screen">
-            <Navbar />
+            <LandingNavbar />
 
             {/* Hero Section */}
             <section className="hero min-h-screen bg-base-200">
