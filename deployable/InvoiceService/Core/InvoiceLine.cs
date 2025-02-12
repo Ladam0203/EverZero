@@ -6,6 +6,7 @@ public class InvoiceLine
     public string Description { get; set; }
     public decimal Quantity { get; set; }
     public string Unit { get; set; }
+    public Guid? EmissionFactorId { get; set; }  // Foreign Key
 
     public Guid InvoiceId { get; set; }  // Foreign Key
     public Invoice Invoice { get; set; }  // Navigation Property
