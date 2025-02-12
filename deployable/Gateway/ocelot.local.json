@@ -67,6 +67,18 @@
         "AuthenticationProviderKey": "RemoteAuthentication",
         "AllowedScopes": []
       }
+    },
+    {
+      "UpstreamPathTemplate": "/api/emission-factors",
+      "UpstreamHttpMethod": [ "Get" ],
+      "DownstreamPathTemplate": "/emission/emission-factors",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5118
+        }
+      ]
     }
   ],
   "GlobalConfiguration": {
