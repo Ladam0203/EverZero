@@ -4,13 +4,34 @@ import { useState } from "react"
 import { FaPlus, FaTrash } from "react-icons/fa"
 
 export const InvoiceForm = ({ onSubmit, onCancel }) => {
-    const [invoice, setInvoice] = useState({
-        subject: process.env.NODE_ENV === "development" ? "Test Invoice" : "",
-        supplierName: process.env.NODE_ENV === "development" ? "Test Supplier" : "",
-        buyerName: process.env.NODE_ENV === "development" ? "Test Buyer" : "",
-        date: process.env.NODE_ENV === "development" ? `${new Date().toISOString().split("T")[0]}` : "",
+    const testInvoice = {
+        subject: "MCA60043-MOGY-0424",
+        supplierName: "Community Utilities",
+        buyerName: "Mira Mogyin",
+        date: "18.04.2024",
+        lines: [
+            {
+                description: "Heat Consumption",
+                quantity: 304,
+                unit: "kWh",
+            },
+            {
+                description: "Elec Consumption",
+                quantity: 137.82,
+                unit: "kWh",
+            },
+        ],
+    }
+
+    const baseInvoice = {
+        subject: "",
+        supplierName: "",
+        buyerName: "",
+        date: new Date().toISOString().split("T")[0],
         lines: [],
-    })
+    }
+
+    const [invoice, setInvoice] = useState(process.env.NODE_ENV === "development" ? testInvoice : baseInvoice)
 
     const handleInputChange = (e, index) => {
         const { name, value } = e.target

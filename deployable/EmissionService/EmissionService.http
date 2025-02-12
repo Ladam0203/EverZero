@@ -1,0 +1,6 @@
+@EmissionService_HostAddress = http://localhost:5118
+
+GET {{EmissionService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
