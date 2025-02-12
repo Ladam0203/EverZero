@@ -12,4 +12,9 @@ public class EmissionFactorRepository : IEmissionFactorRepository
     {
         _emissionFactors = database.GetCollection<EmissionFactor>("emissionfactors");
     }
+    
+    public async Task<IEnumerable<EmissionFactor>> GetAll()
+    {
+        return await _emissionFactors.Find(_ => true).ToListAsync();
+    }
 }

@@ -23,6 +23,7 @@ namespace EmissionService.Infrastructure
             if (count == 0)
             {
                 var initialEmissionFactors = GetInitialEmissionFactors();
+                Console.WriteLine("Inserting initial data of length: " + initialEmissionFactors.Count);
                 await _emissionFactors.InsertManyAsync(initialEmissionFactors);
             }
         }
@@ -31,7 +32,7 @@ namespace EmissionService.Infrastructure
         public async Task Reinitialize()
         {
             // Drop the collection and reinitialize
-            await _emissionFactors.Database.DropCollectionAsync("EmissionFactors");
+            await _emissionFactors.Database.DropCollectionAsync("emissionfactors");
             await Initialize();
         }
 

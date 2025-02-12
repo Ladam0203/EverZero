@@ -1,6 +1,8 @@
 using EmissionService.Infrastructure;
 using EmissionService.Repositories;
 using EmissionService.Repositories.Interfaces;
+using EmissionService.Services;
+using EmissionService.Services.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
@@ -26,6 +28,9 @@ builder.Services.AddScoped<DbInitializer>();
 
 // Repositories
 builder.Services.AddScoped<IEmissionFactorRepository, EmissionFactorRepository>();
+
+// Services
+builder.Services.AddScoped<IEmissionFactorService, EmissionFactorService>();
 
 builder.Services.AddControllers();
 

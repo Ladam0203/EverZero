@@ -1,6 +1,8 @@
+using EmissionService.Domain;
+
 namespace EmissionService.Repositories.Interfaces;
 
-public class IEmissionFactorRepository
+public interface IEmissionFactorRepository
 {
-    // TODO: Add methods
+    public Task<IEnumerable<EmissionFactor>> GetAll();
 }
