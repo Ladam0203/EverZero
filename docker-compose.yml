@@ -77,6 +77,8 @@ services:
       - ConnectionStrings__SecureNotes=Host=emission-db;Database=emission;Username=postgres;Password=root;Port=5432;
     networks:
       - intranet
+        
+  # Database services
 
   auth-db:
     image: postgres:17
@@ -112,6 +114,20 @@ services:
       - emission_db_data:/data/db
     networks:
       - intranet
+  
+  # Monitoring
+  
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+  seq:
+    image: datalust/seq:latest
+    ports:
+      - "5341:5341"
+      - "5342:80"
+    environment:
+      ACCEPT_EULA: Y
 
 networks:
   intranet:
