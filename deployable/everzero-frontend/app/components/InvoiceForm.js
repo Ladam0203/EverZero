@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react"
 import { FaPlus, FaTrash } from "react-icons/fa"
 import { getAllEmissionFactors } from "@/app/server/emissionFactor/getAllEmissionFactors"
-import {useAtom} from "jotai"
-import {emissionFactorsAtom} from "@/app/atoms/emissionFactorsAtom";
+import { useAtom } from "jotai"
+import { emissionFactorsAtom } from "@/app/atoms/emissionFactorsAtom"
 
 export const InvoiceForm = ({ onSubmit, onCancel }) => {
     const testInvoice = {
@@ -40,7 +40,7 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
     useEffect(() => {
         const fetchEmissionFactors = async (retryCount = 0) => {
             if (emissionFactors.loading || emissionFactors.loaded) {
-                return; // If emission factors are already loading or already fetched, do nothing
+                return // If emission factors are already loading or already fetched, do nothing
             }
 
             setEmissionFactors((prevEmissionFactors) => ({
@@ -133,6 +133,26 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
             currentLine.subCategories = {}
             currentLine.emissionFactorId = ""
             currentLine.emissionFactorUnit = ""
+
+            // Automatically select subcategories if there's only one option
+            const categoryFactors = emissionFactors.emissionFactors.filter((ef) => ef.category === value)
+            Object.keys(categoryFactors[0].subCategories).forEach((subCategoryKey) => {
+                const subCategoryOptions = [...new Set(categoryFactors.map((ef) => ef.subCategories[subCategoryKey]))]
+                if (subCategoryOptions.length === 1) {
+                    currentLine.subCategories[subCategoryKey] = subCategoryOptions[0]
+                }
+            })
+
+            // Check if all subcategories are filled and select unit if there's only one option
+            if (Object.keys(currentLine.subCategories).length === Object.keys(categoryFactors[0].subCategories).length) {
+                const matchingFactor = categoryFactors.find((ef) =>
+                    Object.entries(ef.subCategories).every(([key, value]) => currentLine.subCategories[key] === value),
+                )
+                if (matchingFactor && matchingFactor.unitEmissionFactors.length === 1) {
+                    currentLine.emissionFactorUnit = matchingFactor.unitEmissionFactors[0].unit
+                    currentLine.emissionFactorId = matchingFactor.id
+                }
+            }
         } else if (field.startsWith("subCategory-")) {
             const subCategoryKey = field.split("-")[1]
             currentLine.subCategories = {
@@ -141,6 +161,18 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
             }
             currentLine.emissionFactorId = ""
             currentLine.emissionFactorUnit = ""
+
+            // Check if all subcategories are filled and select unit if there's only one option
+            const categoryFactors = emissionFactors.emissionFactors.filter((ef) => ef.category === currentLine.category)
+            if (Object.keys(currentLine.subCategories).length === Object.keys(categoryFactors[0].subCategories).length) {
+                const matchingFactor = categoryFactors.find((ef) =>
+                    Object.entries(ef.subCategories).every(([key, value]) => currentLine.subCategories[key] === value),
+                )
+                if (matchingFactor && matchingFactor.unitEmissionFactors.length === 1) {
+                    currentLine.emissionFactorUnit = matchingFactor.unitEmissionFactors[0].unit
+                    currentLine.emissionFactorId = matchingFactor.id
+                }
+            }
         } else if (field === "emissionFactorUnit") {
             currentLine.emissionFactorUnit = value
             // Find the matching emission factor and set its ID
@@ -155,6 +187,25 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
 
         updatedLines[lineIndex] = currentLine
         setInvoice({ ...invoice, lines: updatedLines })
+    }
+
+    const getSubCategoryOptions = (category, subCategoryKey) => {
+        return [
+            ...new Set(
+                emissionFactors.emissionFactors
+                    .filter((ef) => ef.category === category)
+                    .map((ef) => ef.subCategories[subCategoryKey]),
+            ),
+        ]
+    }
+
+    const getEmissionFactorUnitOptions = (category, subCategories) => {
+        const matchingFactor = emissionFactors.emissionFactors.find(
+            (ef) =>
+                ef.category === category &&
+                Object.entries(ef.subCategories).every(([key, value]) => subCategories[key] === value),
+        )
+        return matchingFactor ? matchingFactor.unitEmissionFactors : []
     }
 
     return (
@@ -280,8 +331,14 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
                                 </div>
                                 {line.category && (
                                     <div className="space-y-4">
-                                        {Object.keys(emissionFactors.emissionFactors.find((ef) => ef.category === line.category).subCategories).map(
-                                            (subCategoryKey) => (
+                                        {Object.keys(
+                                            emissionFactors.emissionFactors.find((ef) => ef.category === line.category).subCategories,
+                                        ).map((subCategoryKey) => {
+                                            const options = getSubCategoryOptions(line.category, subCategoryKey)
+                                            if (options.length === 1 && !line.subCategories[subCategoryKey]) {
+                                                handleEmissionFactorChange(index, `subCategory-${subCategoryKey}`, options[0])
+                                            }
+                                            return (
                                                 <div key={subCategoryKey} className="form-control">
                                                     <label className="label">
                                                         <span className="label-text">{subCategoryKey}</span>
@@ -294,26 +351,22 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
                                                         }
                                                     >
                                                         <option value="">Select {subCategoryKey}</option>
-                                                        {[
-                                                            ...new Set(
-                                                                emissionFactors.emissionFactors
-                                                                    .filter((ef) => ef.category === line.category)
-                                                                    .map((ef) => ef.subCategories[subCategoryKey]),
-                                                            ),
-                                                        ].map((value) => (
+                                                        {options.map((value) => (
                                                             <option key={value} value={value}>
                                                                 {value}
                                                             </option>
                                                         ))}
                                                     </select>
                                                 </div>
-                                            ),
-                                        )}
+                                            )
+                                        })}
                                     </div>
                                 )}
                                 {line.category &&
                                     Object.keys(line.subCategories).length ===
-                                    Object.keys(emissionFactors.emissionFactors.find((ef) => ef.category === line.category).subCategories).length && (
+                                    Object.keys(
+                                        emissionFactors.emissionFactors.find((ef) => ef.category === line.category).subCategories,
+                                    ).length && (
                                         <div className="form-control">
                                             <label className="label">
                                                 <span className="label-text">Emission Factor Unit</span>
@@ -324,19 +377,11 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
                                                 onChange={(e) => handleEmissionFactorChange(index, "emissionFactorUnit", e.target.value)}
                                             >
                                                 <option value="">Select unit</option>
-                                                {emissionFactors.emissionFactors
-                                                    .find(
-                                                        (ef) =>
-                                                            ef.category === line.category &&
-                                                            Object.entries(ef.subCategories).every(
-                                                                ([key, value]) => line.subCategories[key] === value,
-                                                            ),
-                                                    )
-                                                    ?.unitEmissionFactors.map((uef) => (
-                                                        <option key={uef.unit} value={uef.unit}>
-                                                            {uef.unit} ({uef.carbonEmissionKg} kg CO2e)
-                                                        </option>
-                                                    ))}
+                                                {getEmissionFactorUnitOptions(line.category, line.subCategories).map((uef) => (
+                                                    <option key={uef.unit} value={uef.unit}>
+                                                        {uef.unit} ({uef.carbonEmissionKg} kg CO2e)
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
                                     )}
