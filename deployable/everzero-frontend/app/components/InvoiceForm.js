@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { FaPlus, FaTrash } from "react-icons/fa"
-import { getAllEmissionFactors } from "@/app/server/emissionFactor/getAllEmissionFactors"
-import { useAtom } from "jotai"
-import { emissionFactorsAtom } from "@/app/atoms/emissionFactorsAtom"
+import {useState, useEffect} from "react"
+import {FaPlus, FaTrash} from "react-icons/fa"
+import {getAllEmissionFactors} from "@/app/server/emissionFactor/getAllEmissionFactors"
+import {useAtom} from "jotai"
+import {emissionFactorsAtom} from "@/app/atoms/emissionFactorsAtom"
 
-export const InvoiceForm = ({ onSubmit, onCancel }) => {
+export const InvoiceForm = ({onSubmit, onCancel}) => {
     const testInvoice = {
         subject: "MCA60043-MOGY-0424",
         supplierName: "Community Utilities",
@@ -85,14 +85,14 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
     }, [emissionFactors, setEmissionFactors])
 
     const handleInputChange = (e, index) => {
-        const { name, value } = e.target
+        const {name, value} = e.target
         if (name.startsWith("line")) {
             const [, field, lineIndex] = name.split("-")
             const updatedLines = [...invoice.lines]
-            updatedLines[Number(lineIndex)] = { ...updatedLines[Number(lineIndex)], [field]: value }
-            setInvoice({ ...invoice, lines: updatedLines })
+            updatedLines[Number(lineIndex)] = {...updatedLines[Number(lineIndex)], [field]: value}
+            setInvoice({...invoice, lines: updatedLines})
         } else {
-            setInvoice({ ...invoice, [name]: value })
+            setInvoice({...invoice, [name]: value})
         }
     }
 
@@ -116,7 +116,7 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
 
     const removeInvoiceLine = (index) => {
         const updatedLines = invoice.lines.filter((_, i) => i !== index)
-        setInvoice({ ...invoice, lines: updatedLines })
+        setInvoice({...invoice, lines: updatedLines})
     }
 
     const handleSubmit = (e) => {
@@ -126,7 +126,7 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
 
     const handleEmissionFactorChange = (lineIndex, field, value) => {
         const updatedLines = [...invoice.lines]
-        const currentLine = { ...updatedLines[lineIndex] }
+        const currentLine = {...updatedLines[lineIndex]}
 
         if (field === "category") {
             currentLine.category = value
@@ -136,21 +136,23 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
 
             // Automatically select subcategories if there's only one option
             const categoryFactors = emissionFactors.emissionFactors.filter((ef) => ef.category === value)
-            Object.keys(categoryFactors[0].subCategories).forEach((subCategoryKey) => {
-                const subCategoryOptions = [...new Set(categoryFactors.map((ef) => ef.subCategories[subCategoryKey]))]
-                if (subCategoryOptions.length === 1) {
-                    currentLine.subCategories[subCategoryKey] = subCategoryOptions[0]
-                }
-            })
+            if (categoryFactors[0] && currentLine) {
+                Object.keys(categoryFactors[0].subCategories).forEach((subCategoryKey) => {
+                    const subCategoryOptions = [...new Set(categoryFactors.map((ef) => ef.subCategories[subCategoryKey]))]
+                    if (subCategoryOptions.length === 1) {
+                        currentLine.subCategories[subCategoryKey] = subCategoryOptions[0]
+                    }
+                })
 
-            // Check if all subcategories are filled and select unit if there's only one option
-            if (Object.keys(currentLine.subCategories).length === Object.keys(categoryFactors[0].subCategories).length) {
-                const matchingFactor = categoryFactors.find((ef) =>
-                    Object.entries(ef.subCategories).every(([key, value]) => currentLine.subCategories[key] === value),
-                )
-                if (matchingFactor && matchingFactor.unitEmissionFactors.length === 1) {
-                    currentLine.emissionFactorUnit = matchingFactor.unitEmissionFactors[0].unit
-                    currentLine.emissionFactorId = matchingFactor.id
+                // Check if all subcategories are filled and select unit if there's only one option
+                if (Object.keys(currentLine.subCategories).length === Object.keys(categoryFactors[0].subCategories).length) {
+                    const matchingFactor = categoryFactors.find((ef) =>
+                        Object.entries(ef.subCategories).every(([key, value]) => currentLine.subCategories[key] === value),
+                    )
+                    if (matchingFactor && matchingFactor.unitEmissionFactors.length === 1) {
+                        currentLine.emissionFactorUnit = matchingFactor.unitEmissionFactors[0].unit
+                        currentLine.emissionFactorId = matchingFactor.id
+                    }
                 }
             }
         } else if (field.startsWith("subCategory-")) {
@@ -186,7 +188,7 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
         }
 
         updatedLines[lineIndex] = currentLine
-        setInvoice({ ...invoice, lines: updatedLines })
+        setInvoice({...invoice, lines: updatedLines})
     }
 
     const getSubCategoryOptions = (category, subCategoryKey) => {
@@ -385,19 +387,20 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
                                             </select>
                                         </div>
                                     )}
-                                <input type="hidden" name={`line-emissionFactorId-${index}`} value={line.emissionFactorId || ""} />
+                                <input type="hidden" name={`line-emissionFactorId-${index}`}
+                                       value={line.emissionFactorId || ""}/>
                             </div>
                         </div>
                     )}
                     <div className="form-control">
                         <button type="button" className="btn btn-error" onClick={() => removeInvoiceLine(index)}>
-                            <FaTrash className="mr-2" /> Remove Line
+                            <FaTrash className="mr-2"/> Remove Line
                         </button>
                     </div>
                 </div>
             ))}
             <button type="button" className="btn btn-secondary" onClick={addInvoiceLine}>
-                <FaPlus className="mr-2" /> Add Line
+                <FaPlus className="mr-2"/> Add Line
             </button>
             <div className="modal-action">
                 <button type="submit" className="btn btn-primary">
