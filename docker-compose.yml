@@ -6,13 +6,13 @@ services:
       context: ./everzero-frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"  # Exposed frontend port
+      - "3000:3000"
     depends_on:
       - gateway
     environment:
-      - API_URL=http://gateway  # URL to reach the gateway
+      - API_URL=http://gateway
     networks:
-      - extranet  # Accessible externally
+      - extranet
 
   gateway:
     build:
@@ -26,8 +26,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
     networks:
-      - extranet  # Exposed externally
-      - intranet  # Connects to internal services
+      - extranet
+      - intranet
 
   auth-service:
     build:
@@ -46,8 +46,8 @@ services:
       - Jwt__Audience=everzero.co.uk
       - Jwt__ExpirationMinutes=1440
     networks:
-      - intranet  # Internal-only access
-        
+      - intranet
+
   invoice-service:
     build:
       context: ./deployable
@@ -61,7 +61,22 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__SecureNotes=Host=invoice-db;Database=invoice;Username=postgres;Password=root;Port=5432;
     networks:
-      - intranet  # Internal-only access
+      - intranet
+
+  emission-service:
+    build:
+      context: ./deployable
+      dockerfile: EmissionService/Dockerfile
+    ports:
+      - "4000:80"
+      - "4001:443"
+    depends_on:
+      - emission-db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__SecureNotes=Host=emission-db;Database=emission;Username=postgres;Password=root;Port=5432;
+    networks:
+      - intranet
 
   auth-db:
     image: postgres:17
@@ -72,9 +87,9 @@ services:
     ports:
       - "5200:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - auth_db_data:/var/lib/postgresql/data
     networks:
-      - intranet  # Internal-only access
+      - intranet
   
   invoice-db:
     image: postgres:17
@@ -85,17 +100,30 @@ services:
     ports:
       - "5300:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - invoice_db_data:/var/lib/postgresql/data
     networks:
-      - intranet  # Internal-only access
+      - intranet
+
+  emission-db:
+    image: mongo:8
+    ports:
+      - "5400:27017"
+    volumes:
+      - emission_db_data:/data/db
+    networks:
+      - intranet
 
 networks:
   intranet:
     driver: bridge
-    internal: true  # Restrict external access
+    internal: true
   extranet:
-    driver: bridge  # Public-facing network
+    driver: bridge
 
 volumes:
-  postgres_data:
+  auth_db_data:
+    driver: local
+  invoice_db_data:
+    driver: local
+  emission_db_data:
     driver: local
