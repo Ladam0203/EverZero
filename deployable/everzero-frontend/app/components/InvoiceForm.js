@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import { FaPlus, FaTrash } from "react-icons/fa"
 import { getAllEmissionFactors } from "@/app/server/emissionFactor/getAllEmissionFactors"
+import {useAtom} from "jotai"
+import {emissionFactorsAtom} from "@/app/atoms/emissionFactorsAtom";
 
 export const InvoiceForm = ({ onSubmit, onCancel }) => {
     const testInvoice = {
@@ -33,24 +35,54 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
     }
 
     const [invoice, setInvoice] = useState(process.env.NODE_ENV === "development" ? testInvoice : baseInvoice)
-    const [emissionFactors, setEmissionFactors] = useState([])
-    const [loading, setLoading] = useState(true)
+    const [emissionFactors, setEmissionFactors] = useAtom(emissionFactorsAtom)
 
     useEffect(() => {
-        const fetchEmissionFactors = async () => {
+        const fetchEmissionFactors = async (retryCount = 0) => {
+            if (emissionFactors.loading || emissionFactors.loaded) {
+                return; // If emission factors are already loading or already fetched, do nothing
+            }
+
+            setEmissionFactors((prevEmissionFactors) => ({
+                ...prevEmissionFactors,
+                loading: true,
+            }))
+
+            const retryDelay = 1000 * Math.pow(2, retryCount) // Exponential backoff
+
             try {
-                const factors = await getAllEmissionFactors()
-                console.log("Emission factors:", factors.data)
-                setEmissionFactors(factors.data)
+                const result = await getAllEmissionFactors()
+
+                if (!result.success) {
+                    throw new Error(result.message)
+                }
+
+                console.log("Fetched emission factors:", result.data)
+
+                setEmissionFactors({
+                    emissionFactors: result.data.length > 0 ? result.data : [],
+                    loading: false,
+                    loaded: true,
+                    error: null,
+                })
             } catch (error) {
-                console.error("Failed to load emission factors:", error)
-            } finally {
-                setLoading(false)
+                console.error("Failed to fetch emission factors:", error.message)
+
+                if (retryCount < 3) {
+                    setTimeout(() => fetchEmissionFactors(retryCount + 1), retryDelay)
+                } else {
+                    setEmissionFactors({
+                        emissionFactors: [],
+                        loading: false,
+                        loaded: false,
+                        error: error.message,
+                    })
+                }
             }
         }
 
         fetchEmissionFactors()
-    }, [])
+    }, [emissionFactors, setEmissionFactors])
 
     const handleInputChange = (e, index) => {
         const { name, value } = e.target
@@ -112,7 +144,7 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
         } else if (field === "emissionFactorUnit") {
             currentLine.emissionFactorUnit = value
             // Find the matching emission factor and set its ID
-            const matchingFactor = emissionFactors.find(
+            const matchingFactor = emissionFactors.emissionFactors.find(
                 (ef) =>
                     ef.category === currentLine.category &&
                     Object.entries(ef.subCategories).every(([key, value]) => currentLine.subCategories[key] === value) &&
@@ -225,7 +257,7 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
                             />
                         </div>
                     </div>
-                    {!loading && emissionFactors.length > 0 && (
+                    {emissionFactors.loaded && emissionFactors.emissionFactors.length > 0 && (
                         <div className="bg-base-100 p-4 rounded-lg">
                             <h4 className="text-lg font-semibold mb-2">Emission Factor</h4>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -239,7 +271,7 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
                                         onChange={(e) => handleEmissionFactorChange(index, "category", e.target.value)}
                                     >
                                         <option value="">Select category</option>
-                                        {[...new Set(emissionFactors.map((ef) => ef.category))].map((category) => (
+                                        {[...new Set(emissionFactors.emissionFactors.map((ef) => ef.category))].map((category) => (
                                             <option key={category} value={category}>
                                                 {category}
                                             </option>
@@ -248,7 +280,7 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
                                 </div>
                                 {line.category && (
                                     <div className="space-y-4">
-                                        {Object.keys(emissionFactors.find((ef) => ef.category === line.category).subCategories).map(
+                                        {Object.keys(emissionFactors.emissionFactors.find((ef) => ef.category === line.category).subCategories).map(
                                             (subCategoryKey) => (
                                                 <div key={subCategoryKey} className="form-control">
                                                     <label className="label">
@@ -264,7 +296,7 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
                                                         <option value="">Select {subCategoryKey}</option>
                                                         {[
                                                             ...new Set(
-                                                                emissionFactors
+                                                                emissionFactors.emissionFactors
                                                                     .filter((ef) => ef.category === line.category)
                                                                     .map((ef) => ef.subCategories[subCategoryKey]),
                                                             ),
@@ -281,7 +313,7 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
                                 )}
                                 {line.category &&
                                     Object.keys(line.subCategories).length ===
-                                    Object.keys(emissionFactors.find((ef) => ef.category === line.category).subCategories).length && (
+                                    Object.keys(emissionFactors.emissionFactors.find((ef) => ef.category === line.category).subCategories).length && (
                                         <div className="form-control">
                                             <label className="label">
                                                 <span className="label-text">Emission Factor Unit</span>
@@ -292,7 +324,7 @@ export const InvoiceForm = ({ onSubmit, onCancel }) => {
                                                 onChange={(e) => handleEmissionFactorChange(index, "emissionFactorUnit", e.target.value)}
                                             >
                                                 <option value="">Select unit</option>
-                                                {emissionFactors
+                                                {emissionFactors.emissionFactors
                                                     .find(
                                                         (ef) =>
                                                             ef.category === line.category &&
