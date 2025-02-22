@@ -21,6 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\library\Monitoring\Monitoring.csproj" />
       <ProjectReference Include="..\..\shared\Messages\Messages.csproj" />
     </ItemGroup>
 

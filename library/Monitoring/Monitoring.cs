@@ -5,62 +5,54 @@ using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Enrichers.Span;
 using System;
+using Serilog.Events;
 
-namespace Monitoring
+namespace Monitoring;
+
+public static class Monitoring
 {
-    public class Monitoring
+    public static ILogger Log => Serilog.Log.Logger;
+    
+    // Parameterized constructor for dynamic configuration
+    public static void ConfigureLogging(string? seqEndpoint = null, LogEventLevel logLevel = LogEventLevel.Verbose)
     {
-        private readonly IConfiguration _config;
+        var loggerConfig = new LoggerConfiguration()
+            .MinimumLevel.Is(logLevel) // Set the log level dynamically
+            .WriteTo.Console() // Always write to the console
+            .Enrich.WithSpan(); // Include Span info in logs
 
-        // Inject IConfiguration via constructor
-        public Monitoring(IConfiguration config)
+        if (!string.IsNullOrEmpty(seqEndpoint))
         {
-            _config = config;
+            loggerConfig = loggerConfig.WriteTo.Seq(seqEndpoint); // Configure Seq endpoint if provided
+        }
+        else
+        {
+            Log.Warning("Seq sink is not configured for Serilog.");
+        }
 
-            // Serilog Configuration
-            string? seqEndpoint = _config["Monitoring:Seq"];
+        Serilog.Log.Logger = loggerConfig.CreateLogger();
+    }
+
+    public static OpenTelemetryBuilder Setup(this OpenTelemetryBuilder builder, string serviceName, string serviceVersion, string? zipkinEndpoint)
+    {
+        return builder.WithTracing(tcb =>
+        {
+            tcb.AddSource(serviceName)
+                .SetResourceBuilder(ResourceBuilder.CreateDefault()
+                    .AddService(serviceName: serviceName, serviceVersion: serviceVersion));
+                //.AddConsoleExporter();
             
-            if (string.IsNullOrEmpty(seqEndpoint))
+            if (!string.IsNullOrEmpty(zipkinEndpoint))
             {
-                Serilog.Log.Logger = new LoggerConfiguration()
-                    .MinimumLevel.Verbose()
-                    .WriteTo.Console()
-                    .Enrich.WithSpan()
-                    .CreateLogger();
-                Log.Warning("Seq sink is not configured for Serilog.");
-            } else {
-                Serilog.Log.Logger = new LoggerConfiguration()
-                    .MinimumLevel.Verbose()
-                    .WriteTo.Console()
-                    .WriteTo.Seq(seqEndpoint)
-                    .Enrich.WithSpan()
-                    .CreateLogger();
+                tcb.AddZipkinExporter(c => c.Endpoint = new Uri(zipkinEndpoint));
             }
-        }
-
-        public OpenTelemetryBuilder Setup(OpenTelemetryBuilder builder, string serviceName, string serviceVersion)
-        {
-            string zipkinEndpoint = _config["Monitoring:Zipkin"];
-
-            return builder.WithTracing(tcb =>
+            else
             {
-                tcb.AddSource(serviceName)
-                    .SetResourceBuilder(ResourceBuilder.CreateDefault()
-                        .AddService(serviceName: serviceName, serviceVersion: serviceVersion))
-                    .AddConsoleExporter();
-                
-                if (!string.IsNullOrEmpty(zipkinEndpoint))
-                {
-                    tcb.AddZipkinExporter(c => c.Endpoint = new Uri(zipkinEndpoint));
-                }
-                else
-                {
-                    Log.Warning("Zipkin exporter is not configured for OpenTelemetry.");
-                }
+                Log.Warning("Zipkin exporter is not configured for OpenTelemetry.");
+            }
 
-                tcb.AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation();
-            });
-        }
+            tcb.AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation();
+        });
     }
 }

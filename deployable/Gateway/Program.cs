@@ -1,10 +1,26 @@
 using Gateway.Authentication;
+using Gateway.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Monitoring;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using OpenTelemetry.Trace;
+using ILogger = Serilog.ILogger;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure Tracing
+var serviceName = "Gateway";
+var serviceVersion = "1.0.0";
+var zipkinEndpoint = builder.Configuration["Zipkin:Endpoint"];
+builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion, zipkinEndpoint);
+builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
+
+// Configure Logging
+var seqEndpoint = builder.Configuration["Seq:Endpoint"];
+Monitoring.Monitoring.ConfigureLogging(seqEndpoint);
+
+// Configure Ocelot endpoints
 builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddJsonFile("appsettings.json", true, true);
 builder.Configuration.AddJsonFile("appsettings.Development.json", true, true);
@@ -39,6 +55,8 @@ if (app.Environment.IsDevelopment() || args.Contains("swagger") || args.Contains
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.UseOcelot().Wait();
 
