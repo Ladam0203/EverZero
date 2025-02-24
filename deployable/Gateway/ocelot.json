@@ -79,6 +79,18 @@
           "Port": 80
         }
       ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/calculate",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/emission/calculate",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "emission-service",
+          "Port": 80
+        }
+      ]
     }
   ],
   "GlobalConfiguration": {

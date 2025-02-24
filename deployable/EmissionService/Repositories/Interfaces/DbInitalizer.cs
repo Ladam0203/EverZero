@@ -88,7 +88,7 @@ namespace EmissionService.Infrastructure
                         new EmissionFactorUnit
                         {
                             Unit = "kWh",
-                            CarbonEmissionKg = 0.23314M
+                            CarbonEmissionKg = 0.20705M
                         },
                     }
                 },
