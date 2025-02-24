@@ -1,7 +1,8 @@
 namespace EmissionService.Domain;
 
-public class UnitEmissionFactor
+public class EmissionFactorUnit
 {
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string Unit { get; set; }
     public decimal CarbonEmissionKg { get; set; }
 }
