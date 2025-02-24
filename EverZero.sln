@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monitoring", "library\Monit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmissionService", "deployable\EmissionService\EmissionService.csproj", "{54F349FD-5FC3-4BA4-A329-F0617357199A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportService", "deployable\ReportService\ReportService.csproj", "{083EF712-45EB-49A8-A154-DB80261A8B62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,7 @@ Global
 		{AE5B90CC-FAA0-4780-A2D5-A7F545E7DC2F} = {7DE52966-C7DD-4AD8-9260-E2EC705C7E78}
 		{E6CB2EC6-0D26-4F59-9B6D-71F0452BC820} = {0188CDF9-1A3E-4812-B7DA-7E349587D696}
 		{54F349FD-5FC3-4BA4-A329-F0617357199A} = {EFF97FA5-3C20-4631-B5D2-5BFF11C62D47}
+		{083EF712-45EB-49A8-A154-DB80261A8B62} = {EFF97FA5-3C20-4631-B5D2-5BFF11C62D47}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{ED48652A-DA07-4F71-BE00-09FD8FB89D13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -63,5 +66,9 @@ Global
 		{54F349FD-5FC3-4BA4-A329-F0617357199A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54F349FD-5FC3-4BA4-A329-F0617357199A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54F349FD-5FC3-4BA4-A329-F0617357199A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{083EF712-45EB-49A8-A154-DB80261A8B62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{083EF712-45EB-49A8-A154-DB80261A8B62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{083EF712-45EB-49A8-A154-DB80261A8B62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{083EF712-45EB-49A8-A154-DB80261A8B62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
