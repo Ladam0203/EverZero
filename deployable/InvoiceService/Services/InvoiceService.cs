@@ -34,6 +34,7 @@ public class InvoiceService : IInvoiceService
                 Quantity = l.Quantity,
                 Unit = l.Unit,
                 EmissionFactorId = l.EmissionFactorId,
+                EmissionFactorUnitId = l.EmissionFactorUnitId,
             }).ToList()
         });
     }
@@ -53,7 +54,8 @@ public class InvoiceService : IInvoiceService
                 Description = l.Description,
                 Quantity = l.Quantity,
                 Unit = l.Unit,
-                EmissionFactorId = l.EmissionFactorId
+                EmissionFactorId = l.EmissionFactorId,
+                EmissionFactorUnitId = l.EmissionFactorUnitId
             }).ToList()
         };
         
@@ -74,7 +76,8 @@ public class InvoiceService : IInvoiceService
                 Description = l.Description,
                 Quantity = l.Quantity,
                 Unit = l.Unit,
-                EmissionFactorId = l.EmissionFactorId
+                EmissionFactorId = l.EmissionFactorId,
+                EmissionFactorUnitId = l.EmissionFactorUnitId
             }).ToList()
         };
     }
