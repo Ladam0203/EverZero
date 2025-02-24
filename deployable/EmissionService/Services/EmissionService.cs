@@ -32,11 +32,17 @@ public class EmissionFactorService : IEmissionFactorService
         
         var emissionFactors = await _repository.GetByIds(emissionFactorIds);
         
-        // TODO: Calculate the total emission
+        var totalEmission = request.Invoices
+            .SelectMany(i => i.Lines)
+            .Where(l => l.EmissionFactorId.HasValue && l.EmissionFactorId.Value != Guid.Empty) // This also has to be provided
+            .Select(l => l.Quantity * emissionFactors
+                .First(ef => ef.Id == l.EmissionFactorId).EmissionFactorUnit
+                .First(efu => efu.Id == l.EmissionFactorUnitId).CarbonEmissionKg)
+            .Sum();
         
         return new EmissionCalculationResponse()
         {
-            TotalEmission = 1000
+            TotalEmission = totalEmission
         };
     }
 }
