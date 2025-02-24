@@ -149,8 +149,8 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
                     const matchingFactor = categoryFactors.find((ef) =>
                         Object.entries(ef.subCategories).every(([key, value]) => currentLine.subCategories[key] === value),
                     )
-                    if (matchingFactor && matchingFactor.unitEmissionFactors.length === 1) {
-                        currentLine.emissionFactorUnit = matchingFactor.unitEmissionFactors[0].unit
+                    if (matchingFactor && matchingFactor.emissionFactorUnit.length === 1) {
+                        currentLine.emissionFactorUnit = matchingFactor.emissionFactorUnit[0].unit
                         currentLine.emissionFactorId = matchingFactor.id
                     }
                 }
@@ -170,8 +170,8 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
                 const matchingFactor = categoryFactors.find((ef) =>
                     Object.entries(ef.subCategories).every(([key, value]) => currentLine.subCategories[key] === value),
                 )
-                if (matchingFactor && matchingFactor.unitEmissionFactors.length === 1) {
-                    currentLine.emissionFactorUnit = matchingFactor.unitEmissionFactors[0].unit
+                if (matchingFactor && matchingFactor.emissionFactorUnit.length === 1) {
+                    currentLine.emissionFactorUnit = matchingFactor.emissionFactorUnit[0].unit
                     currentLine.emissionFactorId = matchingFactor.id
                 }
             }
@@ -182,9 +182,12 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
                 (ef) =>
                     ef.category === currentLine.category &&
                     Object.entries(ef.subCategories).every(([key, value]) => currentLine.subCategories[key] === value) &&
-                    ef.unitEmissionFactors.some((uef) => uef.unit === value),
+                    ef.emissionFactorUnit.some((uef) => uef.unit === value),
             )
             currentLine.emissionFactorId = matchingFactor ? matchingFactor.id : ""
+            // Find the matching emission factor unit and set its ID
+            const matchingFactorUnit = matchingFactor ? matchingFactor.emissionFactorUnit.find((uef) => uef.unit === value) : null
+            currentLine.emissionFactorUnitId = matchingFactorUnit ? matchingFactorUnit.id : ""
         }
 
         updatedLines[lineIndex] = currentLine
@@ -207,7 +210,7 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
                 ef.category === category &&
                 Object.entries(ef.subCategories).every(([key, value]) => subCategories[key] === value),
         )
-        return matchingFactor ? matchingFactor.unitEmissionFactors : []
+        return matchingFactor ? matchingFactor.emissionFactorUnit : []
     }
 
     return (
