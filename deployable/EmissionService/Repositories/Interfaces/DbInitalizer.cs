@@ -50,24 +50,24 @@ namespace EmissionService.Infrastructure
                         { "Activity", "Gaseous fuels" },
                         { "Fuel", "Natural gas" },
                     },
-                    UnitEmissionFactors = new List<UnitEmissionFactor>
+                    EmissionFactorUnit = new List<EmissionFactorUnit>
                     {
-                        new UnitEmissionFactor
+                        new EmissionFactorUnit
                         {
                             Unit = "tonnes",
                             CarbonEmissionKg = 2568.16441M
                         },
-                        new UnitEmissionFactor
+                        new EmissionFactorUnit
                         {
                             Unit = "cubic metres",
                             CarbonEmissionKg = 2.04542M
                         },
-                        new UnitEmissionFactor()
+                        new EmissionFactorUnit()
                         {
                             Unit = "kWh (Net CV)",
                             CarbonEmissionKg = 0.20264M
                         },
-                        new UnitEmissionFactor()
+                        new EmissionFactorUnit()
                         {
                             Unit = "kWh (Gross CV)",
                             CarbonEmissionKg = 0.1829M
@@ -83,9 +83,9 @@ namespace EmissionService.Infrastructure
                         { "Activity", "Electricity generated" },
                         { "Country", "UK" },
                     },
-                    UnitEmissionFactors = new List<UnitEmissionFactor>
+                    EmissionFactorUnit = new List<EmissionFactorUnit>
                     {
-                        new UnitEmissionFactor
+                        new EmissionFactorUnit
                         {
                             Unit = "kWh",
                             CarbonEmissionKg = 0.23314M

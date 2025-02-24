@@ -1,4 +1,5 @@
 using EmissionService.Domain;
+using EmissionService.Domain.DTOs;
 using EmissionService.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,5 +20,12 @@ public class EmissionController : ControllerBase
     public async Task<IEnumerable<EmissionFactor>> GetAll()
     {
         return await _service.GetAll();
+    }
+    
+    [HttpPost("calculate")]
+    public async Task<IActionResult> CalculateEmission([FromBody] EmissionCalculationRequest request)
+    {
+        var result = await _service.CalculateEmission(request);
+        return Ok(result);
     }
 }

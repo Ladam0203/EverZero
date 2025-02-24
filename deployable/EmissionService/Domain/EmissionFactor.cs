@@ -9,5 +9,5 @@ public class EmissionFactor
     //public FactorSource FactorSource { get; set; } // TODO: Implement, this is just extra info, not currently used
     public string Category { get; set; } // This is called activity in the UK conversion factors
     public Dictionary<string, string> SubCategories { get; set; }
-    public List<UnitEmissionFactor> UnitEmissionFactors { get; set; }
+    public List<EmissionFactorUnit> EmissionFactorUnit { get; set; }
 }
