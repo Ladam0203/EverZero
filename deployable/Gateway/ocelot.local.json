@@ -83,6 +83,22 @@
         "AuthenticationProviderKey": "RemoteAuthentication",
         "AllowedScopes": []
       }
+    },
+    {
+      "UpstreamPathTemplate": "/api/calculate",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/emission/calculate",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5118
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
     }
   ],
   "GlobalConfiguration": {
