@@ -97,6 +97,8 @@ public class EmissionFactorServiceTests
 
         // Assert
         response.TotalEmission.Should().Be(10 * 2.5m + 20 * 3.0m);
+        response.Invoices.Should().HaveCount(1);
+        response.Invoices.First().Lines.Should().HaveCount(2);
     }
 
     [Fact]
