@@ -1,6 +1,6 @@
 namespace EmissionService.Domain;
 
-public class EmissionFactorSource
+public class EmissionFactorMetadata
 {
     // This is really specific to the UK conversion factors, in the future, this could be also a key-value pair
     public string EmissionSource { get; set; }

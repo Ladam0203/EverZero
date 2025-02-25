@@ -8,7 +8,6 @@ public class InvoiceLine
     public string Unit { get; set; }
     
     public Guid? EmissionFactorId { get; set; }  // Foreign Key
-    public Guid? EmissionFactorUnitId { get; set; }  // Foreign Key
 
     public Guid InvoiceId { get; set; }  // Foreign Key
     public Invoice Invoice { get; set; }  // Navigation Property
