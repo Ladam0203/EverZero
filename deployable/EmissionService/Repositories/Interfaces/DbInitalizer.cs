@@ -44,6 +44,15 @@ namespace EmissionService.Infrastructure
                 // Fuels
                 new EmissionFactor
                 {
+                    EmissionFactorSource =
+                    {
+                        EmissionSource = "Fuels",
+                        Scope = "Scope 1",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
                     Category = "Fuels",
                     SubCategories = new Dictionary<string, string>
                     {
@@ -77,6 +86,15 @@ namespace EmissionService.Infrastructure
                 // UK Electricity
                 new EmissionFactor
                 {
+                    EmissionFactorSource =
+                    {
+                        EmissionSource = "UK Electricity",
+                        Scope = "Scope 2",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
                     Category = "UK Electricity",
                     SubCategories = new Dictionary<string, string>
                     {
