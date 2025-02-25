@@ -1,6 +1,6 @@
-namespace InvoiceService.Core.DTOs;
+namespace Domain;
 
-public class PostInvoiceLineResponse
+public class InvoiceLineCalculationDTO
 {
     public Guid Id { get; set; }
     public string Description { get; set; }
@@ -8,5 +8,6 @@ public class PostInvoiceLineResponse
     public string Unit { get; set; }
     
     public Guid? EmissionFactorId { get; set; }
-    public Guid? EmissionFactorUnitId { get; set; }
+    
+    public decimal Emission { get; set; } = 0;
 }

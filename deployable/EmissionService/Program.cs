@@ -1,4 +1,5 @@
 using EmissionService.Infrastructure;
+using EmissionService.Mappings;
 using EmissionService.Repositories;
 using EmissionService.Repositories.Interfaces;
 using EmissionService.Services;
@@ -29,8 +30,11 @@ builder.Services.AddScoped<DbInitializer>();
 // Repositories
 builder.Services.AddScoped<IEmissionFactorRepository, EmissionFactorRepository>();
 
+// AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 // Services
-builder.Services.AddScoped<IEmissionFactorService, EmissionFactorService>();
+builder.Services.AddScoped<IEmissionFactorService, EmissionService.Services.EmissionService>();
 
 builder.Services.AddControllers();
 

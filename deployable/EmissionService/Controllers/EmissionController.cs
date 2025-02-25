@@ -1,5 +1,5 @@
+using Domain;
 using EmissionService.Domain;
-using EmissionService.Domain.DTOs;
 using EmissionService.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,9 +23,9 @@ public class EmissionController : ControllerBase
     }
     
     [HttpPost("calculate")]
-    public async Task<IActionResult> CalculateEmission([FromBody] EmissionCalculationRequest request)
+    public async Task<IActionResult> CalculateEmission([FromBody] IEnumerable<InvoiceDTO> invoices)
     {
-        var result = await _service.CalculateEmission(request);
+        var result = await _service.CalculateEmission(invoices);
         return Ok(result);
     }
 }
