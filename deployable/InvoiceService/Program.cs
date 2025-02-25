@@ -1,4 +1,5 @@
 using InvoiceService;
+using InvoiceService.Mappings;
 using InvoiceService.Middleware;
 using InvoiceService.Repository;
 using InvoiceService.Repository.Interfaces;
@@ -17,6 +18,9 @@ builder.Services.AddScoped<DbInitializer>();
 
 //Repositories
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+
+// AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Services
 builder.Services.AddScoped<IInvoiceService, InvoiceService.Services.InvoiceService>();

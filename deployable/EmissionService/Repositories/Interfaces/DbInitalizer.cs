@@ -35,6 +35,25 @@ namespace EmissionService.Infrastructure
             await _emissionFactors.Database.DropCollectionAsync("emissionfactors");
             await Initialize();
         }
+        
+        /*
+         *                         new EmissionFactorUnit
+               {
+                   Unit = "cubic metres",
+                   CarbonEmissionKg = 2.04542M
+               },
+               new EmissionFactorUnit()
+               {
+                   Unit = "kWh (Net CV)",
+                   CarbonEmissionKg = 0.20264M
+               },
+               new EmissionFactorUnit()
+               {
+                   Unit = "kWh (Gross CV)",
+                   CarbonEmissionKg = 0.1829M
+               }
+           }
+         */
 
         // Example initial data
         private List<EmissionFactor> GetInitialEmissionFactors()
@@ -44,7 +63,7 @@ namespace EmissionService.Infrastructure
                 // Fuels
                 new EmissionFactor
                 {
-                    EmissionFactorSource = new EmissionFactorSource() {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
                         EmissionSource = "Fuels",
                         Scope = "Scope 1",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -58,34 +77,70 @@ namespace EmissionService.Infrastructure
                         { "Activity", "Gaseous fuels" },
                         { "Fuel", "Natural gas" },
                     },
-                    EmissionFactorUnit = new List<EmissionFactorUnit>
+                    Unit = "cubic metres",
+                    CarbonEmissionKg = 2.04542M
+                },
+                new EmissionFactor()
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "Fuels",
+                        Scope = "Scope 1",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "Fuels",
+                    SubCategories = new Dictionary<string, string>
                     {
-                        new EmissionFactorUnit
-                        {
-                            Unit = "tonnes",
-                            CarbonEmissionKg = 2568.16441M
-                        },
-                        new EmissionFactorUnit
-                        {
-                            Unit = "cubic metres",
-                            CarbonEmissionKg = 2.04542M
-                        },
-                        new EmissionFactorUnit()
-                        {
-                            Unit = "kWh (Net CV)",
-                            CarbonEmissionKg = 0.20264M
-                        },
-                        new EmissionFactorUnit()
-                        {
-                            Unit = "kWh (Gross CV)",
-                            CarbonEmissionKg = 0.1829M
-                        }
-                    }
+                        { "Activity", "Gaseous fuels" },
+                        { "Fuel", "Natural gas" },
+                    },
+                    Unit = "kWh (Net CV)",
+                    CarbonEmissionKg = 0.20264M
+                },
+                new EmissionFactor()
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "Fuels",
+                        Scope = "Scope 1",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "Fuels",
+                    SubCategories = new Dictionary<string, string>
+                    {
+                        { "Activity", "Gaseous fuels" },
+                        { "Fuel", "Natural gas" },
+                    },
+                    Unit = "kWh (Gross CV)",
+                    CarbonEmissionKg = 0.1829M
+                },
+                new EmissionFactor
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "Fuels",
+                        Scope = "Scope 1",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "Fuels",
+                    SubCategories = new Dictionary<string, string>
+                    {
+                        { "Activity", "Gaseous fuels" },
+                        { "Fuel", "Natural gas" },
+                    },
+                    Unit = "tonnes",
+                    CarbonEmissionKg = 2568.16441M
                 },
                 // UK Electricity
                 new EmissionFactor
                 {
-                    EmissionFactorSource = new EmissionFactorSource() {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
                         EmissionSource = "UK Electricity",
                         Scope = "Scope 2",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -99,14 +154,8 @@ namespace EmissionService.Infrastructure
                         { "Activity", "Electricity generated" },
                         { "Country", "UK" },
                     },
-                    EmissionFactorUnit = new List<EmissionFactorUnit>
-                    {
-                        new EmissionFactorUnit
-                        {
-                            Unit = "kWh",
-                            CarbonEmissionKg = 0.20705M
-                        },
-                    }
+                    Unit = "kWh",
+                    CarbonEmissionKg = 0.20705M
                 },
             };
         }

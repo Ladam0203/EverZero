@@ -33,14 +33,14 @@ public class InvoiceController : ControllerBase
     }
     
     [HttpPost("invoices")]
-    public async Task<IActionResult> PostInvoice([FromBody] PostInvoiceRequest request)
+    public async Task<IActionResult> PostInvoice([FromBody] PostInvoiceDTO dto)
     {
         var userId = _requestContext.UserId;
         if (userId is null) {
             return Unauthorized("User not authenticated or authorized");
         }
         
-        var response = await _service.Create((Guid) userId, request);
+        var response = await _service.Create((Guid) userId, dto);
         
         return Ok(response);
     }

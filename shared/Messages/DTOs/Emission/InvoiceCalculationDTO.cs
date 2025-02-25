@@ -1,6 +1,6 @@
-﻿namespace Domain;
+namespace Domain;
 
-public class ShallowInvoice
+public class InvoiceCalculationDTO
 {
     public Guid Id { get; set; }
     public string Subject { get; set; }
@@ -10,5 +10,7 @@ public class ShallowInvoice
     
     public Guid UserId { get; set; }
 
-    public List<ShallowInvoiceLine> Lines { get; set; } = new();
+    public List<InvoiceLineCalculationDTO> Lines { get; set; } = new();
+    
+    public decimal Emission { get; set; } = 0;
 }

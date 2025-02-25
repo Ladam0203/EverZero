@@ -1,12 +1,13 @@
-using InvoiceService.Core;
+
+using Domain;
 using InvoiceService.Core.DTOs;
 
 namespace InvoiceService.Services;
 
 public interface IInvoiceService
 {
-    Task<IEnumerable<GetInvoiceResponse>> GetAllByUserId(Guid userId);
-    Task<PostInvoiceResponse> Create(Guid userId, PostInvoiceRequest invoice);
+    Task<IEnumerable<InvoiceDTO>> GetAllByUserId(Guid userId);
+    Task<InvoiceDTO> Create(Guid userId, PostInvoiceDTO invoice);
     //Task<Invoice> GetInvoice(Guid id);
     //Task<Invoice> UpdateInvoice(Invoice invoice);
     //Task DeleteInvoice(Guid id);
