@@ -50,6 +50,7 @@ export default function Invoices() {
                 loaded: true,
                 error: null,
             });
+            console.log("Invoices loaded:", result.data);
         };
 
         doAuthorize()
