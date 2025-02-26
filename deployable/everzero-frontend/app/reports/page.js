@@ -75,9 +75,7 @@ export default function Reports() {
     }, [invoices.loading, invoices.loaded, setInvoices]); // Now only depend on retryCount and loading/loaded states
 
     const createReport = async () => {
-        const dto = {
-            invoices: invoices.invoices,
-        };
+        const dto = invoices.invoices;
 
         console.log("Creating report with DTO:", dto);
 
