@@ -20,61 +20,45 @@ export default function Invoices() {
         const doAuthorize = async () => {
             const response = await authorize();
             if (!response.authenticated) {
-                throw new Error("Unauthorized");
+                throw new Error('Unauthorized');
             }
         };
 
-        const fetchInvoices = async (retryCount = 0) => {
-            if (invoices.loading || invoices.loaded) {
-                return; // If invoices are already loading or already fetched, do nothing
-            }
+        const fetchInvoices = async () => {
+            if (invoices.loading || invoices.loaded) return;
 
-            setInvoices((prevInvoices) => ({
-                ...prevInvoices,
+            setInvoices((prev) => ({
+                ...prev,
                 loading: true,
             }));
 
-            const retryDelay = 1000 * Math.pow(2, retryCount); // Exponential backoff
+            const result = await getAllInvoices();
 
-            try {
-                const result = await getAllInvoices();
-
-                if (!result.success) {
-                    throw new Error(result.message);
-                }
-
-                console.log("Fetched invoices:", result.data);
-
-                setInvoices({
-                    invoices: result.data.length > 0 ? result.data : [],
+            if (!result.success) {
+                setInvoices((prev) => ({
+                    ...prev,
                     loading: false,
+                    error: result.message,
                     loaded: true,
-                    error: null,
-                });
-            } catch (error) {
-                console.error("Failed to fetch invoices:", error.message);
-
-                if (retryCount < 3) {
-                    setTimeout(() => fetchInvoices(retryCount + 1), retryDelay);
-                } else {
-                    setInvoices({
-                        ...invoices,
-                        loading: false,
-                        error: "Failed to load invoices. Please try again later.",
-                        loaded: true,
-                    });
-                }
+                }));
+                return;
             }
+
+            setInvoices({
+                invoices: result.data.length > 0 ? result.data : [],
+                loading: false,
+                loaded: true,
+                error: null,
+            });
         };
 
         doAuthorize()
             .then(() => fetchInvoices())
             .catch((error) => {
-                console.info("Authorization failed:", error.message);
-                router.push("/login");
+                console.info('Authorization failed:', error.message);
+                router.push('/login');
             });
-    }, [invoices.loading, invoices.loaded, setInvoices]); // Now only depend on retryCount and loading/loaded states
-
+    }, [invoices.loading, invoices.loaded]);
 
     const handleSubmit = async (newInvoice) => {
         console.log("New invoice to be sent to backend:", newInvoice)
