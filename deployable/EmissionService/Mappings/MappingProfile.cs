@@ -13,7 +13,7 @@ public class MappingProfile : Profile
             .ReverseMap();
         
         // Mapping for InvoiceLine to InvoiceLineDTO
-        CreateMap<InvoiceLineDTO, InvoiceCalculationDTO>()
+        CreateMap<InvoiceLineDTO, InvoiceLineCalculationDTO>()
             .ReverseMap();
     }
 }
