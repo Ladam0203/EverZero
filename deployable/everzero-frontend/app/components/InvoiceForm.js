@@ -38,47 +38,32 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
     const [emissionFactors, setEmissionFactors] = useAtom(emissionFactorsAtom)
 
     useEffect(() => {
-        const fetchEmissionFactors = async (retryCount = 0) => {
-            if (emissionFactors.loading || emissionFactors.loaded) {
-                return // If emission factors are already loading or already fetched, do nothing
-            }
+        const fetchEmissionFactors = async () => {
+            if (emissionFactors.loading || emissionFactors.loaded) return;
 
-            setEmissionFactors((prevEmissionFactors) => ({
-                ...prevEmissionFactors,
+            setEmissionFactors((prev) => ({
+                ...prev,
                 loading: true,
             }))
 
-            const retryDelay = 1000 * Math.pow(2, retryCount) // Exponential backoff
+            const result = await getAllEmissionFactors()
 
-            try {
-                const result = await getAllEmissionFactors()
-
-                if (!result.success) {
-                    throw new Error(result.message)
-                }
-
-                console.log("Fetched emission factors:", result.data)
-
-                setEmissionFactors({
-                    emissionFactors: result.data.length > 0 ? result.data : [],
+            if (!result.success) {
+                setEmissionFactors((prev) => ({
+                    ...prev,
                     loading: false,
+                    error: result.message,
                     loaded: true,
-                    error: null,
-                })
-            } catch (error) {
-                console.error("Failed to fetch emission factors:", error.message)
-
-                if (retryCount < 3) {
-                    setTimeout(() => fetchEmissionFactors(retryCount + 1), retryDelay)
-                } else {
-                    setEmissionFactors({
-                        emissionFactors: [],
-                        loading: false,
-                        loaded: false,
-                        error: error.message,
-                    })
-                }
+                }))
+                return;
             }
+
+            setEmissionFactors({
+                emissionFactors: result.data.length > 0 ? result.data : [],
+                loading: false,
+                loaded: true,
+                error: null,
+            })
         }
 
         fetchEmissionFactors()
@@ -126,7 +111,7 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
 
     const handleEmissionFactorChange = (lineIndex, field, value) => {
         const updatedLines = [...invoice.lines]
-        const currentLine = { ...updatedLines[lineIndex] }
+        const currentLine = {...updatedLines[lineIndex]}
 
         if (field === "category") {
             currentLine.category = value
@@ -198,7 +183,7 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
         }
 
         updatedLines[lineIndex] = currentLine
-        setInvoice({ ...invoice, lines: updatedLines })
+        setInvoice({...invoice, lines: updatedLines})
     }
 
     const getSubCategoryOptions = (category, subCategoryKey) => {
