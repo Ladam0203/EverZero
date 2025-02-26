@@ -51,6 +51,7 @@ public class EmissionService : IEmissionFactorService
         var emissionFactors = await _repository.GetByIds(emissionFactorIds);
 
         var emissionCalculation = new EmissionCalculationDTO();
+        List<InvoiceCalculationDTO> invoiceCalculations = new();
         foreach (var invoice in invoices)
         {
             var invoiceCalculation = _mapper.Map<InvoiceCalculationDTO>(invoice);
@@ -66,7 +67,9 @@ public class EmissionService : IEmissionFactorService
                 lineCalculation.Emission = lineCalculation.Quantity * emissionFactor.CarbonEmissionKg;
             }
             invoiceCalculation.Emission = invoiceCalculation.Lines.Sum(l => l.Emission);
+            invoiceCalculations.Add(invoiceCalculation);
         }
+        emissionCalculation.Invoices = invoiceCalculations;
         emissionCalculation.TotalEmission = emissionCalculation.Invoices.Sum(i => i.Emission);;
         
         return emissionCalculation;

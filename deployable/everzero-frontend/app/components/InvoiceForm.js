@@ -64,6 +64,8 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
                 loaded: true,
                 error: null,
             })
+
+            console.log("Emission factors loaded", result.data)
         }
 
         fetchEmissionFactors()
@@ -110,81 +112,65 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
     }
 
     const handleEmissionFactorChange = (lineIndex, field, value) => {
-        const updatedLines = [...invoice.lines]
-        const currentLine = {...updatedLines[lineIndex]}
+        const updatedLines = [...invoice.lines];
+        const currentLine = { ...updatedLines[lineIndex] };
 
         if (field === "category") {
-            currentLine.category = value
-            currentLine.subCategories = {}
-            currentLine.emissionFactorId = ""
-            currentLine.emissionFactorUnit = ""
-            currentLine.emissionFactorUnitId = "" // Clear emissionFactorUnitId
+            currentLine.category = value;
+            currentLine.subCategories = {};
+            currentLine.emissionFactorId = "";
+            currentLine.emissionFactorUnit = "";
 
             // Automatically select subcategories if there's only one option
-            const categoryFactors = emissionFactors.emissionFactors.filter((ef) => ef.category === value)
+            const categoryFactors = emissionFactors.emissionFactors.filter((ef) => ef.category === value);
             if (categoryFactors[0] && currentLine) {
                 Object.keys(categoryFactors[0].subCategories).forEach((subCategoryKey) => {
-                    const subCategoryOptions = [...new Set(categoryFactors.map((ef) => ef.subCategories[subCategoryKey]))]
+                    const subCategoryOptions = [...new Set(categoryFactors.map((ef) => ef.subCategories[subCategoryKey]))];
                     if (subCategoryOptions.length === 1) {
-                        currentLine.subCategories[subCategoryKey] = subCategoryOptions[0]
+                        currentLine.subCategories[subCategoryKey] = subCategoryOptions[0];
                     }
-                })
+                });
 
-                // Check if all subcategories are filled and select unit if there's only one option
+                // Auto-select unit if all subcategories are filled and there's only one unit option
                 if (Object.keys(currentLine.subCategories).length === Object.keys(categoryFactors[0].subCategories).length) {
-                    const matchingFactor = categoryFactors.find((ef) =>
-                        Object.entries(ef.subCategories).every(([key, value]) => currentLine.subCategories[key] === value),
-                    )
-                    if (matchingFactor && matchingFactor.emissionFactorUnit.length === 1) {
-                        currentLine.emissionFactorUnit = matchingFactor.emissionFactorUnit[0].unit
-                        currentLine.emissionFactorId = matchingFactor.id
-                        currentLine.emissionFactorUnitId = matchingFactor.emissionFactorUnit[0].id // Set emissionFactorUnitId
+                    const unitOptions = getEmissionFactorUnitOptions(value, currentLine.subCategories);
+                    if (unitOptions.length === 1) {
+                        currentLine.emissionFactorUnit = unitOptions[0].unit;
+                        currentLine.emissionFactorId = unitOptions[0].id;
                     }
                 }
             }
         } else if (field.startsWith("subCategory-")) {
-            const subCategoryKey = field.split("-")[1]
+            const subCategoryKey = field.split("-")[1];
             currentLine.subCategories = {
                 ...currentLine.subCategories,
                 [subCategoryKey]: value,
-            }
-            currentLine.emissionFactorId = ""
-            currentLine.emissionFactorUnit = ""
-            currentLine.emissionFactorUnitId = "" // Clear emissionFactorUnitId
+            };
+            currentLine.emissionFactorId = "";
+            currentLine.emissionFactorUnit = "";
 
-            // Check if all subcategories are filled and select unit if there's only one option
-            const categoryFactors = emissionFactors.emissionFactors.filter((ef) => ef.category === currentLine.category)
-            if (Object.keys(currentLine.subCategories).length === Object.keys(categoryFactors[0].subCategories).length) {
-                const matchingFactor = categoryFactors.find((ef) =>
-                    Object.entries(ef.subCategories).every(([key, value]) => currentLine.subCategories[key] === value),
-                )
-                if (matchingFactor && matchingFactor.emissionFactorUnit.length === 1) {
-                    currentLine.emissionFactorUnit = matchingFactor.emissionFactorUnit[0].unit
-                    currentLine.emissionFactorUnitId = matchingFactor.emissionFactorUnit[0].id // Set emissionFactorUnitId
-                    currentLine.emissionFactorId = matchingFactor.id
+            // Auto-select unit if all subcategories are filled
+            const categoryFactors = emissionFactors.emissionFactors.find((ef) => ef.category === currentLine.category);
+            if (
+                categoryFactors &&
+                Object.keys(currentLine.subCategories).length === Object.keys(categoryFactors.subCategories).length
+            ) {
+                const unitOptions = getEmissionFactorUnitOptions(currentLine.category, currentLine.subCategories);
+                if (unitOptions.length === 1) {
+                    currentLine.emissionFactorUnit = unitOptions[0].unit;
+                    currentLine.emissionFactorId = unitOptions[0].id;
                 }
             }
         } else if (field === "emissionFactorUnit") {
-            currentLine.emissionFactorUnit = value
-            currentLine.emissionFactorUnitId = "" // Clear emissionFactorUnitId until matched
-
-            // Find the matching emission factor and set its ID
-            const matchingFactor = emissionFactors.emissionFactors.find(
-                (ef) =>
-                    ef.category === currentLine.category &&
-                    Object.entries(ef.subCategories).every(([key, value]) => currentLine.subCategories[key] === value) &&
-                    ef.emissionFactorUnit.some((uef) => uef.unit === value),
-            )
-            currentLine.emissionFactorId = matchingFactor ? matchingFactor.id : ""
-
-            // Find the matching emission factor unit and set its ID
-            const matchingFactorUnit = matchingFactor ? matchingFactor.emissionFactorUnit.find((uef) => uef.unit === value) : null
-            currentLine.emissionFactorUnitId = matchingFactorUnit ? matchingFactorUnit.id : ""
+            currentLine.emissionFactorUnit = value;
+            const matchingFactor = getEmissionFactorUnitOptions(currentLine.category, currentLine.subCategories)
+                .find(uef => uef.unit === value);
+            currentLine.emissionFactorId = matchingFactor ? matchingFactor.id : "";
         }
 
-        updatedLines[lineIndex] = currentLine
-        setInvoice({...invoice, lines: updatedLines})
-    }
+        updatedLines[lineIndex] = currentLine;
+        setInvoice({ ...invoice, lines: updatedLines });
+    };
 
     const getSubCategoryOptions = (category, subCategoryKey) => {
         return [
@@ -197,12 +183,16 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
     }
 
     const getEmissionFactorUnitOptions = (category, subCategories) => {
-        const matchingFactor = emissionFactors.emissionFactors.find(
-            (ef) =>
+        return emissionFactors.emissionFactors
+            .filter(ef =>
                 ef.category === category &&
-                Object.entries(ef.subCategories).every(([key, value]) => subCategories[key] === value),
-        )
-        return matchingFactor ? matchingFactor.emissionFactorUnit : []
+                Object.entries(subCategories).every(([key, value]) => ef.subCategories[key] === value)
+            )
+            .map(ef => ({
+                unit: ef.unit,
+                carbonEmissionKg: ef.carbonEmissionKg,
+                id: ef.id
+            }));
     }
 
     return (
@@ -331,9 +321,9 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
                                         {Object.keys(
                                             emissionFactors.emissionFactors.find((ef) => ef.category === line.category).subCategories,
                                         ).map((subCategoryKey) => {
-                                            const options = getSubCategoryOptions(line.category, subCategoryKey)
+                                            const options = getSubCategoryOptions(line.category, subCategoryKey);
                                             if (options.length === 1 && !line.subCategories[subCategoryKey]) {
-                                                handleEmissionFactorChange(index, `subCategory-${subCategoryKey}`, options[0])
+                                                handleEmissionFactorChange(index, `subCategory-${subCategoryKey}`, options[0]);
                                             }
                                             return (
                                                 <div key={subCategoryKey} className="form-control">
@@ -355,7 +345,7 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
                                                         ))}
                                                     </select>
                                                 </div>
-                                            )
+                                            );
                                         })}
                                     </div>
                                 )}
@@ -382,8 +372,11 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
                                             </select>
                                         </div>
                                     )}
-                                <input type="hidden" name={`line-emissionFactorId-${index}`}
-                                       value={line.emissionFactorId || ""}/>
+                                <input
+                                    type="hidden"
+                                    name={`line-emissionFactorId-${index}`}
+                                    value={line.emissionFactorId || ""}
+                                />
                             </div>
                         </div>
                     )}
