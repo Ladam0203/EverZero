@@ -29,6 +29,7 @@ public class InvoiceService : IInvoiceService
     public async Task<InvoiceDTO> Create(Guid userId, PostInvoiceDTO dto)
     {
         var invoice = _mapper.Map<Invoice>(dto);
+        invoice.UserId = userId;
         
         var createdInvoice = await _invoiceRepository.Create(invoice);
         
