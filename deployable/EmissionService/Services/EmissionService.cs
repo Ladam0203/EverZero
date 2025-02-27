@@ -24,7 +24,7 @@ public class EmissionService : IEmissionFactorService
         return await _repository.GetAll();
     }
 
-    public async Task<EmissionCalculationDTO> CalculateEmission(IEnumerable<InvoiceDTO> invoices)
+    public async Task<EmissionCalculationDTO> CalculateEmission(Guid userId, IEnumerable<InvoiceDTO> invoices)
     {
         // TODO: Add FluentValidation
         if (invoices == null)
@@ -41,6 +41,13 @@ public class EmissionService : IEmissionFactorService
         if (!invoices.SelectMany(i => i.Lines).Any(l => l.EmissionFactorId.HasValue))
         {
             throw new ArgumentException("No emission factors found in one or more invoice lines", nameof(invoices));
+        }
+        
+        // Check if all invoices belong to the user
+        if (invoices.Any(i => i.UserId != userId))
+        {
+            throw new UnauthorizedAccessException("Calculations can only be done on invoices belonging to the user. Heeey, how did you get them anyway? \ud83e\udd14");
+            // TODO: Log this
         }
 
         // Fetch the emission factors present in the invoices
