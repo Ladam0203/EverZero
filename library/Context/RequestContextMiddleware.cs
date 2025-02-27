@@ -1,4 +1,7 @@
-namespace InvoiceService.Middleware;
+using Context;
+using Microsoft.AspNetCore.Http;
+
+namespace Context;
 
 /// <summary>
 /// A middleware that wraps the current <see cref="HttpContext"/> in a <see cref="RequestContext"/> object.
