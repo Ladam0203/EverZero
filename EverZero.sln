@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "shared\Domain\Dom
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmissionServiceTest", "test\EmissionServiceTest\EmissionServiceTest.csproj", "{3C63D4BD-0244-4A23-A60E-51AFF335FA20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Context", "library\Context\Context.csproj", "{67F928A6-FC77-4BA7-844B-B14AF3677FD9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,7 @@ Global
 		{083EF712-45EB-49A8-A154-DB80261A8B62} = {EFF97FA5-3C20-4631-B5D2-5BFF11C62D47}
 		{3E9EADE0-83D2-4507-B60D-F3090BF1E390} = {7DE52966-C7DD-4AD8-9260-E2EC705C7E78}
 		{3C63D4BD-0244-4A23-A60E-51AFF335FA20} = {B83A8F7D-99AB-420B-A14C-F86265E78C23}
+		{67F928A6-FC77-4BA7-844B-B14AF3677FD9} = {0188CDF9-1A3E-4812-B7DA-7E349587D696}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{ED48652A-DA07-4F71-BE00-09FD8FB89D13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -84,5 +87,9 @@ Global
 		{3C63D4BD-0244-4A23-A60E-51AFF335FA20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C63D4BD-0244-4A23-A60E-51AFF335FA20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C63D4BD-0244-4A23-A60E-51AFF335FA20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67F928A6-FC77-4BA7-844B-B14AF3677FD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67F928A6-FC77-4BA7-844B-B14AF3677FD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67F928A6-FC77-4BA7-844B-B14AF3677FD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67F928A6-FC77-4BA7-844B-B14AF3677FD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

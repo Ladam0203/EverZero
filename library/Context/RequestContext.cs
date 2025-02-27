@@ -1,8 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
-namespace InvoiceService;
+namespace Context;
 
 /// <summary>
 /// Provides a scoped, accessible context for the current HTTP request.
