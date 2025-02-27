@@ -1,4 +1,6 @@
+using Context;
 using QuestPDF.Infrastructure;
+using ReportService.Services;
 
 QuestPDF.Settings.License = LicenseType.Community;
 
@@ -9,9 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Services
+builder.Services.AddScoped<IReportService, ReportService.Services.ReportService>();
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+app.UseMiddleware<RequestContextMiddleware>();
 
 app.MapControllers();
 

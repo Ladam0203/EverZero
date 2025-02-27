@@ -91,6 +91,18 @@
           "Port": 80
         }
       ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/reports",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/report",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "report-service",
+          "Port": 80
+        }
+      ]
     }
   ],
   "GlobalConfiguration": {

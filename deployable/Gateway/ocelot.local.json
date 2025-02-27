@@ -99,6 +99,18 @@
         "AuthenticationProviderKey": "RemoteAuthentication",
         "AllowedScopes": []
       }
+    },
+    {
+      "UpstreamPathTemplate": "/api/reports",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/report",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5180
+        }
+      ]
     }
   ],
   "GlobalConfiguration": {

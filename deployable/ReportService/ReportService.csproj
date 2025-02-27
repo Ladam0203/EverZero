@@ -13,7 +13,13 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Repositories\" />
       <Folder Include="wwwroot\reports\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\library\Context\Context.csproj" />
+      <ProjectReference Include="..\..\shared\Messages\Messages.csproj" />
     </ItemGroup>
 
 </Project>
