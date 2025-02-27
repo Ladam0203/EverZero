@@ -1,16 +1,20 @@
-using Microsoft.AspNetCore.Mvc;
+using Domain.Emission;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 
-namespace ReportService.Controllers;
+namespace ReportService.Services;
 
-[ApiController]
-[Route("api/[controller]")]
-public class ReportsController : ControllerBase
+public class ReportService : IReportService
 {
-    [HttpPost]
-    public async Task<IActionResult> GenerateReport(Guid userId)
+    public async Task<string> GeneratePdfReport(Guid userId, EmissionCalculationDTO dto)
     {
+        // Check if all invoices belong to the user
+        if (dto.Invoices.Any(i => i.UserId != userId))
+        {
+            throw new UnauthorizedAccessException("Reports can only be made out of invoices belonging to the user. Heeey, how did you get them anyway? \ud83e\udd14");
+            // TODO: Log this
+        }
+        
         var reportPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "reports");
 
         if (!Directory.Exists(reportPath))
@@ -36,6 +40,7 @@ public class ReportsController : ControllerBase
         await System.IO.File.WriteAllBytesAsync(filePath, pdfBytes);
 
         var downloadUrl = $"/reports/{fileName}";
-        return Ok(new { url = downloadUrl });
+        
+        return downloadUrl;
     }
 }
