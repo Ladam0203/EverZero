@@ -1,3 +1,4 @@
+using Context;
 using Domain;
 using EmissionService.Domain;
 using EmissionService.Services.Interfaces;
@@ -11,9 +12,12 @@ public class EmissionController : ControllerBase
 {
     private readonly IEmissionFactorService _service;
     
-    public EmissionController(IEmissionFactorService service)
+    private readonly RequestContext _requestContext;
+    
+    public EmissionController(IEmissionFactorService service, RequestContext requestContext)
     {
         _service = service;
+        _requestContext = requestContext;
     }
     
     [HttpGet("emission-factors")]
@@ -25,7 +29,12 @@ public class EmissionController : ControllerBase
     [HttpPost("calculate")]
     public async Task<IActionResult> CalculateEmission([FromBody] IEnumerable<InvoiceDTO> invoices)
     {
-        var result = await _service.CalculateEmission(invoices);
+        var userId = _requestContext.UserId;
+        if (userId is null) {
+            return Unauthorized("User not authenticated or authorized");
+        }
+        
+        var result = await _service.CalculateEmission((Guid) userId, invoices);
         return Ok(result);
     }
 }

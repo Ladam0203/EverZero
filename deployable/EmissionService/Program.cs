@@ -1,3 +1,4 @@
+using Context;
 using EmissionService.Infrastructure;
 using EmissionService.Mappings;
 using EmissionService.Repositories;
@@ -39,6 +40,8 @@ builder.Services.AddScoped<IEmissionFactorService, EmissionService.Services.Emis
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+app.UseMiddleware<RequestContextMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

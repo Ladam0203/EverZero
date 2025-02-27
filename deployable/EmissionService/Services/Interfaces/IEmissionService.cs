@@ -7,5 +7,5 @@ namespace EmissionService.Services.Interfaces;
 public interface IEmissionFactorService
 {
     Task<IEnumerable<EmissionFactor>> GetAll();
-    Task<EmissionCalculationDTO> CalculateEmission(IEnumerable<InvoiceDTO> invoices);
+    Task<EmissionCalculationDTO> CalculateEmission(Guid userId, IEnumerable<InvoiceDTO> invoices);
 }
