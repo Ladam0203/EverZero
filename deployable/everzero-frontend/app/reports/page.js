@@ -95,7 +95,7 @@ export default function Reports() {
         console.log("Generated report:", report);
 
         // Open the report in a new tab (with API_URL as the base URL)
-        window.open(process.env.NEXT_PUBLIC_API_URL + report, "_blank");
+        window.open(`${process.env.NEXT_PUBLIC_API_URL}/${report.path}`);
     };
 
     return (

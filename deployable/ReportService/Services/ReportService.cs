@@ -1,13 +1,22 @@
+using Domain;
 using Domain.Emission;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using ReportService.Repositories.Interfaces;
 
 namespace ReportService.Services;
 
 public class ReportService : IReportService
 {
-    public async Task<string> GeneratePdfReport(Guid userId, EmissionCalculationDTO dto)
+    private readonly IReportRepository _repository;
+    
+    public ReportService(IReportRepository repository)
+    {
+        _repository = repository;
+    }
+    
+    public async Task<Report> Create(Guid userId, EmissionCalculationDTO dto)
     {
         // Validate invoices belong to user
         if (dto.Invoices.Any(i => i.UserId != userId))
@@ -22,6 +31,14 @@ public class ReportService : IReportService
 
         var fileName = $"Report-{userId}-{DateTime.Now:yyyyMMddHHmmss}.pdf";
         var filePath = Path.Combine(reportPath, fileName);
+        
+        // Calculate date range from invoices
+        var invoiceDates = dto.Invoices.Select(i => i.Date);
+        var startDate = invoiceDates.Min();
+        var endDate = invoiceDates.Max();
+        var periodString = invoiceDates.Any() 
+            ? $"{startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}" 
+            : "No invoices available";
 
         var pdfBytes = Document.Create(container =>
         {
@@ -29,9 +46,11 @@ public class ReportService : IReportService
             {
                 page.Size(PageSizes.A4);
                 page.Margin(50);
-                page.Header().Height(50).Background(Colors.Grey.Lighten3)
-                    .AlignCenter().Text($"Emission Report")
-                    .FontSize(20).Bold().FontColor(Colors.Blue.Medium);
+                page.Header().Height(30).Background(Colors.Grey.Lighten3).Column(header =>
+                {
+                    header.Item().AlignCenter().Text($"Emission Report")
+                        .FontSize(20).Bold().FontColor(Colors.Blue.Medium);
+                });
 
                 page.Content().Column(column =>
                 {
@@ -43,7 +62,7 @@ public class ReportService : IReportService
                     {
                         table.ColumnsDefinition(columns =>
                         {
-                            columns.RelativeColumn(3);
+                            columns.RelativeColumn(1);
                             columns.RelativeColumn(1);
                         });
 
@@ -58,6 +77,9 @@ public class ReportService : IReportService
 
                         table.Cell().Element(CellStyle).Text("Total Emission");
                         table.Cell().Element(CellStyle).Text($"{dto.TotalEmission:F2} units");
+                        
+                        table.Cell().Element(CellStyle).Text("Period");
+                        table.Cell().Element(CellStyle).Text(periodString);
                     });
 
                     // Invoices Details Section
@@ -155,8 +177,7 @@ public class ReportService : IReportService
         }).GeneratePdf();
 
         await System.IO.File.WriteAllBytesAsync(filePath, pdfBytes);
-        return $"/reports/{fileName}";
-
+        
         // Helper method for table cell styling
         static IContainer CellStyle(IContainer container)
         {
@@ -167,5 +188,24 @@ public class ReportService : IReportService
                 .AlignLeft()
                 .AlignMiddle();
         }
+        
+        string path = Path.Combine("reports", fileName);
+        
+        var report = new Report
+        {
+            UserId = userId,
+            Path = path,
+            TotalInvoices = dto.Invoices.Count(),
+            TotalEmission = dto.TotalEmission,
+            StartDate = startDate,
+            EndDate = endDate
+        };
+        
+        return await _repository.Create(report);
+    }
+    
+    public async Task<IEnumerable<Report>> GetAllByUserId(Guid userId)
+    {
+        return await _repository.GetAllByUserId(userId);
     }
 }

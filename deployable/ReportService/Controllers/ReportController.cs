@@ -20,13 +20,24 @@ public class ReportController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<IActionResult> GenerateReport([FromBody] EmissionCalculationDTO dto)
+    public async Task<IActionResult> CreateReport([FromBody] EmissionCalculationDTO dto)
     {
         var userId = _requestContext.UserId;
         if (userId is null) {
             return Unauthorized("User not authenticated or authorized");
         }
         
-        return Ok(await _service.GeneratePdfReport((Guid) userId, dto));
+        return Ok(await _service.Create((Guid) userId, dto));
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetAllReports()
+    {
+        var userId = _requestContext.UserId;
+        if (userId is null) {
+            return Unauthorized("User not authenticated or authorized");
+        }
+        
+        return Ok(await _service.GetAllByUserId((Guid) userId));
     }
 }
