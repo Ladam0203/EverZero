@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="wwwroot\reports\" />
+      <Folder Include="wwwroot\" />
     </ItemGroup>
 
     <ItemGroup>

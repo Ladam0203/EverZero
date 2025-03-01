@@ -129,6 +129,18 @@
       ]
     },
     {
+      "UpstreamPathTemplate": "/api/reports",
+      "UpstreamHttpMethod": ["Get"],
+      "DownstreamPathTemplate": "/report",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5180
+        }
+      ]
+    },
+    {
       "UpstreamPathTemplate": "/api/reports/{filename}",
       "UpstreamHttpMethod": ["Get"],
       "DownstreamPathTemplate": "/reports/{filename}",
