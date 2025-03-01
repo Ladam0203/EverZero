@@ -3,7 +3,7 @@
 import axios from 'axios';
 import { cookies } from 'next/headers'; // For managing cookies in Next.js
 
-export async function generatePdfReport(dto) {
+export async function createReport(dto) {
     // TODO: Validate the DTO
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
