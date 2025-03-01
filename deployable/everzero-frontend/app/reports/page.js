@@ -163,7 +163,7 @@ export default function Reports() {
                                 <div className="card-body">
                                     <h2 className="card-title flex items-center">
                                         <FaFileAlt className="text-primary mr-2" />
-                                        Report
+                                        Emission Report
                                     </h2>
                                     <p>
                                         <strong>Period:</strong> {format(new Date(report.startDate), "MMM d, yyyy")} -{" "}
