@@ -37,6 +37,9 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 // Services
 builder.Services.AddScoped<IEmissionFactorService, EmissionService.Services.EmissionService>();
 
+// Request context
+builder.Services.AddScoped<RequestContext>();
+
 builder.Services.AddControllers();
 
 var app = builder.Build();

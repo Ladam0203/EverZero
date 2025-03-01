@@ -14,6 +14,9 @@ builder.Services.AddSwaggerGen();
 // Services
 builder.Services.AddScoped<IReportService, ReportService.Services.ReportService>();
 
+// Request context
+builder.Services.AddScoped<RequestContext>();
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
