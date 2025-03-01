@@ -77,6 +77,19 @@ services:
       - ConnectionStrings__SecureNotes=Host=emission-db;Database=emission;Username=postgres;Password=root;Port=5432;
     networks:
       - intranet
+      
+  report-service:
+    build:
+      context: ./deployable
+      dockerfile: ReportService/Dockerfile
+    ports:
+      - "5000:80"
+      - "5001:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__SQLiteConnection=Data Source=report.db
+    networks:
+      - intranet
         
   # Database services
 
