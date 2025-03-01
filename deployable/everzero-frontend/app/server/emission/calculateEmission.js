@@ -4,7 +4,7 @@ import axios from 'axios';
 import { cookies } from 'next/headers'; // For managing cookies in Next.js
 
 export async function calculateEmission(dto) {
-    const API_URL = process.env.API_URL;
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     // Retrieve the JWT token from the cookies
     const token = (await cookies()).get('auth_token'); // This reads the 'auth_token' cookie
@@ -18,7 +18,7 @@ export async function calculateEmission(dto) {
 
     try {
         const response = await axios.post(
-            `${API_URL}/api/calculate`, // Endpoint to fetch all notes
+            `${API_URL}/calculate`, // Endpoint to fetch all notes
             dto,
             {  // Corrected: Headers should be passed as the third argument
                 headers: {

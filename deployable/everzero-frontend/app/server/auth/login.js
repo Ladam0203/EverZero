@@ -4,10 +4,10 @@ import axios from 'axios';
 import { cookies } from 'next/headers'; // For managing cookies in Next.js
 
 export async function login(dto) {
-    const API_URL = process.env.API_URL;
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     try {
-        const response = await axios.post(`${API_URL}/api/login`, dto, {
+        const response = await axios.post(`${API_URL}/login`, dto, {
             headers: {
                 "Content-Type": "application/json",
             },
