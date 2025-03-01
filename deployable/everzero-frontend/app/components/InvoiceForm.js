@@ -2,7 +2,7 @@
 
 import {useState, useEffect} from "react"
 import {FaPlus, FaTrash} from "react-icons/fa"
-import {getAllEmissionFactors} from "@/app/server/emissionFactor/getAllEmissionFactors"
+import {getAllEmissionFactors} from "@/app/server/emission/getAllEmissionFactors"
 import {useAtom} from "jotai"
 import {emissionFactorsAtom} from "@/app/atoms/emissionFactorsAtom"
 

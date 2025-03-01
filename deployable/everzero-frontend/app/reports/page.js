@@ -6,10 +6,9 @@ import {invoicesAtom} from "@/app/atoms/invoicesAtom";
 import {authorize} from "@/app/server/auth/authorize";
 import {getAllInvoices} from "@/app/server/invoice/getAllInvoices";
 import AppNavbar from "@/app/components/AppNavbar";
-import {FaExclamationTriangle, FaFileInvoiceDollar, FaPlus, FaSpinner} from "react-icons/fa";
-import {format} from "date-fns";
-import {InvoiceForm} from "@/app/components/InvoiceForm";
-import {calculateEmission} from "@/app/server/emissionFactor/calculateEmission";
+import {FaPlus} from "react-icons/fa";
+import {calculateEmission} from "@/app/server/emission/calculateEmission";
+import {generatePdfReport} from "@/app/server/report/generatePdfReport";
 
 export default function Reports() {
     const router = useRouter();
@@ -76,11 +75,27 @@ export default function Reports() {
 
     const createReport = async () => {
         const dto = invoices.invoices;
-
         console.log("Creating report with DTO:", dto);
 
-        const response = await calculateEmission(dto);
-        console.log(response);
+        // Get the emission calculation result
+        const calculationResponse = await calculateEmission(dto);
+        if (!calculationResponse.success) {
+            console.error("Failed to calculate emission:", calculationResponse.message);
+            return;
+        }
+        const calculation = calculationResponse.data;
+        console.log("Emission calculation result:", calculation);
+        // Create a PDF report
+        const reportResponse = await generatePdfReport(calculation);
+        if (!reportResponse.success) {
+            console.error("Failed to generate report:", reportResponse.message);
+            return;
+        }
+        const report = reportResponse.data;
+        console.log("Generated report:", report);
+
+        // Open the report in a new tab (with API_URL as the base URL)
+        window.open(process.env.NEXT_PUBLIC_API_URL + report, "_blank");
     };
 
     return (

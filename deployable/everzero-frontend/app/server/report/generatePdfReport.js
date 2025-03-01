@@ -6,7 +6,7 @@ import { cookies } from 'next/headers'; // For managing cookies in Next.js
 export async function generatePdfReport(dto) {
     // TODO: Validate the DTO
 
-    const API_URL = process.env.API_URL;
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     // Retrieve the JWT token from the cookies
     const token = (await cookies()).get('auth_token');
@@ -20,7 +20,7 @@ export async function generatePdfReport(dto) {
 
     try {
         const response = await axios.post(
-            `${API_URL}/api/reports`, // Endpoint to post a new invoice
+            `${API_URL}/reports`, // Endpoint to post a new invoice
             dto, // Corrected: Send dto as the second argument (request body)
             {  // Corrected: Headers should be passed as the third argument
                 headers: {

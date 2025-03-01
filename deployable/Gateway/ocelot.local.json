@@ -2,7 +2,9 @@
   "Routes": [
     {
       "UpstreamPathTemplate": "/api/register",
-      "UpstreamHttpMethod": [ "Post" ],
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
       "DownstreamPathTemplate": "/auth/register",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -14,7 +16,9 @@
     },
     {
       "UpstreamPathTemplate": "/api/login",
-      "UpstreamHttpMethod": [ "Post" ],
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
       "DownstreamPathTemplate": "/auth/login",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -26,7 +30,9 @@
     },
     {
       "UpstreamPathTemplate": "/api/authorize",
-      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
       "DownstreamPathTemplate": "/auth/authorize",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -38,7 +44,9 @@
     },
     {
       "UpstreamPathTemplate": "/api/invoices",
-      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
       "DownstreamPathTemplate": "/invoice/invoices",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -54,7 +62,9 @@
     },
     {
       "UpstreamPathTemplate": "/api/invoices",
-      "UpstreamHttpMethod": [ "Post" ],
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
       "DownstreamPathTemplate": "/invoice/invoices",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -70,7 +80,9 @@
     },
     {
       "UpstreamPathTemplate": "/api/emission-factors",
-      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
       "DownstreamPathTemplate": "/emission/emission-factors",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -86,7 +98,9 @@
     },
     {
       "UpstreamPathTemplate": "/api/calculate",
-      "UpstreamHttpMethod": [ "Post" ],
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
       "DownstreamPathTemplate": "/emission/calculate",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -102,8 +116,22 @@
     },
     {
       "UpstreamPathTemplate": "/api/reports",
-      "UpstreamHttpMethod": [ "Post" ],
+      "UpstreamHttpMethod": [
+        "Post"
+      ],
       "DownstreamPathTemplate": "/report",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5180
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/reports/{filename}",
+      "UpstreamHttpMethod": ["Get"],
+      "DownstreamPathTemplate": "/reports/{filename}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {

@@ -4,7 +4,7 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 import { cookies } from 'next/headers';
 
-const API_URL = process.env.API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 axiosRetry(axios, {
     retries: 3,
@@ -26,7 +26,7 @@ export async function getAllInvoices() {
     }
 
     try {
-        const response = await axios.get(`${API_URL}/api/invoices`, {
+        const response = await axios.get(`${API_URL}/invoices`, {
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token.value}`,
