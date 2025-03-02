@@ -51,34 +51,58 @@ public class EmissionService : IEmissionFactorService
         }
 
         // Fetch the emission factors present in the invoices
+        var emissionFactors = await GetEmissionFactors(invoices);
+
+        var emissionCalculation = new EmissionCalculationDTO();
+        emissionCalculation.Invoices = CalculateEmissionsPerInvoice(invoices, emissionFactors); 
+        emissionCalculation.TotalEmission = emissionCalculation.Invoices.Sum(i => i.Emission);;
+        
+        return emissionCalculation;
+    }
+    
+    private async Task<IEnumerable<EmissionFactor>> GetEmissionFactors(IEnumerable<InvoiceDTO> invoices)
+    {
         var emissionFactorIds = invoices
             .SelectMany(i => i.Lines
                 .Select(l => l.EmissionFactorId!.Value)) // Safe to use ! here
             .ToList();
-        var emissionFactors = await _repository.GetByIds(emissionFactorIds);
-
-        var emissionCalculation = new EmissionCalculationDTO();
-        List<InvoiceCalculationDTO> invoiceCalculations = new();
+        return await _repository.GetByIds(emissionFactorIds);
+    }
+    
+    
+    private List<InvoiceCalculationDTO> CalculateEmissionsPerInvoice(IEnumerable<InvoiceDTO> invoices, IEnumerable<EmissionFactor> emissionFactors)
+    {
+        var invoiceCalculations = new List<InvoiceCalculationDTO>();
         foreach (var invoice in invoices)
         {
-            var invoiceCalculation = _mapper.Map<InvoiceCalculationDTO>(invoice);
-            foreach (var lineCalculation in invoiceCalculation.Lines)
+            var invoiceCalculation = new InvoiceCalculationDTO
             {
-                var emissionFactor = emissionFactors
-                    .FirstOrDefault(ef => ef.Id == lineCalculation.EmissionFactorId);
+                Id = invoice.Id,
+                UserId = invoice.UserId,
+                Lines = new List<InvoiceLineCalculationDTO>()
+            };
+            foreach (var line in invoice.Lines)
+            {
+                var emissionFactor = emissionFactors.FirstOrDefault(ef => ef.Id == line.EmissionFactorId);
                 if (emissionFactor == null)
                 {
-                    throw new InvalidOperationException($"Emission factor with ID {lineCalculation.EmissionFactorId} not found");
+                    throw new InvalidOperationException($"Emission factor with ID {line.EmissionFactorId} not found");
                 }
 
-                lineCalculation.Emission = lineCalculation.Quantity * emissionFactor.CarbonEmissionKg;
+                var lineCalculation = new InvoiceLineCalculationDTO
+                {
+                    Id = line.Id,
+                    Description = line.Description,
+                    Quantity = line.Quantity,
+                    Unit = line.Unit,
+                    EmissionFactorId = line.EmissionFactorId,
+                    Emission = line.Quantity * emissionFactor.CarbonEmissionKg
+                };
+                invoiceCalculation.Lines.Add(lineCalculation);
             }
             invoiceCalculation.Emission = invoiceCalculation.Lines.Sum(l => l.Emission);
             invoiceCalculations.Add(invoiceCalculation);
         }
-        emissionCalculation.Invoices = invoiceCalculations;
-        emissionCalculation.TotalEmission = emissionCalculation.Invoices.Sum(i => i.Emission);;
-        
-        return emissionCalculation;
+        return invoiceCalculations;
     }
 }
