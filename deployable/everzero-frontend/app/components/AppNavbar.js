@@ -9,6 +9,9 @@ export default function AppNavbar() {
     return (
         <div className="navbar bg-base-100">
             <div className="navbar-start">
+                <Link href="/dashboard" className={`btn btn-ghost ${pathname === "/dashboard" ? "btn-active btn-outline" : ""}`}>
+                    Dashboard
+                </Link>
                 <Link href="/invoices" className={`btn btn-ghost ${pathname === "/invoices" ? "btn-active btn-outline" : ""}`}>
                     Invoices
                 </Link>
