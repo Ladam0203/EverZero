@@ -20,7 +20,7 @@ axiosRetry(axios, {
 export async function GET() {
     try {
         // Retrieve the JWT token from cookies
-        const cookieStore = cookies();
+        const cookieStore = await cookies();
         const token = cookieStore.get('auth_token');
 
         if (!token) {
