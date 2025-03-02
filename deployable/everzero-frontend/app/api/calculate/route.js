@@ -7,11 +7,11 @@ export async function POST(request) {
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     try {
-        // Get the request body (dto)
+        // Get request body
         const dto = await request.json();
 
         // Retrieve the JWT token from cookies
-        const cookieStore = cookies();
+        const cookieStore = await cookies();
         const token = cookieStore.get('auth_token');
 
         if (!token) {
@@ -25,7 +25,8 @@ export async function POST(request) {
         }
 
         // Make the API call
-        const response = await axios.post(`${API_URL}/calculate`, dto, {
+        const response = await axios.post(`${API_URL}/calculate`,
+            dto, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token.value}`,
@@ -40,6 +41,7 @@ export async function POST(request) {
             { status: 200 }
         );
     } catch (error) {
+        console.error(error);
         return NextResponse.json(
             {
                 success: false,
