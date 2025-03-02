@@ -4,6 +4,7 @@ using Domain.Emission;
 using EmissionService.Domain;
 using EmissionService.Repositories.Interfaces;
 using EmissionService.Services.Interfaces;
+using Messages.DTOs.Emission;
 using MongoDB.Driver.Linq;
 
 namespace EmissionService.Services;
@@ -54,8 +55,15 @@ public class EmissionService : IEmissionFactorService
         var emissionFactors = await GetEmissionFactors(invoices);
 
         var emissionCalculation = new EmissionCalculationDTO();
-        emissionCalculation.Invoices = CalculateEmissionsPerInvoice(invoices, emissionFactors); 
-        emissionCalculation.TotalEmission = emissionCalculation.Invoices.Sum(i => i.Emission);;
+        // Per invoice 
+        var invoiceCalculations = CalculateEmissionsPerInvoice(invoices, emissionFactors);
+        emissionCalculation.Invoices = invoiceCalculations; 
+        // Per scope
+        emissionCalculation.Scopes = CalculateEmissionsPerScope(invoiceCalculations, emissionFactors);
+        
+        // Total emission
+        var totalEmission = emissionCalculation.Invoices.Sum(i => i.Emission);
+        emissionCalculation.TotalEmission = totalEmission;
         
         return emissionCalculation;
     }
@@ -104,5 +112,30 @@ public class EmissionService : IEmissionFactorService
             invoiceCalculations.Add(invoiceCalculation);
         }
         return invoiceCalculations;
+    }
+    
+    private List<ScopeCalculationDTO> CalculateEmissionsPerScope(IEnumerable<InvoiceCalculationDTO> invoiceCalculations, IEnumerable<EmissionFactor> emissionFactors)
+    {
+        // Create a lookup for emission factors (still improves performance)
+        var emissionFactorLookup = emissionFactors.ToDictionary(ef => ef.Id, ef => ef);
+
+        // Calculate total emission
+        var totalEmission = invoiceCalculations.Sum(i => i.Emission);
+
+        // Group emissions by scope
+        var scopeGroups = invoiceCalculations
+            .SelectMany(i => i.Lines)
+            .GroupBy(line => emissionFactorLookup[line.EmissionFactorId!.Value].EmissionFactorMetadata.Scope)
+            .Select(g => new ScopeCalculationDTO
+            {
+                Scope = g.Key,
+                Emission = g.Sum(line => line.Emission),
+                Percentage = totalEmission > 0 
+                    ? (g.Sum(line => line.Emission) / totalEmission) * 100 
+                    : 0
+            })
+            .ToList();
+
+        return scopeGroups;
     }
 }
