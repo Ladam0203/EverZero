@@ -83,7 +83,7 @@ export default function Register() {
         console.log("Registered user:", data);
         console.info("User registered successfully!");
 
-        router.push("/invoices");
+        router.push("/dashboard");
     };
 
     return (
