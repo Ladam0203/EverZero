@@ -83,12 +83,7 @@ public class EmissionService : IEmissionFactorService
         var invoiceCalculations = new List<InvoiceCalculationDTO>();
         foreach (var invoice in invoices)
         {
-            var invoiceCalculation = new InvoiceCalculationDTO
-            {
-                Id = invoice.Id,
-                UserId = invoice.UserId,
-                Lines = new List<InvoiceLineCalculationDTO>()
-            };
+            var invoiceCalculation = _mapper.Map<InvoiceCalculationDTO>(invoice);
             foreach (var line in invoice.Lines)
             {
                 var emissionFactor = emissionFactors.FirstOrDefault(ef => ef.Id == line.EmissionFactorId);
@@ -97,15 +92,8 @@ public class EmissionService : IEmissionFactorService
                     throw new InvalidOperationException($"Emission factor with ID {line.EmissionFactorId} not found");
                 }
 
-                var lineCalculation = new InvoiceLineCalculationDTO
-                {
-                    Id = line.Id,
-                    Description = line.Description,
-                    Quantity = line.Quantity,
-                    Unit = line.Unit,
-                    EmissionFactorId = line.EmissionFactorId,
-                    Emission = line.Quantity * emissionFactor.CarbonEmissionKg
-                };
+                var lineCalculation = _mapper.Map<InvoiceLineCalculationDTO>(line);
+                lineCalculation.Emission = line.Quantity * emissionFactor.CarbonEmissionKg;
                 invoiceCalculation.Lines.Add(lineCalculation);
             }
             invoiceCalculation.Emission = invoiceCalculation.Lines.Sum(l => l.Emission);
@@ -133,20 +121,20 @@ public class EmissionService : IEmissionFactorService
                 Percentage = totalEmission > 0 
                     ? (g.Sum(line => line.Emission) / totalEmission) * 100 
                     : 0,
-                Categories = CalculateEmissionsPerCategory(g, emissionFactors)
+                Categories = CalculateEmissionsPerCategory(invoiceCalculations, g, emissionFactors)
             })
             .ToList();
 
         return scopeGroups;
     }
     
-    private List<CategoryCalculationDTO> CalculateEmissionsPerCategory(IEnumerable<InvoiceLineCalculationDTO> invoiceLineCalculations, IEnumerable<EmissionFactor> emissionFactors)
+    private List<CategoryCalculationDTO> CalculateEmissionsPerCategory(IEnumerable<InvoiceCalculationDTO> invoiceCalculations, IEnumerable<InvoiceLineCalculationDTO> invoiceLineCalculations, IEnumerable<EmissionFactor> emissionFactors)
     {
         // Create a lookup for emission factors (still improves performance)
         var emissionFactorLookup = emissionFactors.ToDictionary(ef => ef.Id, ef => ef);
 
         // Calculate total emission
-        var totalEmission = invoiceLineCalculations.Sum(i => i.Emission);
+        var totalEmission = invoiceCalculations.Sum(i => i.Emission);
 
         // Group emissions by category
         var categoryGroups = invoiceLineCalculations
