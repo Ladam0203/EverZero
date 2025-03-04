@@ -15,22 +15,55 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 export default function Dashboard() {
     const router = useRouter();
     const [invoices, setInvoices] = useAtom(invoicesAtom);
-    const [calculation, setCaculation] = useState(null);
+    const [calculation, setCalculation] = useState(null);
 
-    const chartData = {
-        labels: calculation?.scopes?.map((scope) => scope.scope),
+    // Chart data for the Overall scope emissions
+    const overallChartData = {
+        labels: calculation?.scopes?.map((scope) => scope.scope) || [],
         datasets: [
             {
-                data: calculation?.scopes?.map((scope) => scope.emission),
+                data: calculation?.scopes?.map((scope) => scope.emission) || [],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
                     'rgba(255, 206, 86, 0.2)',
-                    ],
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                ],
+                borderWidth: 1,
                 hoverOffset: 4,
             },
         ],
     };
+
+    // Function to generate chart data for each scope's categories
+    const generateCategoryChartData = (scope) => ({
+        labels: scope.categories?.map((category) => category.category) || [],
+        datasets: [
+            {
+                data: scope.categories?.map((category) => category.emission) || [],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                ],
+                borderWidth: 1,
+                hoverOffset: 4,
+            },
+        ],
+    });
 
     useEffect(() => {
         const doAuthorize = async () => {
@@ -66,27 +99,23 @@ export default function Dashboard() {
                 loaded: true,
                 error: null,
             });
-            console.log("Invoices loaded:", result.data);
         };
 
         const fetchCalculation = async () => {
             if (invoices.loading || !invoices.loaded) return;
 
             const dto = invoices.invoices;
-            console.log("Calculation DTO:", dto);
-
             const result = await fetch('api/calculate', {
                 method: 'POST',
                 body: JSON.stringify(dto),
             }).then((res) => res.json());
 
             if (!result.success) {
-                setCaculation(null);
+                setCalculation(null);
                 return;
             }
 
-            console.log("Calculation result:", result.data);
-            setCaculation(result.data);
+            setCalculation(result.data);
         };
 
         doAuthorize()
@@ -96,16 +125,70 @@ export default function Dashboard() {
                 console.info('Authorization failed:', error.message);
                 router.push('/login');
             });
-    }, [invoices.loading, invoices.loaded]);
+    }, [invoices.loading, invoices.loaded, router, setInvoices]);
 
     return (
         <div className="min-h-screen bg-base-200">
             <AppNavbar />
-            {/* Render Pie chart only if calculation data is available */}
             {calculation && calculation.scopes && (
                 <div className="p-6">
-                    <Pie className={'max-w-[256px] max-h-[256px]'}
-                        data={chartData} />
+                    {/* Overall Scope Emissions Chart */}
+                    <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+                        <h2 className="text-lg font-semibold mb-4">Scope Emissions</h2>
+                        <div className="max-w-[256px] max-h-[256px] mx-auto">
+                            <Pie
+                                data={overallChartData}
+                                options={{
+                                    maintainAspectRatio: true,
+                                    plugins: {
+                                        legend: {
+                                            position: 'bottom',
+                                        },
+                                        tooltip: {
+                                            callbacks: {
+                                                label: (context) => {
+                                                    const label = context.label || '';
+                                                    const value = context.parsed || 0;
+                                                    return `${label}: ${value}`;
+                                                },
+                                            },
+                                        },
+                                    },
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Individual Scope Category Charts */}
+                    <div className="flex flex-wrap gap-6">
+                        {calculation.scopes.map((scope, index) => (
+                            <div key={index} className="bg-white p-4 rounded-lg shadow-md">
+                                <h2 className="text-lg font-semibold mb-4">{scope.scope} Activity Emissions</h2>
+                                <div className="max-w-[256px] max-h-[256px]">
+                                    <Pie
+                                        data={generateCategoryChartData(scope)}
+                                        options={{
+                                            maintainAspectRatio: true,
+                                            plugins: {
+                                                legend: {
+                                                    position: 'bottom',
+                                                },
+                                                tooltip: {
+                                                    callbacks: {
+                                                        label: (context) => {
+                                                            const label = context.label || '';
+                                                            const value = context.parsed || 0;
+                                                            return `${label}: ${value}`;
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>
