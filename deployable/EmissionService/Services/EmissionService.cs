@@ -132,10 +132,35 @@ public class EmissionService : IEmissionFactorService
                 Emission = g.Sum(line => line.Emission),
                 Percentage = totalEmission > 0 
                     ? (g.Sum(line => line.Emission) / totalEmission) * 100 
-                    : 0
+                    : 0,
+                Categories = CalculateEmissionsPerCategory(g, emissionFactors)
             })
             .ToList();
 
         return scopeGroups;
+    }
+    
+    private List<CategoryCalculationDTO> CalculateEmissionsPerCategory(IEnumerable<InvoiceLineCalculationDTO> invoiceLineCalculations, IEnumerable<EmissionFactor> emissionFactors)
+    {
+        // Create a lookup for emission factors (still improves performance)
+        var emissionFactorLookup = emissionFactors.ToDictionary(ef => ef.Id, ef => ef);
+
+        // Calculate total emission
+        var totalEmission = invoiceLineCalculations.Sum(i => i.Emission);
+
+        // Group emissions by category
+        var categoryGroups = invoiceLineCalculations
+            .GroupBy(line => emissionFactorLookup[line.EmissionFactorId!.Value].Category)
+            .Select(g => new CategoryCalculationDTO
+            {
+                Category = g.Key,
+                Emission = g.Sum(line => line.Emission),
+                Percentage = totalEmission > 0 
+                    ? (g.Sum(line => line.Emission) / totalEmission) * 100 
+                    : 0
+            })
+            .ToList();
+
+        return categoryGroups;
     }
 }
