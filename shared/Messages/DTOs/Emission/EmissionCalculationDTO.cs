@@ -1,3 +1,4 @@
+using System.Collections;
 using Messages.DTOs.Emission;
 
 namespace Domain.Emission;

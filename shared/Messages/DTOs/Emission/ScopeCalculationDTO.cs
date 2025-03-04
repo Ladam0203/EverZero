@@ -6,5 +6,5 @@ public class ScopeCalculationDTO
     public decimal Emission { get; set; }
     public decimal Percentage { get; set; }
     
-    // TODO: Add category
+    public IEnumerable<CategoryCalculationDTO> Categories { get; set; }
 }
