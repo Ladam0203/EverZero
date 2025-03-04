@@ -10,12 +10,12 @@ namespace ReportService.Services;
 public class ReportService : IReportService
 {
     private readonly IReportRepository _repository;
-    
+
     public ReportService(IReportRepository repository)
     {
         _repository = repository;
     }
-    
+
     public async Task<Report> Create(Guid userId, EmissionCalculationDTO dto)
     {
         // Validate invoices belong to user
@@ -27,17 +27,16 @@ public class ReportService : IReportService
         }
 
         var reportPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "reports");
-        Directory.CreateDirectory(reportPath); // Creates directory if it doesn't exist
+        Directory.CreateDirectory(reportPath);
 
         var fileName = $"Report-{userId}-{DateTime.Now:yyyyMMddHHmmss}.pdf";
         var filePath = Path.Combine(reportPath, fileName);
-        
-        // Calculate date range from invoices
+
         var invoiceDates = dto.Invoices.Select(i => i.Date);
         var startDate = invoiceDates.Min();
         var endDate = invoiceDates.Max();
-        var periodString = invoiceDates.Any() 
-            ? $"{startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}" 
+        var periodString = invoiceDates.Any()
+            ? $"{startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}"
             : "No invoices available";
 
         var pdfBytes = Document.Create(container =>
@@ -77,10 +76,63 @@ public class ReportService : IReportService
 
                         table.Cell().Element(CellStyle).Text("Total Emission");
                         table.Cell().Element(CellStyle).Text($"{dto.TotalEmission:F2} units");
-                        
+
                         table.Cell().Element(CellStyle).Text("Period");
                         table.Cell().Element(CellStyle).Text(periodString);
                     });
+
+                    // Emissions by Scope and Category Section
+                    column.Item().PaddingTop(20).Text("Emissions by Scope and Category")
+                        .FontSize(16).Bold().FontColor(Colors.Black);
+
+                    if (dto.Scopes != null && dto.Scopes.Any())
+                    {
+                        foreach (var scope in dto.Scopes)
+                        {
+                            column.Item().PaddingVertical(10).Column(scopeColumn =>
+                            {
+                                // Scope Header
+                                scopeColumn.Item().Background(Colors.Grey.Lighten4)
+                                    .Padding(5)
+                                    .Text(
+                                        $"{scope.Scope} (Emission: {scope.Emission:F2} units, {scope.Percentage:F2}%)")
+                                    .FontSize(14).Bold();
+
+                                // Categories Table
+                                if (scope.Categories != null && scope.Categories.Any())
+                                {
+                                    scopeColumn.Item().PaddingLeft(20).PaddingTop(5).Table(table =>
+                                    {
+                                        table.ColumnsDefinition(columns =>
+                                        {
+                                            columns.RelativeColumn(2);
+                                            columns.RelativeColumn(1);
+                                            columns.RelativeColumn(1);
+                                        });
+
+                                        table.Header(header =>
+                                        {
+                                            header.Cell().Element(CellStyle).Text("Category");
+                                            header.Cell().Element(CellStyle).Text("Emission");
+                                            header.Cell().Element(CellStyle).Text("Percentage");
+                                        });
+
+                                        foreach (var category in scope.Categories)
+                                        {
+                                            table.Cell().Element(CellStyle).Text(category.Category);
+                                            table.Cell().Element(CellStyle).Text($"{category.Emission:F2} units");
+                                            table.Cell().Element(CellStyle).Text($"{category.Percentage:F2}%");
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
+                    else
+                    {
+                        column.Item().PaddingTop(5).Text("No scope data available")
+                            .FontSize(12).Italic().FontColor(Colors.Grey.Darken1);
+                    }
 
                     // Invoices Details Section
                     column.Item().PaddingTop(20).Text("Invoice Details")
@@ -177,8 +229,7 @@ public class ReportService : IReportService
         }).GeneratePdf();
 
         await System.IO.File.WriteAllBytesAsync(filePath, pdfBytes);
-        
-        // Helper method for table cell styling
+
         static IContainer CellStyle(IContainer container)
         {
             return container
@@ -188,9 +239,9 @@ public class ReportService : IReportService
                 .AlignLeft()
                 .AlignMiddle();
         }
-        
+
         string path = Path.Combine("reports", fileName);
-        
+
         var report = new Report
         {
             UserId = userId,
@@ -200,10 +251,10 @@ public class ReportService : IReportService
             StartDate = startDate,
             EndDate = endDate
         };
-        
+
         return await _repository.Create(report);
     }
-    
+
     public async Task<IEnumerable<Report>> GetAllByUserId(Guid userId)
     {
         return await _repository.GetAllByUserId(userId);
