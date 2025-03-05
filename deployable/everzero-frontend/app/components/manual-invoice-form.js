@@ -6,7 +6,7 @@ import {getAllEmissionFactors} from "@/app/server/emission/getAllEmissionFactors
 import {useAtom} from "jotai"
 import {emissionFactorsAtom} from "@/app/atoms/emissionFactorsAtom"
 
-export default function ManualInvoiceForm({onSubmit, onCancel}) {
+export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
     const testInvoice = {
         subject: "MCA60043-MOGY-0424",
         supplierName: "Community Utilities",
@@ -27,10 +27,10 @@ export default function ManualInvoiceForm({onSubmit, onCancel}) {
     }
 
     const baseInvoice = {
-        subject: "",
-        supplierName: "",
-        buyerName: "",
-        date: new Date().toISOString().split("T")[0],
+        subject: extractedData?.subject || "",
+        supplierName: extractedData?.supplierName || "",
+        buyerName: extractedData?.buyerName || "",
+        date: extractedData?.date || new Date().toISOString().split("T")[0],
         lines: [],
     }
 
