@@ -12,6 +12,7 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
     const [isDragging, setIsDragging] = useState(false)
     const [file, setFile] = useState(null)
     const [isUploading, setIsUploading] = useState(false)
+    const [extractedData, setExtractedData] = useState(null)
     const fileInputRef = useRef(null)
 
     const handleDragOver = (e) => {
@@ -49,30 +50,68 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
         }
     }
 
-    const handleUpload = () => {
-        if (!file) return
+    const handleUpload = async () => {
+        if (!file) return;
 
-        setIsUploading(true)
-        // Simulate upload process
-        setTimeout(() => {
-            setIsUploading(false)
-            // Here you would process the file and move to the next step
-            alert(`File "${file.name}" would be processed here.`)
-        }, 1500)
+        setIsUploading(true);
+
+        try {
+            // Create FormData object and append the file
+            const formData = new FormData();
+            formData.append("file", file);
+
+            // Make the POST request to the FastAPI endpoint
+            const response = await fetch("api/extract", {
+                method: "POST",
+                body: formData,
+            });
+
+            // Check if the response is OK
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || "Upload failed");
+            }
+
+            // Parse and log the response
+            const data = await response.json();
+            console.log("Response from endpoint:", data);
+
+            // Set the extracted data
+            setExtractedData(data);
+
+            // Set the step to "manual"
+            setStep("manual");
+        } catch (error) {
+            console.error("Error uploading file:", error.message);
+            alert(`Upload failed: ${error.message}`);
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const resetForm = () => {
+        setStep("upload")
+        setFile(null)
+    }
+
+    const handleOnSubmit = (invoice) => {
+        // Call the onSubmit callback
+        onSubmit(invoice)
+
+        // Reset the form
+        resetForm()
     }
 
     const handleOnCancel = () => {
-        // Reset the form
-        setStep("upload")
-        setFile(null)
-
         // Call the onCancel callback
         onCancel()
+
+        resetForm()
     }
 
     if (step === "manual") {
         return (
-            <ManualInvoiceForm onSubmit={onSubmit} onCancel={handleOnCancel} />
+            <ManualInvoiceForm onSubmit={onSubmit} onCancel={handleOnCancel} extractedData={extractedData}/>
         )
     }
 
