@@ -1,0 +1,106 @@
+On behalf of The McEwan
+Your details
+Mira Mogyin
+Customer reference
+MCA60043-MOGY
+Bill Number
+MCA60043-MOGY-0424
+Billing Address
+Supply Address
+43, 6 McEwan Walk, Edinburgh, 
+EH3 8FT
+Bill date
+18.04.2024
+Bill period
+01.03.2024     to     31.03.2024
+Readings
+Units
+VAT
+Utility
+Start Type
+Current Type
+Total Unit
+Rate £
+Cost Rate
+Total
+Total
+Heat Consumption
+5080.00
+A
+5384.00
+A
+304.00 KWH
+0.0996
+£30.28
+5%
+£1.51
+£31.79
+Heat Metering Charge
+31.00 DAY
+0.3593
+£11.14
+5%
+£0.56
+£11.70
+Elec Consumption
+3319.80
+A
+3457.62
+A
+137.82 KWH
+0.2745
+£37.83
+5%
+£1.89
+£39.72
+Elec Metering Charge
+31.00 DAY
+0.3104
+£9.62
+5%
+£0.48
+£10.10
+Total
+£88.87
+£4.44
+£93.31
+Total charges (including VAT)
+£93.31
+Do you have a question about your bill? Why not 
+check out our FAQs?
+Billing Key
+A: Actual
+E: Estimate
+I: Initial
+F: Final
+C: Customer
+P: Portal
+EX: VAT Exempt
+Your account balance at
+18.04.2024
+Balance brought forward
+-£118.89
+Payments since last bill
+-£140.00
+Total Charges
+£93.31
+Adjustments
+£0.00
+Your current balance
+-£165.58 In Credit
+Please note that you can pay your outstanding balance by using the link here.  Your current balance may differ from the one 
+shown on this statement if payments have been made or additional statements have been raised since the statement date.
+Information
+If you have a question about your bill, you might find the answer you're looking for via our FAQs page. If you've not found the 
+answer you're looking for there, you can always contact us instead.
+    
+You may be able to reduce your bill.
+For more information on how you can save energy, visit:
+https://www.simpleenergyadvice.org.uk/
+or https://energysavingtrust.org.uk/
+Company Name:   Springside Opco Limited
+VAT Registration Number:   403 7673 03
+Registered Address:   8 Sackville Street, London, United Kingdom, W1S 3DG
+
+[OCR from image 1]: COMMUNITY
+[OCR from image 1]: UTilities

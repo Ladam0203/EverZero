@@ -69,7 +69,7 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
             // Check if the response is OK
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.detail || "Upload failed");
+                throw new Error(errorData.message);
             }
 
             // Parse and log the response
