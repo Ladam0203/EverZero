@@ -6,7 +6,7 @@ import {getAllEmissionFactors} from "@/app/server/emission/getAllEmissionFactors
 import {useAtom} from "jotai"
 import {emissionFactorsAtom} from "@/app/atoms/emissionFactorsAtom"
 
-export const InvoiceForm = ({onSubmit, onCancel}) => {
+export default function ManualInvoiceForm({onSubmit, onCancel}) {
     const testInvoice = {
         subject: "MCA60043-MOGY-0424",
         supplierName: "Community Utilities",
@@ -390,12 +390,12 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
             <button type="button" className="btn btn-secondary" onClick={addInvoiceLine}>
                 <FaPlus className="mr-2"/> Add Line
             </button>
-            <div className="modal-action">
-                <button type="submit" className="btn btn-primary">
-                    Add Invoice
-                </button>
+            <div className="modal-action justify-between">
                 <button type="button" className="btn" onClick={onCancel}>
                     Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                    Add Invoice
                 </button>
             </div>
         </form>
