@@ -1,9 +1,16 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile, HTTPException
+from typing import List
 
 app = FastAPI()
 
-@app.get("/")
-async def root():
+@app.post("/extraction/extract")
+async def extract_invoice(file: UploadFile = File(...)):
+    if file.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="Invalid file type. Only PDF files are allowed.")
+
+    # Placeholder for actual PDF parsing logic
+    # Here you would typically read the PDF and extract the invoice data
+
     return {
         "invoices": [
             {
