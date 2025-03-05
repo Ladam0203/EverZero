@@ -126,7 +126,11 @@
           "Host": "localhost",
           "Port": 5180
         }
-      ]
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/reports",
@@ -138,7 +142,11 @@
           "Host": "localhost",
           "Port": 5180
         }
-      ]
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/reports/{filename}",
@@ -150,7 +158,27 @@
           "Host": "localhost",
           "Port": 5180
         }
-      ]
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/extract",
+      "UpstreamHttpMethod": ["Post"],
+      "DownstreamPathTemplate": "/extraction/extract",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 8000
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
     }
   ],
   "GlobalConfiguration": {

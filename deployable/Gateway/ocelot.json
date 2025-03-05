@@ -78,7 +78,11 @@
           "Host": "emission-service",
           "Port": 80
         }
-      ]
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/calculate",
@@ -90,7 +94,11 @@
           "Host": "emission-service",
           "Port": 80
         }
-      ]
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/reports",
@@ -102,7 +110,11 @@
           "Host": "report-service",
           "Port": 80
         }
-      ]
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/reports",
@@ -114,7 +126,11 @@
           "Host": "report-service",
           "Port": 80
         }
-      ]
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
     },
     {
       "UpstreamPathTemplate": "/api/reports/{filename}",
@@ -126,7 +142,27 @@
           "Host": "report-service",
           "Port": 80
         }
-      ]
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/extract",
+      "UpstreamHttpMethod": ["Post"],
+      "DownstreamPathTemplate": "/extraction/extract",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "extraction-service",
+          "Port": 80
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
     }
   ],
   "GlobalConfiguration": {
