@@ -5,7 +5,7 @@ import {useAtom} from "jotai"
 import {invoicesAtom} from "@/app/atoms/invoicesAtom"
 import {FaFileInvoiceDollar, FaSpinner, FaPlus, FaExclamationTriangle} from "react-icons/fa"
 import {format} from "date-fns"
-import {InvoiceForm} from "@/app/components/InvoiceForm"
+import {InvoiceForm} from "@/app/components/invoice-form"
 import {useRouter} from "next/navigation"
 import {authorize} from "@/app/server/auth/authorize";
 import {postInvoice} from "@/app/server/invoice/postInvoice";
@@ -59,7 +59,7 @@ export default function Invoices() {
                 console.info('Authorization failed:', error.message);
                 router.push('/login');
             });
-    }, [invoices.loading, invoices.loaded]);
+    }, []);
 
     const handleSubmit = async (newInvoice) => {
         console.log("New invoice to be sent to backend:", newInvoice)
