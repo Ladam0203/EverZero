@@ -31,7 +31,7 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
         supplierName: extractedData?.supplierName || "",
         buyerName: extractedData?.buyerName || "",
         date: extractedData?.date || new Date().toISOString().split("T")[0],
-        lines: [],
+        lines: extractedData?.lines || [],
     }
 
     const [invoice, setInvoice] = useState(process.env.NODE_ENV === "development" ? testInvoice : baseInvoice)

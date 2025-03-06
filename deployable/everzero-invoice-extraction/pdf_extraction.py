@@ -5,7 +5,11 @@ import easyocr
 from PIL import Image
 from io import BytesIO
 import numpy as np
+from dotenv import load_dotenv
 from openai import OpenAI
+
+# Load environment variables
+load_dotenv()
 
 # Initialize EasyOCR reader
 reader = easyocr.Reader(['en'])  # Specify additional languages as needed
