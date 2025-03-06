@@ -1,6 +1,8 @@
+import os
+
+from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from pdf_extraction import extract_text_and_images, analyze_text_with_gpt  # Import both functions
-
 app = FastAPI()
 
 @app.post("/extraction/extract")
