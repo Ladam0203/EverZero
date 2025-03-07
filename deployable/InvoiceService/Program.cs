@@ -3,6 +3,7 @@ using InvoiceService.Mappings;
 using InvoiceService.Repository;
 using InvoiceService.Repository.Interfaces;
 using InvoiceService.Services;
+using InvoiceService.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Services
 builder.Services.AddScoped<IInvoiceService, InvoiceService.Services.InvoiceService>();
+builder.Services.AddScoped<ISuggestionService, SuggestionService>();
 
 // Middleware
 builder.Services.AddScoped<RequestContext>();
