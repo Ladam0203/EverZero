@@ -1,7 +1,7 @@
 "use client"
 
 import {useState, useEffect} from "react"
-import {FaPlus, FaTrash} from "react-icons/fa"
+import {FaPlus, FaTrash, FaMagic} from "react-icons/fa"
 import {getAllEmissionFactors} from "@/app/server/emission/getAllEmissionFactors"
 import {useAtom} from "jotai"
 import {emissionFactorsAtom} from "@/app/atoms/emissionFactorsAtom"
@@ -73,6 +73,8 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
 
     const handleInputChange = (e, index) => {
         const {name, value} = e.target
+
+        // Regular input
         if (name.startsWith("line")) {
             const [, field, lineIndex] = name.split("-")
             const updatedLines = [...invoice.lines]
@@ -80,6 +82,39 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
             setInvoice({...invoice, lines: updatedLines})
         } else {
             setInvoice({...invoice, [name]: value})
+        }
+    }
+
+    const updateEmissionFactorId = (index, supplierName, description, unit) => {
+        getEmissionFactorIdSuggestion(supplierName, description, unit).then((data) => {
+            if (data.success) {
+                const emissionFactorId = data.data.emissionFactorId;
+                let updatedLine = { ...invoice.lines[index] };
+                const emissionFactor = emissionFactors.emissionFactors.find((ef) => ef.id === emissionFactorId);
+                updatedLine = {
+                    ...updatedLine,
+                    category: emissionFactor.category,
+                    subCategories: emissionFactor.subCategories,
+                    emissionFactorUnit: emissionFactor.unit,
+                    emissionFactorId,
+                };
+
+
+                const updatedLines = [...invoice.lines];
+                updatedLines[index] = updatedLine;
+                setInvoice({ ...invoice, lines: updatedLines });
+            }
+        });
+    };
+
+    const getEmissionFactorIdSuggestion = async (supplierName, invoiceLineDescription, unit) => {
+        try {
+            const response = await fetch(`/api/invoices/suggestions/emission-factor-id?supplierName=${supplierName}&invoiceLineDescription=${invoiceLineDescription}&unit=${unit}`)
+            const data = await response.json()
+            return data
+        } catch (error) {
+            console.error("Failed to get emission factor ID suggestion", error)
+            return {success: false, message: "Failed to get emission factor ID suggestion"}
         }
     }
 
@@ -263,7 +298,7 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
                                 type="text"
                                 name={`line-description-${index}`}
                                 value={line.description}
-                                onChange={(e) => handleInputChange(e, index)}
+                                onChange={(e) => { handleInputChange(e, index)} }
                                 className="input input-bordered"
                                 required
                             />
@@ -297,7 +332,18 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
                     </div>
                     {emissionFactors.loaded && emissionFactors.emissionFactors.length > 0 && (
                         <div className="bg-base-100 p-4 rounded-lg">
-                            <h4 className="text-lg font-semibold mb-2">Emission Factor</h4>
+                            <div className={"flex items-center justify-between"}>
+                                <h2 className="text-lg font-bold">Emission Factor</h2>
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-ghost"
+                                    onClick={() =>
+                                        updateEmissionFactorId(index, invoice.supplierName, line.description, line.unit)
+                                    }
+                                >
+                                    <FaMagic/>
+                                </button>
+                            </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="form-control">
                                     <label className="label">
