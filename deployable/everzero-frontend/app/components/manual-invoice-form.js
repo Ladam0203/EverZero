@@ -27,12 +27,35 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
     }
 
     const baseInvoice = {
-        subject: extractedData?.subject || "",
-        supplierName: extractedData?.supplierName || "",
-        buyerName: extractedData?.buyerName || "",
-        date: extractedData?.date || new Date().toISOString().split("T")[0],
-        lines: extractedData?.lines || [],
+        subject: "",
+        supplierName: "",
+        buyerName: "",
+        date: new Date().toISOString().split("T")[0],
+        lines: [],
     }
+
+    useEffect(() => {
+        // Load extracted data into the form
+        if (extractedData) {
+            const lines = extractedData.lines.map((line) => ({
+                description: line.description,
+                quantity: line.quantity,
+                unit: line.unit,
+                category: "",
+                subCategories: {},
+                emissionFactorUnit: "",
+                emissionFactorId: "",
+            }))
+
+            setInvoice({
+                subject: extractedData.subject,
+                supplierName: extractedData.supplierName,
+                buyerName: extractedData.buyerName,
+                date: extractedData.date,
+                lines,
+            })
+        }
+    }, [extractedData])
 
     const [invoice, setInvoice] = useState(baseInvoice)
     const [emissionFactors, setEmissionFactors] = useAtom(emissionFactorsAtom)
@@ -89,7 +112,7 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
         getEmissionFactorIdSuggestion(supplierName, description, unit).then((data) => {
             if (data.success) {
                 const emissionFactorId = data.data.emissionFactorId;
-                let updatedLine = { ...invoice.lines[index] };
+                let updatedLine = {...invoice.lines[index]};
                 const emissionFactor = emissionFactors.emissionFactors.find((ef) => ef.id === emissionFactorId);
                 updatedLine = {
                     ...updatedLine,
@@ -102,7 +125,7 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
 
                 const updatedLines = [...invoice.lines];
                 updatedLines[index] = updatedLine;
-                setInvoice({ ...invoice, lines: updatedLines });
+                setInvoice({...invoice, lines: updatedLines});
             }
         });
     };
@@ -148,7 +171,7 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
 
     const handleEmissionFactorChange = (lineIndex, field, value) => {
         const updatedLines = [...invoice.lines];
-        const currentLine = { ...updatedLines[lineIndex] };
+        const currentLine = {...updatedLines[lineIndex]};
 
         if (field === "category") {
             currentLine.category = value;
@@ -204,7 +227,7 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
         }
 
         updatedLines[lineIndex] = currentLine;
-        setInvoice({ ...invoice, lines: updatedLines });
+        setInvoice({...invoice, lines: updatedLines});
     };
 
     const getSubCategoryOptions = (category, subCategoryKey) => {
@@ -298,7 +321,9 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
                                 type="text"
                                 name={`line-description-${index}`}
                                 value={line.description}
-                                onChange={(e) => { handleInputChange(e, index)} }
+                                onChange={(e) => {
+                                    handleInputChange(e, index)
+                                }}
                                 className="input input-bordered"
                                 required
                             />
