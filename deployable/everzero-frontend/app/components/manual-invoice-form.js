@@ -34,7 +34,7 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
         lines: extractedData?.lines || [],
     }
 
-    const [invoice, setInvoice] = useState(process.env.NODE_ENV === "development" ? testInvoice : baseInvoice)
+    const [invoice, setInvoice] = useState(baseInvoice)
     const [emissionFactors, setEmissionFactors] = useAtom(emissionFactorsAtom)
 
     useEffect(() => {
