@@ -158,11 +158,7 @@
           "Host": "report-service",
           "Port": 80
         }
-      ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "RemoteAuthentication",
-        "AllowedScopes": []
-      }
+      ]
     },
     {
       "UpstreamPathTemplate": "/api/extract",
