@@ -1,5 +1,7 @@
 using Context;
 using Microsoft.EntityFrameworkCore;
+using Monitoring;
+using OpenTelemetry.Trace;
 using QuestPDF.Infrastructure;
 using ReportService.Repositories;
 using ReportService.Repositories.Interfaces;
@@ -8,6 +10,17 @@ using ReportService.Services;
 QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Tracing
+var serviceName = "ReportService";
+var serviceVersion = "1.0.0";
+var zipkinEndpoint = builder.Configuration["Zipkin:Endpoint"];
+builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion, zipkinEndpoint);
+builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
+
+// Configure Logging
+var seqEndpoint = builder.Configuration["Seq:Endpoint"];
+Monitoring.Monitoring.ConfigureLogging(seqEndpoint);
 
 // DbContext
 builder.Services.AddDbContext<AppDbContext>(db => {
