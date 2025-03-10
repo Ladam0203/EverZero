@@ -6,6 +6,7 @@ using EmissionService.Repositories.Interfaces;
 using EmissionService.Services.Interfaces;
 using Messages.DTOs.Emission;
 using MongoDB.Driver.Linq;
+using ILogger = Serilog.ILogger;
 
 namespace EmissionService.Services;
 
@@ -14,10 +15,13 @@ public class EmissionService : IEmissionFactorService
     private readonly IEmissionFactorRepository _repository;
     private readonly IMapper _mapper;
     
-    public EmissionService(IEmissionFactorRepository repository, IMapper mapper)
+    private readonly ILogger _logger;
+    
+    public EmissionService(IEmissionFactorRepository repository, IMapper mapper, ILogger logger)
     {
         _repository = repository;
         _mapper = mapper;
+        _logger = logger;
     }
     
     public async Task<IEnumerable<EmissionFactor>> GetAll()
@@ -47,8 +51,8 @@ public class EmissionService : IEmissionFactorService
         // Check if all invoices belong to the user
         if (invoices.Any(i => i.UserId != userId))
         {
+            _logger.Warning("User with ID {UserId1} tried to calculate emissions for invoices that belong to another user with ID {UserId2}", userId, invoices.First().UserId);
             throw new UnauthorizedAccessException("Calculations can only be done on invoices belonging to the user. Heeey, how did you get them anyway? \ud83e\udd14");
-            // TODO: Log this
         }
 
         // Fetch the emission factors present in the invoices
