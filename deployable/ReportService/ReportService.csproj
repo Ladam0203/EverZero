@@ -19,6 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\library\Context\Context.csproj" />
+      <ProjectReference Include="..\..\library\Monitoring\Monitoring.csproj" />
       <ProjectReference Include="..\..\shared\Domain\Domain.csproj" />
       <ProjectReference Include="..\..\shared\Messages\Messages.csproj" />
     </ItemGroup>

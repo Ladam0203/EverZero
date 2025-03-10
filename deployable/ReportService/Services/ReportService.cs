@@ -4,16 +4,20 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using ReportService.Repositories.Interfaces;
+using ILogger = Serilog.ILogger;
 
 namespace ReportService.Services;
 
 public class ReportService : IReportService
 {
     private readonly IReportRepository _repository;
+    
+    private readonly ILogger _logger;
 
-    public ReportService(IReportRepository repository)
+    public ReportService(IReportRepository repository, ILogger logger)
     {
         _repository = repository;
+        _logger = logger;
     }
 
     public async Task<Report> Create(Guid userId, EmissionCalculationDTO dto)
@@ -21,9 +25,9 @@ public class ReportService : IReportService
         // Validate invoices belong to user
         if (dto.Invoices.Any(i => i.UserId != userId))
         {
+            _logger.Warning("User with ID {UserId1} tried to create a report for invoices that belong to another user with ID {UserId2}", userId, dto.Invoices.First().UserId);
             throw new UnauthorizedAccessException(
                 "Reports can only be made out of invoices belonging to the user. Heeey, how did you get them anyway? \ud83e\udd14");
-            // TODO: Log this
         }
 
         var reportPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "reports");
