@@ -27,4 +27,16 @@ public class InvoiceRepository : IInvoiceRepository
         _context.SaveChanges();
         return Task.FromResult(invoice);
     }
+    
+    public async Task<Guid?> GetEmissionFactorIdBy(string supplierName, string invoiceLineDescription, string unit)
+    {
+        var emissionFactorId = await _context.Invoices
+            .Where(i => i.SupplierName == supplierName)
+            .SelectMany(i => i.Lines
+                .Where(l => l.Description == invoiceLineDescription && l.Unit == unit)
+                .Select(l => l.EmissionFactorId))
+            .FirstOrDefaultAsync();
+
+        return emissionFactorId;
+    }
 }

@@ -6,8 +6,9 @@ namespace EmissionService.Domain;
 public class EmissionFactor
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    //public FactorSource FactorSource { get; set; } // TODO: Implement, this is just extra info, not currently used
+    public EmissionFactorMetadata EmissionFactorMetadata { get; set; }
     public string Category { get; set; } // This is called activity in the UK conversion factors
     public Dictionary<string, string> SubCategories { get; set; }
-    public List<UnitEmissionFactor> UnitEmissionFactors { get; set; }
+    public string Unit { get; set; }
+    public decimal CarbonEmissionKg { get; set; }
 }

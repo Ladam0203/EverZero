@@ -1,4 +1,6 @@
+using Context;
 using EmissionService.Infrastructure;
+using EmissionService.Mappings;
 using EmissionService.Repositories;
 using EmissionService.Repositories.Interfaces;
 using EmissionService.Services;
@@ -7,8 +9,21 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+using Monitoring;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Tracing
+var serviceName = "EmissionService";
+var serviceVersion = "1.0.0";
+var zipkinEndpoint = builder.Configuration["Zipkin:Endpoint"];
+builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion, zipkinEndpoint);
+builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
+
+// Configure Logging
+var seqEndpoint = builder.Configuration["Seq:Endpoint"];
+Monitoring.Monitoring.ConfigureLogging(seqEndpoint);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -29,12 +44,20 @@ builder.Services.AddScoped<DbInitializer>();
 // Repositories
 builder.Services.AddScoped<IEmissionFactorRepository, EmissionFactorRepository>();
 
+// AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 // Services
-builder.Services.AddScoped<IEmissionFactorService, EmissionFactorService>();
+builder.Services.AddScoped<IEmissionFactorService, EmissionService.Services.EmissionService>();
+
+// Request context
+builder.Services.AddScoped<RequestContext>();
 
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+app.UseMiddleware<RequestContextMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

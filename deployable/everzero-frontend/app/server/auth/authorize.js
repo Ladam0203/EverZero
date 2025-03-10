@@ -16,7 +16,7 @@ export async function authorize() {
 
     let response;
     try {
-        response = await fetch(`${process.env.API_URL}/api/authorize`, {
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/authorize`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${authToken.value}`,

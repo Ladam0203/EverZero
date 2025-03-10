@@ -9,7 +9,7 @@ export async function postInvoice(dto) {
     // Parse Date to ISO string
     dto.date = new Date(dto.date).toISOString();
 
-    const API_URL = process.env.API_URL;
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     // Retrieve the JWT token from the cookies
     const token = (await cookies()).get('auth_token');
@@ -23,7 +23,7 @@ export async function postInvoice(dto) {
 
     try {
         const response = await axios.post(
-            `${API_URL}/api/invoices`, // Endpoint to post a new invoice
+            `${API_URL}/invoices`, // Endpoint to post a new invoice
             dto, // Corrected: Send dto as the second argument (request body)
             {  // Corrected: Headers should be passed as the third argument
                 headers: {

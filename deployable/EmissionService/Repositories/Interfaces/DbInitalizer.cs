@@ -35,6 +35,25 @@ namespace EmissionService.Infrastructure
             await _emissionFactors.Database.DropCollectionAsync("emissionfactors");
             await Initialize();
         }
+        
+        /*
+         *                         new EmissionFactorUnit
+               {
+                   Unit = "cubic metres",
+                   CarbonEmissionKg = 2.04542M
+               },
+               new EmissionFactorUnit()
+               {
+                   Unit = "kWh (Net CV)",
+                   CarbonEmissionKg = 0.20264M
+               },
+               new EmissionFactorUnit()
+               {
+                   Unit = "kWh (Gross CV)",
+                   CarbonEmissionKg = 0.1829M
+               }
+           }
+         */
 
         // Example initial data
         private List<EmissionFactor> GetInitialEmissionFactors()
@@ -44,53 +63,99 @@ namespace EmissionService.Infrastructure
                 // Fuels
                 new EmissionFactor
                 {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "Fuels",
+                        Scope = "Scope 1",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
                     Category = "Fuels",
                     SubCategories = new Dictionary<string, string>
                     {
                         { "Activity", "Gaseous fuels" },
                         { "Fuel", "Natural gas" },
                     },
-                    UnitEmissionFactors = new List<UnitEmissionFactor>
+                    Unit = "cubic metres",
+                    CarbonEmissionKg = 2.04542M
+                },
+                new EmissionFactor()
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "Fuels",
+                        Scope = "Scope 1",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "Fuels",
+                    SubCategories = new Dictionary<string, string>
                     {
-                        new UnitEmissionFactor
-                        {
-                            Unit = "tonnes",
-                            CarbonEmissionKg = 2568.16441M
-                        },
-                        new UnitEmissionFactor
-                        {
-                            Unit = "cubic metres",
-                            CarbonEmissionKg = 2.04542M
-                        },
-                        new UnitEmissionFactor()
-                        {
-                            Unit = "kWh (Net CV)",
-                            CarbonEmissionKg = 0.20264M
-                        },
-                        new UnitEmissionFactor()
-                        {
-                            Unit = "kWh (Gross CV)",
-                            CarbonEmissionKg = 0.1829M
-                        }
-                    }
+                        { "Activity", "Gaseous fuels" },
+                        { "Fuel", "Natural gas" },
+                    },
+                    Unit = "kWh (Net CV)",
+                    CarbonEmissionKg = 0.20264M
+                },
+                new EmissionFactor()
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "Fuels",
+                        Scope = "Scope 1",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "Fuels",
+                    SubCategories = new Dictionary<string, string>
+                    {
+                        { "Activity", "Gaseous fuels" },
+                        { "Fuel", "Natural gas" },
+                    },
+                    Unit = "kWh (Gross CV)",
+                    CarbonEmissionKg = 0.1829M
+                },
+                new EmissionFactor
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "Fuels",
+                        Scope = "Scope 1",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "Fuels",
+                    SubCategories = new Dictionary<string, string>
+                    {
+                        { "Activity", "Gaseous fuels" },
+                        { "Fuel", "Natural gas" },
+                    },
+                    Unit = "tonnes",
+                    CarbonEmissionKg = 2568.16441M
                 },
                 // UK Electricity
                 new EmissionFactor
                 {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "UK Electricity",
+                        Scope = "Scope 2",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
                     Category = "UK Electricity",
                     SubCategories = new Dictionary<string, string>
                     {
                         { "Activity", "Electricity generated" },
                         { "Country", "UK" },
                     },
-                    UnitEmissionFactors = new List<UnitEmissionFactor>
-                    {
-                        new UnitEmissionFactor
-                        {
-                            Unit = "kWh",
-                            CarbonEmissionKg = 0.23314M
-                        },
-                    }
+                    Unit = "kWh",
+                    CarbonEmissionKg = 0.20705M
                 },
             };
         }
