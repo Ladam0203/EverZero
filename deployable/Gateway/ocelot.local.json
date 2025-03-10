@@ -174,11 +174,7 @@
           "Host": "localhost",
           "Port": 5180
         }
-      ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "RemoteAuthentication",
-        "AllowedScopes": []
-      }
+      ]
     },
     {
       "UpstreamPathTemplate": "/api/extract",
