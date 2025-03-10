@@ -77,7 +77,7 @@ export const InvoiceForm = ({onSubmit, onCancel}) => {
             console.log("Response from endpoint:", data);
 
             // Set the extracted data
-            setExtractedData(data);
+            setExtractedData(data.data);
 
             // Set the step to "manual"
             setStep("manual");
