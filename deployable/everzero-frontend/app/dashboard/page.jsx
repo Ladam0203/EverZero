@@ -117,6 +117,48 @@ export default function Dashboard() {
             });
     }, [invoices.loading, invoices.loaded, router, setInvoices]);
 
+    const chartOptions = {
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: "bottom", // Move legend to the right (or 'left', 'top', etc.)
+                labels: {
+                    generateLabels: (chart) => {
+                        const { data } = chart;
+                        if (data.labels.length && data.datasets.length) {
+                            return data.labels.map((label, i) => {
+                                const meta = chart.getDatasetMeta(0);
+                                const style = meta.controller.getStyle(i);
+                                return {
+                                    text: label,
+                                    fillStyle: style.backgroundColor,
+                                    strokeStyle: style.borderColor,
+                                    lineWidth: style.borderWidth,
+                                    hidden: !chart.getDataVisibility(i),
+                                    index: i,
+                                    // Add a leader line effect
+                                    lineDash: [5, 5], // Optional: dashed line for visual effect
+                                };
+                            });
+                        }
+                        return [];
+                    },
+                    padding: 20, // Space between legend items
+                    usePointStyle: true, // Use a point style instead of a box
+                },
+            },
+            tooltip: {
+                callbacks: {
+                    label: (context) => {
+                        const label = context.label || "";
+                        const value = context.parsed || 0;
+                        return `${label}: ${value}`;
+                    },
+                },
+            },
+        },
+    };
+
     return (
         <div className="min-h-screen bg-base-200">
             <AppNavbar />
@@ -124,27 +166,11 @@ export default function Dashboard() {
                 <div className="p-6">
                     {/* Overall Scope Emissions Chart */}
                     <div className="bg-white p-4 rounded-lg shadow-md mb-6">
-                        <h2 className="text-lg font-semibold mb-4">Scope Emissions</h2>
+                        <h2 className="text-lg font-semibold mb-4">Scopes</h2>
                         <div className="max-w-[256px] max-h-[256px] mx-auto">
                             <Doughnut
                                 data={overallChartData}
-                                options={{
-                                    maintainAspectRatio: true,
-                                    plugins: {
-                                        legend: {
-                                            position: 'bottom',
-                                        },
-                                        tooltip: {
-                                            callbacks: {
-                                                label: (context) => {
-                                                    const label = context.label || '';
-                                                    const value = context.parsed || 0;
-                                                    return `${label}: ${value}`;
-                                                },
-                                            },
-                                        },
-                                    },
-                                }}
+                                options={chartOptions}
                             />
                         </div>
                     </div>
@@ -153,27 +179,11 @@ export default function Dashboard() {
                     <div className="flex flex-wrap gap-6">
                         {calculation.scopes.map((scope, index) => (
                             <div key={index} className="bg-white p-4 rounded-lg shadow-md">
-                                <h2 className="text-lg font-semibold mb-4">{scope.scope} Activity Emissions</h2>
+                                <h2 className="text-lg font-semibold mb-4">{scope.scope}</h2>
                                 <div className="max-w-[256px] max-h-[256px]">
                                     <Doughnut
                                         data={generateCategoryChartData(scope)}
-                                        options={{
-                                            maintainAspectRatio: true,
-                                            plugins: {
-                                                legend: {
-                                                    position: 'bottom',
-                                                },
-                                                tooltip: {
-                                                    callbacks: {
-                                                        label: (context) => {
-                                                            const label = context.label || '';
-                                                            const value = context.parsed || 0;
-                                                            return `${label}: ${value}`;
-                                                        },
-                                                    },
-                                                },
-                                            },
-                                        }}
+                                        options={chartOptions}
                                     />
                                 </div>
                             </div>
