@@ -21,6 +21,7 @@ builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
 // Configure Logging
 var seqEndpoint = builder.Configuration["Seq:Endpoint"];
 Monitoring.Monitoring.ConfigureLogging(seqEndpoint);
+builder.Services.AddSingleton(Monitoring.Monitoring.Log);
 
 // DbContext
 builder.Services.AddDbContext<AppDbContext>(db => {

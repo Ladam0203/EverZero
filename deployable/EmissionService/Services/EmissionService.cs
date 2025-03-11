@@ -5,7 +5,6 @@ using EmissionService.Domain;
 using EmissionService.Repositories.Interfaces;
 using EmissionService.Services.Interfaces;
 using Messages.DTOs.Emission;
-using MongoDB.Driver.Linq;
 using ILogger = Serilog.ILogger;
 
 namespace EmissionService.Services;
