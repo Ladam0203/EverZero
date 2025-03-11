@@ -91,7 +91,7 @@ public class ReportService : IReportService
 
                     if (dto.Scopes != null && dto.Scopes.Any())
                     {
-                        foreach (var scope in dto.Scopes)
+                        foreach (var scope in dto.Scopes.OrderBy(s => s.Scope))
                         {
                             column.Item().PaddingVertical(10).Column(scopeColumn =>
                             {
@@ -121,7 +121,7 @@ public class ReportService : IReportService
                                             header.Cell().Element(CellStyle).Text("Percentage");
                                         });
 
-                                        foreach (var category in scope.Categories)
+                                        foreach (var category in scope.Categories.OrderBy(c => c.Category))
                                         {
                                             table.Cell().Element(CellStyle).Text(category.Category);
                                             table.Cell().Element(CellStyle).Text($"{category.Emission:F2} units");
