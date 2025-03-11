@@ -6,7 +6,7 @@ import { useAtom } from "jotai";
 import { invoicesAtom } from "@/app/atoms/invoicesAtom";
 import { authorize } from "@/app/server/auth/authorize";
 import { useEffect, useState } from "react";
-import { Pie } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 // Registering the required chart elements
@@ -24,20 +24,15 @@ export default function Dashboard() {
             {
                 data: calculation?.scopes?.map((scope) => scope.emission) || [],
                 backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
+                    '#4768fa',
+                    '#7b92b2',
+                    '#67cba0',
                 ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                ],
-                borderWidth: 1,
+                borderWidth: 0,
                 hoverOffset: 4,
             },
         ],
-    };
+    }
 
     // Function to generate chart data for each scope's categories
     const generateCategoryChartData = (scope) => ({
@@ -46,20 +41,15 @@ export default function Dashboard() {
             {
                 data: scope.categories?.map((category) => category.emission) || [],
                 backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
+                    '#1c92f2',
+                    '#009485',
+                    '#ff9900',
+                    '#ff5724',
+                    '#4768fa',
+                    '#7b92b2',
+                    '#67cba0',
                 ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                ],
-                borderWidth: 1,
+                borderWidth: 0,
                 hoverOffset: 4,
             },
         ],
@@ -136,7 +126,7 @@ export default function Dashboard() {
                     <div className="bg-white p-4 rounded-lg shadow-md mb-6">
                         <h2 className="text-lg font-semibold mb-4">Scope Emissions</h2>
                         <div className="max-w-[256px] max-h-[256px] mx-auto">
-                            <Pie
+                            <Doughnut
                                 data={overallChartData}
                                 options={{
                                     maintainAspectRatio: true,
@@ -165,7 +155,7 @@ export default function Dashboard() {
                             <div key={index} className="bg-white p-4 rounded-lg shadow-md">
                                 <h2 className="text-lg font-semibold mb-4">{scope.scope} Activity Emissions</h2>
                                 <div className="max-w-[256px] max-h-[256px]">
-                                    <Pie
+                                    <Doughnut
                                         data={generateCategoryChartData(scope)}
                                         options={{
                                             maintainAspectRatio: true,
