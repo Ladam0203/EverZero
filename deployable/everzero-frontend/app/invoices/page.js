@@ -3,7 +3,7 @@ import {useEffect, useState} from "react"
 import {getAllInvoices} from "@/app/server/invoice/getAllInvoices"
 import {useAtom} from "jotai"
 import {invoicesAtom} from "@/app/atoms/invoicesAtom"
-import {FaFileInvoiceDollar, FaSpinner, FaPlus, FaExclamationTriangle} from "react-icons/fa"
+import {FaFileInvoiceDollar, FaSpinner, FaPlus, FaExclamationTriangle, FaEllipsisH} from "react-icons/fa"
 import {format} from "date-fns"
 import {InvoiceForm} from "@/app/components/invoice-form"
 import {useRouter} from "next/navigation"
@@ -77,6 +77,29 @@ export default function Invoices() {
             ...prevInvoices,
             invoices: [...prevInvoices.invoices, result.data],
         }))
+
+        console.log("Invoice added successfully:", result.data)
+    }
+
+    const handleDelete = async (invoiceId) => {
+        // Call SSF API to delete the invoice
+        await fetch(`/api/invoices/${invoiceId}`, {
+            method: 'DELETE',
+        }).then((res) => res.json()).then((result) => {
+            if (!result.success) {
+                console.error("Failed to delete invoice")
+                return
+            }
+
+            // Update the invoices list
+            setInvoices((prevInvoices) => ({
+                ...prevInvoices,
+                invoices: prevInvoices.invoices.filter((invoice) => invoice.id !== invoiceId),
+            }))
+
+        }).catch((error) => {
+            console.error("Failed to delete invoice:", error)
+        })
     }
 
     return (
@@ -111,10 +134,29 @@ export default function Invoices() {
                         {invoices.invoices.map((invoice) => (
                             <div key={invoice.id} className="card bg-base-100 shadow-xl">
                                 <div className="card-body">
-                                    <h2 className="card-title flex items-center">
-                                        <FaFileInvoiceDollar className="text-primary mr-2"/>
-                                        {invoice.subject}
-                                    </h2>
+                                    <div className={"flex justify-between items-center mb-4"}>
+                                        <h2 className="card-title flex items-center">
+                                            <FaFileInvoiceDollar className="text-primary mr-2"/>
+                                            {invoice.subject}
+                                        </h2>
+                                        <div className="dropdown dropdown-end">
+                                            <div tabIndex={0} className="btn btn-sm btn-ghost">
+                                                <FaEllipsisH/>
+                                            </div>
+                                            <ul tabIndex={0}
+                                                className="text-sm p-2 shadow menu dropdown-content bg-base-100 rounded-box w-32">
+                                                <li>
+                                                    <span>Edit</span>
+                                                </li>
+                                                <li>
+                                                    <span className="hover:bg-error"
+                                                          onClick={() => handleDelete(invoice.id)}>
+                                                        Delete
+                                                    </span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                     <p>
                                         <strong>Supplier:</strong> {invoice.supplierName}
                                     </p>

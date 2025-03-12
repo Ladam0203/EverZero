@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import axios from "axios";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export async function DELETE(request, { params }) {
     try {
         // Retrieve the JWT token from cookies
@@ -28,8 +30,10 @@ export async function DELETE(request, { params }) {
             },
         });
 
-        return NextResponse.json({ success: true }, { status: 204 });
+        return NextResponse.json({ success: true }, { status: 200 });
     } catch (error) {
+        console.error(error);
+
         if (axios.isAxiosError(error)) {
             const status = error.response?.status;
 
