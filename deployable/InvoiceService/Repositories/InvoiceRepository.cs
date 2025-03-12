@@ -21,11 +21,24 @@ public class InvoiceRepository : IInvoiceRepository
             .ToListAsync();
     }
     
+    public async Task<Invoice> GetById(Guid id)
+    {
+        return await _context.Invoices
+            .Include(i => i.Lines)
+            .FirstOrDefaultAsync(i => i.Id == id) ?? throw new KeyNotFoundException();
+    }
+    
     public Task<Invoice> Create(Invoice invoice)
     {
         _context.Invoices.Add(invoice);
         _context.SaveChanges();
         return Task.FromResult(invoice);
+    }
+    
+    public async Task Delete(Invoice invoice)
+    {
+        _context.Invoices.Remove(invoice);
+        await _context.SaveChangesAsync();
     }
     
     public async Task<Guid?> GetEmissionFactorIdBy(string supplierName, string invoiceLineDescription, string unit)

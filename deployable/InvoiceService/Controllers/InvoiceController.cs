@@ -66,4 +66,28 @@ public class InvoiceController : ControllerBase
         
         return Ok(suggestion);
     }
+    
+    [HttpDelete("invoices/{invoiceId}")]
+    public async Task<IActionResult> DeleteInvoice(Guid invoiceId)
+    {
+        var userId = _requestContext.UserId;
+        if (userId is null) {
+            return Unauthorized("User not authenticated or authorized");
+        }
+
+        try
+        {
+            await _service.Delete((Guid) userId, invoiceId);
+        } 
+        catch (KeyNotFoundException e)
+        {
+            return NotFound();
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            return NotFound(); // Security through obscurity
+        }
+
+        return NoContent();
+    }
 }
