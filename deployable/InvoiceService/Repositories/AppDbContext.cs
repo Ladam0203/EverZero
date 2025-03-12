@@ -15,7 +15,8 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Invoice>()
             .HasMany(i => i.Lines)
             .WithOne(l => l.Invoice)
-            .HasForeignKey(l => l.InvoiceId);
+            .HasForeignKey(l => l.InvoiceId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         base.OnModelCreating(modelBuilder);
     }
