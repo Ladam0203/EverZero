@@ -69,6 +69,22 @@
       }
     },
     {
+      "UpstreamPathTemplate": "/api/invoices/{id}",
+      "UpstreamHttpMethod": [ "Delete" ],
+      "DownstreamPathTemplate": "/invoice/invoices/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "invoice-service",
+          "Port": 80
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
+    },
+    {
       "UpstreamPathTemplate": "/api/invoices/suggestions/emission-factor-id",
       "UpstreamHttpMethod": [ "Get" ],
       "DownstreamPathTemplate": "/invoice/suggestions/emission-factor-id",
