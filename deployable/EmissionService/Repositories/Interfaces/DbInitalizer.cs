@@ -35,25 +35,6 @@ namespace EmissionService.Infrastructure
             await _emissionFactors.Database.DropCollectionAsync("emissionfactors");
             await Initialize();
         }
-        
-        /*
-         *                         new EmissionFactorUnit
-               {
-                   Unit = "cubic metres",
-                   CarbonEmissionKg = 2.04542M
-               },
-               new EmissionFactorUnit()
-               {
-                   Unit = "kWh (Net CV)",
-                   CarbonEmissionKg = 0.20264M
-               },
-               new EmissionFactorUnit()
-               {
-                   Unit = "kWh (Gross CV)",
-                   CarbonEmissionKg = 0.1829M
-               }
-           }
-         */
 
         // Example initial data
         private List<EmissionFactor> GetInitialEmissionFactors()
@@ -61,6 +42,8 @@ namespace EmissionService.Infrastructure
             return new List<EmissionFactor>
             {
                 // Fuels
+                // Gaseous fuels
+                // Natural gas
                 new EmissionFactor
                 {
                     EmissionFactorMetadata = new EmissionFactorMetadata() {
@@ -136,6 +119,86 @@ namespace EmissionService.Infrastructure
                     },
                     Unit = "tonnes",
                     CarbonEmissionKg = 2568.16441M
+                },
+                // Bioenergy
+                // Biogas
+                // Biogas
+                new EmissionFactor
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "Bioenergy",
+                        Scope = "Scope 1",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "Bioenergy",
+                    SubCategories = new Dictionary<string, string>
+                    {
+                        { "Activity", "Biogas" },
+                        { "Fuel", "Biogas" },
+                    },
+                    Unit = "tonnes",
+                    CarbonEmissionKg = 1.26431M
+                },
+                new EmissionFactor
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "Bioenergy",
+                        Scope = "Scope 1",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "Bioenergy",
+                    SubCategories = new Dictionary<string, string>
+                    {
+                        { "Activity", "Biogas" },
+                        { "Fuel", "Biogas" },
+                    },
+                    Unit = "kWh",
+                    CarbonEmissionKg = 0.00023M
+                },
+                // Landfill gas
+                new EmissionFactor()
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "Bioenergy",
+                        Scope = "Scope 1",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "Bioenergy",
+                    SubCategories = new Dictionary<string, string>
+                    {
+                        { "Activity", "Biogas" },
+                        { "Fuel", "Landfill gas" },
+                    },
+                    Unit = "tonnes",
+                    CarbonEmissionKg = 0.69619M
+                },
+                new EmissionFactor()
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "Bioenergy",
+                        Scope = "Scope 1",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "Bioenergy",
+                    SubCategories = new Dictionary<string, string>
+                    {
+                        { "Activity", "Biogas" },
+                        { "Fuel", "Landfill gas" },
+                    },
+                    Unit = "kWh",
+                    CarbonEmissionKg = 0.0002M
                 },
                 // UK Electricity
                 new EmissionFactor
