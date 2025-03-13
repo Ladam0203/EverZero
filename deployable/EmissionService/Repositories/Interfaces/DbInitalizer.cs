@@ -220,6 +220,91 @@ namespace EmissionService.Infrastructure
                     Unit = "kWh",
                     CarbonEmissionKg = 0.20705M
                 },
+                // UK Electricity for EVs
+                // Cars (by size)
+                // Small car
+                // Plug-in Hybrid Electric Vehicle
+                new EmissionFactor
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "UK Electricity for EVs",
+                        Scope = "Scope 2",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "UK Electricity for EVs",
+                    SubCategories = new Dictionary<string, string>
+                    {
+                        { "Activity", "Cars (by size)" },
+                        { "Type", "Small car" },
+                        { "Powertrain", "Plug-in Hybrid Electric Vehicle" },
+                    },
+                    Unit = "km",
+                    CarbonEmissionKg = 0.02817M
+                },
+                new EmissionFactor
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "UK Electricity for EVs",
+                        Scope = "Scope 2",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "UK Electricity for EVs",
+                    SubCategories = new Dictionary<string, string>
+                    {
+                        { "Activity", "Cars (by size)" },
+                        { "Type", "Small car" },
+                        { "Powertrain", "Plug-in Hybrid Electric Vehicle" },
+                    },
+                    Unit = "miles",
+                    CarbonEmissionKg = 0.04533M
+                },
+                // Battery Electric Vehicle
+                new EmissionFactor
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "UK Electricity for EVs",
+                        Scope = "Scope 2",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "UK Electricity for EVs",
+                    SubCategories = new Dictionary<string, string>
+                    {
+                        { "Activity", "Cars (by size)" },
+                        { "Type", "Small car" },
+                        { "Powertrain", "Battery Electric Vehicle" },
+                    },
+                    Unit = "km",
+                    CarbonEmissionKg = 0.03937M
+                },
+                new EmissionFactor
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "UK Electricity for EVs",
+                        Scope = "Scope 2",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "UK Electricity for EVs",
+                    SubCategories = new Dictionary<string, string>
+                    {
+                        { "Activity", "Cars (by size)" },
+                        { "Type", "Small car" },
+                        { "Powertrain", "Battery Electric Vehicle" },
+                    },
+                    Unit = "miles",
+                    CarbonEmissionKg = 0.06334M
+                },
             };
         }
     }
