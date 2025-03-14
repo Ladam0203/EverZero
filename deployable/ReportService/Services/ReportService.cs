@@ -1,5 +1,6 @@
 using Domain;
 using Domain.Emission;
+using Messages.DTOs.Report;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -11,7 +12,7 @@ namespace ReportService.Services;
 public class ReportService : IReportService
 {
     private readonly IReportRepository _repository;
-    
+
     private readonly ILogger _logger;
 
     public ReportService(IReportRepository repository, ILogger logger)
@@ -20,12 +21,16 @@ public class ReportService : IReportService
         _logger = logger;
     }
 
-    public async Task<Report> Create(Guid userId, EmissionCalculationDTO dto)
+    public async Task<Report> Create(Guid userId, PostReportDTO dto)
     {
+        var emissionCalculation = dto.EmissionCalculation;
+
         // Validate invoices belong to user
-        if (dto.Invoices.Any(i => i.UserId != userId))
+        if (emissionCalculation.Invoices.Any(i => i.UserId != userId))
         {
-            _logger.Warning("User with ID {UserId1} tried to create a report for invoices that belong to another user with ID {UserId2}", userId, dto.Invoices.First().UserId);
+            _logger.Warning(
+                "User with ID {UserId1} tried to create a report for invoices that belong to another user with ID {UserId2}",
+                userId, dto.Invoices.First().UserId);
             throw new UnauthorizedAccessException(
                 "Reports can only be made out of invoices belonging to the user. Heeey, how did you get them anyway? \ud83e\udd14");
         }
@@ -36,7 +41,7 @@ public class ReportService : IReportService
         var fileName = $"Report-{userId}-{DateTime.Now:yyyyMMddHHmmss}.pdf";
         var filePath = Path.Combine(reportPath, fileName);
 
-        var invoiceDates = dto.Invoices.Select(i => i.Date);
+        var invoiceDates = emissionCalculation.Invoices.Select(i => i.Date);
         var startDate = invoiceDates.Min();
         var endDate = invoiceDates.Max();
         var periodString = invoiceDates.Any()
@@ -76,10 +81,10 @@ public class ReportService : IReportService
                         });
 
                         table.Cell().Element(CellStyle).Text("Total Invoices");
-                        table.Cell().Element(CellStyle).Text(dto.Invoices.Count().ToString());
+                        table.Cell().Element(CellStyle).Text(emissionCalculation.Invoices.Count().ToString());
 
                         table.Cell().Element(CellStyle).Text("Total Emission");
-                        table.Cell().Element(CellStyle).Text($"{dto.TotalEmission:F2} units");
+                        table.Cell().Element(CellStyle).Text($"{emissionCalculation.TotalEmission:F2} units");
 
                         table.Cell().Element(CellStyle).Text("Period");
                         table.Cell().Element(CellStyle).Text(periodString);
@@ -89,9 +94,9 @@ public class ReportService : IReportService
                     column.Item().PaddingTop(20).Text("Emissions by Scope and Category")
                         .FontSize(16).Bold().FontColor(Colors.Black);
 
-                    if (dto.Scopes != null && dto.Scopes.Any())
+                    if (emissionCalculation.Scopes != null && emissionCalculation.Scopes.Any())
                     {
-                        foreach (var scope in dto.Scopes.OrderBy(s => s.Scope))
+                        foreach (var scope in emissionCalculation.Scopes.OrderBy(s => s.Scope))
                         {
                             column.Item().PaddingVertical(10).Column(scopeColumn =>
                             {
@@ -139,85 +144,90 @@ public class ReportService : IReportService
                     }
 
                     // Invoices Details Section
-                    column.Item().PaddingTop(20).Text("Invoice Details")
-                        .FontSize(16).Bold().FontColor(Colors.Black);
 
-                    foreach (var invoice in dto.Invoices)
+                    if (dto.ShouldIncludePerInvoiceEmissionDetails)
                     {
-                        column.Item().PaddingVertical(10).Border(1).BorderColor(Colors.Grey.Medium).Padding(10).Column(
-                            invoiceColumn =>
-                            {
-                                // Invoice Header
-                                invoiceColumn.Item().Text($"Invoice: {invoice.Subject}")
-                                    .FontSize(14).Bold();
+                        column.Item().PaddingTop(20).Text("Invoice Details")
+                            .FontSize(16).Bold().FontColor(Colors.Black);
 
-                                invoiceColumn.Item().PaddingTop(5).Table(table =>
-                                {
-                                    table.ColumnsDefinition(columns =>
+                        foreach (var invoice in emissionCalculation.Invoices)
+                        {
+                            column.Item().PaddingVertical(10).Border(1).BorderColor(Colors.Grey.Medium).Padding(10)
+                                .Column(
+                                    invoiceColumn =>
                                     {
-                                        columns.RelativeColumn(2);
-                                        columns.RelativeColumn(2);
-                                        columns.RelativeColumn(1);
-                                    });
+                                        // Invoice Header
+                                        invoiceColumn.Item().Text($"Invoice: {invoice.Subject}")
+                                            .FontSize(14).Bold();
 
-                                    table.Header(header =>
-                                    {
-                                        header.Cell().Element(CellStyle).Text("Field");
-                                        header.Cell().Element(CellStyle).Text("Details");
-                                        header.Cell().Element(CellStyle).Text("Emission");
-                                    });
-
-                                    table.Cell().Element(CellStyle).Text("Supplier");
-                                    table.Cell().Element(CellStyle).Text(invoice.SupplierName);
-                                    table.Cell().Element(CellStyle).Text("");
-
-                                    table.Cell().Element(CellStyle).Text("Buyer");
-                                    table.Cell().Element(CellStyle).Text(invoice.BuyerName);
-                                    table.Cell().Element(CellStyle).Text("");
-
-                                    table.Cell().Element(CellStyle).Text("Date");
-                                    table.Cell().Element(CellStyle).Text(invoice.Date.ToString("yyyy-MM-dd"));
-                                    table.Cell().Element(CellStyle).Text("");
-
-                                    table.Cell().Element(CellStyle).Text("Total Emission");
-                                    table.Cell().Element(CellStyle).Text("");
-                                    table.Cell().Element(CellStyle).Text($"{invoice.Emission:F2}");
-                                });
-
-                                // Invoice Lines
-                                if (invoice.Lines.Any())
-                                {
-                                    invoiceColumn.Item().PaddingTop(10).Text("Invoice Lines")
-                                        .FontSize(12).Bold();
-
-                                    invoiceColumn.Item().Table(table =>
-                                    {
-                                        table.ColumnsDefinition(columns =>
+                                        invoiceColumn.Item().PaddingTop(5).Table(table =>
                                         {
-                                            columns.RelativeColumn(2);
-                                            columns.RelativeColumn(1);
-                                            columns.RelativeColumn(1);
-                                            columns.RelativeColumn(1);
+                                            table.ColumnsDefinition(columns =>
+                                            {
+                                                columns.RelativeColumn(2);
+                                                columns.RelativeColumn(2);
+                                                columns.RelativeColumn(1);
+                                            });
+
+                                            table.Header(header =>
+                                            {
+                                                header.Cell().Element(CellStyle).Text("Field");
+                                                header.Cell().Element(CellStyle).Text("Details");
+                                                header.Cell().Element(CellStyle).Text("Emission");
+                                            });
+
+                                            table.Cell().Element(CellStyle).Text("Supplier");
+                                            table.Cell().Element(CellStyle).Text(invoice.SupplierName);
+                                            table.Cell().Element(CellStyle).Text("");
+
+                                            table.Cell().Element(CellStyle).Text("Buyer");
+                                            table.Cell().Element(CellStyle).Text(invoice.BuyerName);
+                                            table.Cell().Element(CellStyle).Text("");
+
+                                            table.Cell().Element(CellStyle).Text("Date");
+                                            table.Cell().Element(CellStyle).Text(invoice.Date.ToString("yyyy-MM-dd"));
+                                            table.Cell().Element(CellStyle).Text("");
+
+                                            table.Cell().Element(CellStyle).Text("Total Emission");
+                                            table.Cell().Element(CellStyle).Text("");
+                                            table.Cell().Element(CellStyle).Text($"{invoice.Emission:F2}");
                                         });
 
-                                        table.Header(header =>
+                                        // Invoice Lines
+                                        if (invoice.Lines.Any())
                                         {
-                                            header.Cell().Element(CellStyle).Text("Description");
-                                            header.Cell().Element(CellStyle).Text("Quantity");
-                                            header.Cell().Element(CellStyle).Text("Unit");
-                                            header.Cell().Element(CellStyle).Text("Emission");
-                                        });
+                                            invoiceColumn.Item().PaddingTop(10).Text("Invoice Lines")
+                                                .FontSize(12).Bold();
 
-                                        foreach (var line in invoice.Lines)
-                                        {
-                                            table.Cell().Element(CellStyle).Text(line.Description);
-                                            table.Cell().Element(CellStyle).Text(line.Quantity.ToString("F2"));
-                                            table.Cell().Element(CellStyle).Text(line.Unit);
-                                            table.Cell().Element(CellStyle).Text($"{line.Emission:F2}");
+                                            invoiceColumn.Item().Table(table =>
+                                            {
+                                                table.ColumnsDefinition(columns =>
+                                                {
+                                                    columns.RelativeColumn(2);
+                                                    columns.RelativeColumn(1);
+                                                    columns.RelativeColumn(1);
+                                                    columns.RelativeColumn(1);
+                                                });
+
+                                                table.Header(header =>
+                                                {
+                                                    header.Cell().Element(CellStyle).Text("Description");
+                                                    header.Cell().Element(CellStyle).Text("Quantity");
+                                                    header.Cell().Element(CellStyle).Text("Unit");
+                                                    header.Cell().Element(CellStyle).Text("Emission");
+                                                });
+
+                                                foreach (var line in invoice.Lines)
+                                                {
+                                                    table.Cell().Element(CellStyle).Text(line.Description);
+                                                    table.Cell().Element(CellStyle).Text(line.Quantity.ToString("F2"));
+                                                    table.Cell().Element(CellStyle).Text(line.Unit);
+                                                    table.Cell().Element(CellStyle).Text($"{line.Emission:F2}");
+                                                }
+                                            });
                                         }
                                     });
-                                }
-                            });
+                        }
                     }
                 });
 
@@ -250,8 +260,8 @@ public class ReportService : IReportService
         {
             UserId = userId,
             Path = path,
-            TotalInvoices = dto.Invoices.Count(),
-            TotalEmission = dto.TotalEmission,
+            TotalInvoices = emissionCalculation.Invoices.Count(),
+            TotalEmission = emissionCalculation.TotalEmission,
             StartDate = startDate,
             EndDate = endDate
         };
