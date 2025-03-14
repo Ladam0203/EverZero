@@ -305,6 +305,47 @@ namespace EmissionService.Infrastructure
                     Unit = "miles",
                     CarbonEmissionKg = 0.06334M
                 },
+                // Scope 3
+                // Water supply
+                // Water supply
+                new EmissionFactor
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "Water supply",
+                        Scope = "Scope 3",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "Water supply",
+                    SubCategories = new Dictionary<string, string>
+                    {
+                        { "Activity", "Water supply" },
+                        { "Type", "Water supply" },
+                    },
+                    Unit = "cubic metres",
+                    CarbonEmissionKg = 0.15311M
+                },
+                new EmissionFactor
+                {
+                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                        EmissionSource = "Water supply",
+                        Scope = "Scope 3",
+                        NextPublicationDate = DateTime.Parse("2025-10-06"),
+                        Version = "1.1",
+                        FactorSet = "Condensed set",
+                        Year = "2024"
+                    },
+                    Category = "Water supply",
+                    SubCategories = new Dictionary<string, string>
+                    {
+                        { "Activity", "Water supply" },
+                        { "Type", "Water supply" },
+                    },
+                    Unit = "million litres",
+                    CarbonEmissionKg = 153.10865M
+                },
             };
         }
     }
