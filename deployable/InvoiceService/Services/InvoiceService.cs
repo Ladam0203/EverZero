@@ -2,6 +2,7 @@ using AutoMapper;
 using Domain;
 using InvoiceService.Core;
 using InvoiceService.Core.DTOs;
+using InvoiceService.Repositories.Interfaces;
 using InvoiceService.Repository;
 using ILogger = Serilog.ILogger;
 
@@ -21,9 +22,13 @@ public class InvoiceService : IInvoiceService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<InvoiceDTO>> GetAllByUserId(Guid userId)
+    public async Task<IEnumerable<InvoiceDTO>> GetAllByUserId(Guid userId, DateTime startDate, DateTime endDate)
     {
-        var invoices = await _invoiceRepository.GetAllByUserId(userId);
+        if (startDate > endDate) {
+            throw new ArgumentException("Start date must be before end date");
+        }
+        
+        var invoices = await _invoiceRepository.GetAllByUserId(userId, startDate, endDate);
         
         var invoiceDTOs = invoices.Select(i => _mapper.Map<InvoiceDTO>(i));
         

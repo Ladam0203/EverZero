@@ -1,8 +1,10 @@
 using InvoiceService.Core;
+using InvoiceService.Repositories.Interfaces;
+using InvoiceService.Repository;
 using InvoiceService.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace InvoiceService.Repository;
+namespace InvoiceService.Repositories;
 
 public class InvoiceRepository : IInvoiceRepository
 {
@@ -13,10 +15,13 @@ public class InvoiceRepository : IInvoiceRepository
         _context = context;
     }
     
-    public async Task<IEnumerable<Invoice>> GetAllByUserId(Guid userId)
+    public async Task<IEnumerable<Invoice>> GetAllByUserId(Guid userId, DateTime startDate, DateTime endDate)
     {
+        var utcStartDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
+        var utcEndDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
+
         return await _context.Invoices
-            .Where(i => i.UserId == userId)
+            .Where(i => i.UserId == userId && i.Date >= utcStartDate && i.Date <= utcEndDate)
             .Include(i => i.Lines)
             .ToListAsync();
     }
