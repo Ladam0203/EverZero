@@ -32,8 +32,8 @@ public class InvoiceController : ControllerBase
             return Unauthorized("User not authenticated or authorized");
         }
         
-        // Adjust startDate to the beginning of the day if provided
-        startDate = startDate?.Date ?? DateTime.MinValue;
+        // Adjust startDate to the beginning of the day if provided, otherwise beginning of year
+        startDate = startDate?.Date ?? new DateTime(DateTime.Now.Year, 1, 1);
 
         // Adjust endDate to the end of the day if provided
         endDate = endDate?.Date.AddDays(1).AddTicks(-1) ?? DateTime.MaxValue;
