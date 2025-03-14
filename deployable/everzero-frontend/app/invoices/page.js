@@ -3,7 +3,14 @@ import {useEffect, useState} from "react"
 import {getAllInvoices} from "@/app/server/invoice/getAllInvoices"
 import {useAtom} from "jotai"
 import {invoicesAtom} from "@/app/atoms/invoicesAtom"
-import {FaFileInvoiceDollar, FaSpinner, FaPlus, FaExclamationTriangle, FaEllipsisH} from "react-icons/fa"
+import {
+    FaFileInvoiceDollar,
+    FaSpinner,
+    FaPlus,
+    FaExclamationTriangle,
+    FaEllipsisH,
+    FaRegCalendarAlt
+} from "react-icons/fa"
 import {format} from "date-fns"
 import {InvoiceForm} from "@/app/components/invoice-form"
 import {useRouter} from "next/navigation"
@@ -202,7 +209,10 @@ export default function Invoices() {
             />
             <div className="modal">
                 <div className="modal-box w-11/12 max-w-5xl">
-                    <h3 className="font-bold text-lg mb-4">Add New Invoice</h3>
+                    <div className="modal-header flex items-center gap-2 mb-4">
+                        <FaFileInvoiceDollar className="text-primary"/>
+                        <h3 className="text-lg font-bold">New Invoice</h3>
+                    </div>
                     <InvoiceForm onSubmit={handleSubmit} onCancel={() => setIsModalOpen(false)}/>
                 </div>
             </div>

@@ -12,6 +12,7 @@ import { getAllReports } from "@/app/server/report/getAllReports"
 import { calculateEmission } from "@/app/server/emission/calculateEmission"
 import { createReport } from "@/app/server/report/createReport"
 import AppNavbar from "@/app/components/AppNavbar"
+import CreateReportModal from "@/app/components/create-report-modal";
 
 export default function Reports() {
     const router = useRouter()
@@ -130,6 +131,11 @@ export default function Reports() {
         window.open(`${process.env.NEXT_PUBLIC_API_URL}/${reportPath}`)
     }
 
+    const openCreateReportModal = () => {
+        const modal = document.getElementById("create_report_modal")
+        modal.showModal()
+    }
+
     return (
         <div className="min-h-screen bg-base-200">
             <AppNavbar />
@@ -137,7 +143,7 @@ export default function Reports() {
             <section className="p-8">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-4xl font-bold">Reports</h1>
-                    <button className="btn btn-primary" onClick={handleCreateReport}>
+                    <button className="btn btn-primary" onClick={openCreateReportModal}>
                         <FaPlus className="mr-2" /> Create Report
                     </button>
                 </div>
@@ -186,6 +192,8 @@ export default function Reports() {
                     </div>
                 )}
             </section>
+
+            <CreateReportModal />
         </div>
     )
 }

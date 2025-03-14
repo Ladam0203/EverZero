@@ -1,5 +1,6 @@
 using Context;
 using Domain.Emission;
+using Messages.DTOs.Report;
 using Microsoft.AspNetCore.Mvc;
 using ReportService.Services;
 
@@ -20,7 +21,7 @@ public class ReportController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<IActionResult> CreateReport([FromBody] EmissionCalculationDTO dto)
+    public async Task<IActionResult> CreateReport([FromBody] PostReportDTO dto)
     {
         var userId = _requestContext.UserId;
         if (userId is null) {
