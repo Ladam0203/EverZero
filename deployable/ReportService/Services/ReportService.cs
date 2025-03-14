@@ -30,7 +30,7 @@ public class ReportService : IReportService
         {
             _logger.Warning(
                 "User with ID {UserId1} tried to create a report for invoices that belong to another user with ID {UserId2}",
-                userId, dto.Invoices.First().UserId);
+                userId, emissionCalculation.Invoices.First().UserId);
             throw new UnauthorizedAccessException(
                 "Reports can only be made out of invoices belonging to the user. Heeey, how did you get them anyway? \ud83e\udd14");
         }

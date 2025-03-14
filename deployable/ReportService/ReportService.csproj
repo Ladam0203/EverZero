@@ -24,4 +24,9 @@
       <ProjectReference Include="..\..\shared\Messages\Messages.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\reports\Report-04f5c4ee-fffa-471e-bfc4-4cd40570b160-20250309202956.pdf" />
+      <_ContentIncludedByDefault Remove="wwwroot\reports\Report-04f5c4ee-fffa-471e-bfc4-4cd40570b160-20250309204513.pdf" />
+    </ItemGroup>
+
 </Project>

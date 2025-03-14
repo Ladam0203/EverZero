@@ -95,38 +95,6 @@ export default function Reports() {
             })
     }, [invoices.loading, invoices.loaded, reports.loading, reports.loaded, setInvoices, setReports, router])
 
-    const handleCreateReport = async () => {
-        const dto = invoices.invoices
-        console.log("Creating report with DTO:", dto)
-
-        // Get the emission calculation result
-        const calculationResponse = await calculateEmission(dto)
-        if (!calculationResponse.success) {
-            console.error("Failed to calculate emission:", calculationResponse.message)
-            return
-        }
-        const calculation = calculationResponse.data
-        console.log("Emission calculation result:", calculation)
-
-        // Create a PDF report
-        const reportResponse = await createReport(calculation)
-        if (!reportResponse.success) {
-            console.error("Failed to generate report:", reportResponse.message)
-            return
-        }
-        const report = reportResponse.data
-        console.log("Generated report:", report)
-
-        // Add the new report to the reports list
-        setReports((prev) => ({
-            ...prev,
-            reports: [...prev.reports, report],
-        }))
-
-        // Open the report in a new tab
-        window.open(`${process.env.NEXT_PUBLIC_API_URL}/${report.path}`)
-    }
-
     const handleViewReport = (reportPath) => {
         window.open(`${process.env.NEXT_PUBLIC_API_URL}/${reportPath}`)
     }
