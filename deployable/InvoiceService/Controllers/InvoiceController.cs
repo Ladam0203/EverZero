@@ -25,16 +25,32 @@ public class InvoiceController : ControllerBase
     }
     
     [HttpGet("invoices")]
-    public async Task<IActionResult> GetInvoices()
+    public async Task<IActionResult> GetInvoices([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
     {
         var userId = _requestContext.UserId;
         if (userId is null) {
             return Unauthorized("User not authenticated or authorized");
         }
         
-        var invoices = await _service.GetAllByUserId((Guid) userId);
-        
-        return Ok(invoices);
+        // Adjust startDate to the beginning of the day if provided
+        startDate = startDate?.Date ?? DateTime.MinValue;
+
+        // Adjust endDate to the end of the day if provided
+        endDate = endDate?.Date.AddDays(1).AddTicks(-1) ?? DateTime.MaxValue;
+
+        try
+        {
+            var invoices = await _service.GetAllByUserId((Guid) userId, (DateTime) startDate, (DateTime) endDate);
+            return Ok(invoices);
+        }
+        catch (ArgumentException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
     }
     
     [HttpPost("invoices")]

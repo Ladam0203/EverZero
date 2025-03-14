@@ -1,4 +1,5 @@
 using Domain.Suggestions;
+using InvoiceService.Repositories.Interfaces;
 using InvoiceService.Repository;
 using InvoiceService.Services.Interfaces;
 

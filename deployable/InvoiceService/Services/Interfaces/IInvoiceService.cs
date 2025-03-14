@@ -6,9 +6,7 @@ namespace InvoiceService.Services;
 
 public interface IInvoiceService
 {
-    Task<IEnumerable<InvoiceDTO>> GetAllByUserId(Guid userId);
+    Task<IEnumerable<InvoiceDTO>> GetAllByUserId(Guid userId, DateTime startDate, DateTime endDate);
     Task<InvoiceDTO> Create(Guid userId, PostInvoiceDTO invoice);
     Task Delete(Guid userId, Guid id);
-    //Task<Invoice> GetInvoice(Guid id);
-    //Task<Invoice> UpdateInvoice(Invoice invoice);
 }

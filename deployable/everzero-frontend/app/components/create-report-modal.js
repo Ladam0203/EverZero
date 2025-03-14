@@ -16,8 +16,8 @@ export default function CreateReportModal() {
     const handleCreateReport = async (e) => {
         e.preventDefault(); // Prevent the form from reloading the page
 
-        // Fetch the invoices (TODO: In time range)
-        const response = await fetch('/api/invoices')
+        // Fetch the invoices
+        const response = await fetch('/api/invoices?startDate=' + startDate + '&endDate=' + endDate)
         if (!response.ok) {
             console.error("Failed to fetch invoices:", response.statusText)
             return

@@ -17,7 +17,7 @@ axiosRetry(axios, {
 });
 
 // GET handler for the API route
-export async function GET() {
+export async function GET(request) {
     try {
         // Retrieve the JWT token from cookies
         const cookieStore = await cookies();
@@ -33,8 +33,19 @@ export async function GET() {
             );
         }
 
+        const startDate = request.nextUrl.searchParams.get('startDate');
+        const endDate = request.nextUrl.searchParams.get('endDate');
+
+        let url = `${API_URL}/invoices`;
+        if (startDate) {
+            url += `?startDate=${startDate}`;
+        }
+        if (endDate) {
+            url += `${startDate ? '&' : '?'}endDate=${endDate}`;
+        }
+
         // Make the API call with axios
-        const response = await axios.get(`${API_URL}/invoices`, {
+        const response = await axios.get(url, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token.value}`,
@@ -49,6 +60,8 @@ export async function GET() {
             { status: 200 }
         );
     } catch (error) {
+        console.error(error);
+
         // Handle specific error cases
         if (error.response?.status === 401) {
             return NextResponse.json(
