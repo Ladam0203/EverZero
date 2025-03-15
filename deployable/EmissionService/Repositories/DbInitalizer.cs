@@ -46,7 +46,9 @@ namespace EmissionService.Infrastructure
                 // Natural gas
                 new EmissionFactor
                 {
-                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                    Id = Guid.Parse("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
+                    EmissionFactorMetadata = new EmissionFactorMetadata()
+                    {
                         EmissionSource = "Fuels",
                         Scope = "Scope 1",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -65,7 +67,9 @@ namespace EmissionService.Infrastructure
                 },
                 new EmissionFactor()
                 {
-                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                    Id = Guid.Parse("550e8400-e29b-41d4-a716-446655440000"),
+                    EmissionFactorMetadata = new EmissionFactorMetadata()
+                    {
                         EmissionSource = "Fuels",
                         Scope = "Scope 1",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -84,7 +88,9 @@ namespace EmissionService.Infrastructure
                 },
                 new EmissionFactor()
                 {
-                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                    Id = Guid.Parse("6ba7b810-9dad-11d1-80b4-00c04fd430c8"),
+                    EmissionFactorMetadata = new EmissionFactorMetadata()
+                    {
                         EmissionSource = "Fuels",
                         Scope = "Scope 1",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -103,7 +109,9 @@ namespace EmissionService.Infrastructure
                 },
                 new EmissionFactor
                 {
-                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                    Id = Guid.Parse("6ba7b811-9dad-11d1-80b4-00c04fd430c8"),
+                    EmissionFactorMetadata = new EmissionFactorMetadata()
+                    {
                         EmissionSource = "Fuels",
                         Scope = "Scope 1",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -122,10 +130,11 @@ namespace EmissionService.Infrastructure
                 },
                 // Bioenergy
                 // Biogas
-                // Biogas
                 new EmissionFactor
                 {
-                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                    Id = Guid.Parse("6ba7b812-9dad-11d1-80b4-00c04fd430c8"),
+                    EmissionFactorMetadata = new EmissionFactorMetadata()
+                    {
                         EmissionSource = "Bioenergy",
                         Scope = "Scope 1",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -144,7 +153,9 @@ namespace EmissionService.Infrastructure
                 },
                 new EmissionFactor
                 {
-                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                    Id = Guid.Parse("6ba7b813-9dad-11d1-80b4-00c04fd430c8"),
+                    EmissionFactorMetadata = new EmissionFactorMetadata()
+                    {
                         EmissionSource = "Bioenergy",
                         Scope = "Scope 1",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -164,7 +175,9 @@ namespace EmissionService.Infrastructure
                 // Landfill gas
                 new EmissionFactor()
                 {
-                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                    Id = Guid.Parse("6ba7b814-9dad-11d1-80b4-00c04fd430c8"),
+                    EmissionFactorMetadata = new EmissionFactorMetadata()
+                    {
                         EmissionSource = "Bioenergy",
                         Scope = "Scope 1",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -183,7 +196,9 @@ namespace EmissionService.Infrastructure
                 },
                 new EmissionFactor()
                 {
-                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                    Id = Guid.Parse("6ba7b815-9dad-11d1-80b4-00c04fd430c8"),
+                    EmissionFactorMetadata = new EmissionFactorMetadata()
+                    {
                         EmissionSource = "Bioenergy",
                         Scope = "Scope 1",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -203,7 +218,9 @@ namespace EmissionService.Infrastructure
                 // UK Electricity
                 new EmissionFactor
                 {
-                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                    Id = Guid.Parse("6ba7b816-9dad-11d1-80b4-00c04fd430c8"),
+                    EmissionFactorMetadata = new EmissionFactorMetadata()
+                    {
                         EmissionSource = "UK Electricity",
                         Scope = "Scope 2",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -226,7 +243,9 @@ namespace EmissionService.Infrastructure
                 // Plug-in Hybrid Electric Vehicle
                 new EmissionFactor
                 {
-                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                    Id = Guid.Parse("6ba7b817-9dad-11d1-80b4-00c04fd430c8"),
+                    EmissionFactorMetadata = new EmissionFactorMetadata()
+                    {
                         EmissionSource = "UK Electricity for EVs",
                         Scope = "Scope 2",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -246,7 +265,9 @@ namespace EmissionService.Infrastructure
                 },
                 new EmissionFactor
                 {
-                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                    Id = Guid.Parse("6ba7b818-9dad-11d1-80b4-00c04fd430c8"),
+                    EmissionFactorMetadata = new EmissionFactorMetadata()
+                    {
                         EmissionSource = "UK Electricity for EVs",
                         Scope = "Scope 2",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -267,7 +288,9 @@ namespace EmissionService.Infrastructure
                 // Battery Electric Vehicle
                 new EmissionFactor
                 {
-                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                    Id = Guid.Parse("6ba7b819-9dad-11d1-80b4-00c04fd430c8"),
+                    EmissionFactorMetadata = new EmissionFactorMetadata()
+                    {
                         EmissionSource = "UK Electricity for EVs",
                         Scope = "Scope 2",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -287,7 +310,9 @@ namespace EmissionService.Infrastructure
                 },
                 new EmissionFactor
                 {
-                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                    Id = Guid.Parse("6ba7b81a-9dad-11d1-80b4-00c04fd430c8"),
+                    EmissionFactorMetadata = new EmissionFactorMetadata()
+                    {
                         EmissionSource = "UK Electricity for EVs",
                         Scope = "Scope 2",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -307,10 +332,11 @@ namespace EmissionService.Infrastructure
                 },
                 // Scope 3
                 // Water supply
-                // Water supply
                 new EmissionFactor
                 {
-                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                    Id = Guid.Parse("6ba7b81b-9dad-11d1-80b4-00c04fd430c8"),
+                    EmissionFactorMetadata = new EmissionFactorMetadata()
+                    {
                         EmissionSource = "Water supply",
                         Scope = "Scope 3",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
@@ -329,7 +355,9 @@ namespace EmissionService.Infrastructure
                 },
                 new EmissionFactor
                 {
-                    EmissionFactorMetadata = new EmissionFactorMetadata() {
+                    Id = Guid.Parse("6ba7b81c-9dad-11d1-80b4-00c04fd430c8"),
+                    EmissionFactorMetadata = new EmissionFactorMetadata()
+                    {
                         EmissionSource = "Water supply",
                         Scope = "Scope 3",
                         NextPublicationDate = DateTime.Parse("2025-10-06"),
