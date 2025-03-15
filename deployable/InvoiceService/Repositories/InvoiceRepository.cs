@@ -1,7 +1,6 @@
 using InvoiceService.Core;
 using InvoiceService.Repositories.Interfaces;
 using InvoiceService.Repository;
-using InvoiceService.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvoiceService.Repositories;
