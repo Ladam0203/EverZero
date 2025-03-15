@@ -13,8 +13,8 @@ export default function Login() {
     const router = useRouter()
     const setAuthState = useSetAtom(authAtom)
     const [showPassword, setShowPassword] = useState(false)
-    const [email, setEmail] = useState(process.env.NODE_ENV === "development" ? "lorinczadam0203@gmail.com" : "");
-    const [password, setPassword] = useState(process.env.NODE_ENV === "development" ? "Password123!" : "");
+    const [email, setEmail] = useState(process.env.NODE_ENV === "development" ? "ceo@greentechsolutions.com" : "");
+    const [password, setPassword] = useState(process.env.NODE_ENV === "development" ? "GreenTech#2025!" : "");
     const [error, setError] = useState("")
 
     const handleSubmit = async (e) => {

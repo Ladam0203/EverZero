@@ -13,10 +13,10 @@ export default function Register() {
     const router = useRouter();
     const setAuthState = useSetAtom(authAtom);
     const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState(process.env.NODE_ENV === "development" ? "lorinczadam0203@gmail.com" : "");
-    const [username, setUsername] = useState(process.env.NODE_ENV === "development" ? "lorinczadam" : "");
-    const [password, setPassword] = useState(process.env.NODE_ENV === "development" ? "Password123!" : "");
-    const [confirmPassword, setConfirmPassword] = useState(process.env.NODE_ENV === "development" ? "Password123!" : "");
+    const [email, setEmail] = useState( "");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
 
     const validateUsername = (username) => {
