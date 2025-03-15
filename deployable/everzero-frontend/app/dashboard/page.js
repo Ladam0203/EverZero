@@ -280,86 +280,85 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-base-200">
+        <div className="min-h-screen bg-gray-100">
             <AppNavbar/>
+            <div className="container mx-auto px-4 py-8">
+                <h1 className="text-3xl font-bold mb-8 text-gray-800">Dashboard
+                    <span className="text-3xl font-normal text-gray-500 ml-2">({new Date().getFullYear()})</span>
+                </h1>
 
-            <section className="p-8">
-
-                <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-4xl font-bold">Dashboard</h1>
-                </div>
-
-                {!calculation && (
-                    <div className="flex justify-center items-center">
-                        <FaSpinner className="animate-spin text-4xl text-primary"/>
+                {!calculation ? (
+                    <div className="flex justify-center items-center h-64">
+                        <FaSpinner className="animate-spin text-4xl text-blue-600"/>
                     </div>
-                )}
-                {calculation && calculation.scopes && (
-                    <div className={"flex flex-col gap-6"}>
-                        <div>
-                            {/* Emission Calculation Summary */}
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                                <div className="bg-base-100 p-4 rounded-lg shadow-md">
-                                    <h3 className="text-lg font-semibold mb-2">Total Emission</h3>
-                                    <p className="text-3xl font-bold">{calculation?.totalEmission} kg</p>
+                ) : (
+                    <div className="space-y-8">
+                        {/* Summary Cards */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {[
+                                {title: `Total Emission`, value: `${calculation?.totalEmission.toFixed(1)} kg CO2e`},
+                                {
+                                    title: `Avg Monthly Emission`,
+                                    value: `${(getMonthlyEmissions(calculation).reduce((a, b) => a + b, 0) / getMonthlyEmissions(calculation).length).toFixed(1)} kg CO2e`
+                                },
+                                {
+                                    title: `Highest Scope`,
+                                    value: calculation?.scopes?.reduce((a, b) => a.emission > b.emission ? a : b).scope
+                                },
+                                {
+                                    title: `Highest Activity`,
+                                    value: calculation?.scopes?.reduce((a, b) => a.emission > b.emission ? a : b).categories.reduce((a, b) => a.emission > b.emission ? a : b).category
+                                }
+                            ].map((item, index) => (
+                                <div key={index}
+                                     className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                                    <h3 className="text-sm font-medium text-gray-600">{item.title}</h3>
+                                    <p className="text-2xl font-bold text-gray-800 mt-2">{item.value}</p>
                                 </div>
-                                <div className="bg-base-100 p-4 rounded-lg shadow-md">
-                                    <h3 className="text-lg font-semibold mb-2">Average Monthly Emission</h3>
-                                    <p className="text-3xl font-bold">{getMonthlyEmissions(calculation).reduce((a, b) => a + b, 0) / getMonthlyEmissions(calculation).length} kg</p>
-                                </div>
-                                <div className="bg-base-100 p-4 rounded-lg shadow-md">
-                                    <h3 className="text-lg font-semibold mb-2">Highest Scope</h3>
-                                    <p className="text-3xl font-bold">{calculation?.scopes?.reduce((a, b) => a.emission > b.emission ? a : b).scope}</p>
-                                </div>
-                                <div className="bg-base-100 p-4 rounded-lg shadow-md">
-                                    <h3 className="text-lg font-semibold mb-2">Highest Activity</h3>
-                                    <p className="text-3xl font-bold">{calculation?.scopes?.reduce((a, b) => a.emission > b.emission ? a : b).categories.reduce((a, b) => a.emission > b.emission ? a : b).category}</p>
-                                </div>
+                            ))}
+                        </div>
+
+                        {/* Charts Section */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Monthly Carbon Footprint (Left Side) */}
+                            <div className="bg-white p-6 rounded-xl shadow-sm flex flex-col items-center">
+                                <h2 className="text-lg font-semibold text-gray-800 mb-4">Carbon Footprint</h2>
+                                    <div className="w-full h-[32rem] mt-auto">
+                                        <Bar data={generateMonthlyStackedChartData(calculation)}
+                                             options={barChartOptions}/>
+                                    </div>
                             </div>
 
-                            <div className="flex flex-wrap">
-                                <div className={"flex flex-col w-full md:w-1/3 pr-3"}>
-                                    <div className="bg-white p-4 rounded-lg shadow-md mb-6">
-                                        <h2 className="text-lg font-semibold mb-4">Scopes</h2>
-                                        <div className="flex justify-center max-w-1/3 max-h-[256px]">
-                                            <Doughnut
-                                                data={overallChartData}
-                                                options={chartOptions}
-                                            />
-                                        </div>
+                            {/* Scope Charts (Right Side) */}
+                            <div className="grid grid-cols-2 gap-6">
+                                {/* Overall Scope Chart */}
+                                <div className="bg-white p-6 rounded-xl shadow-sm flex flex-col items-center">
+                                    <h2 className="text-lg font-semibold text-gray-800 mb-4">Scope Breakdown</h2>
+                                    <div className="w-full h-64 mx-auto">
+                                        <Doughnut className={"mx-auto"} data={overallChartData} options={chartOptions}/>
                                     </div>
+                                </div>
 
-                                    {/* Individual Scope Category Charts */}
-                                    <div className="flex gap-6">
-                                        {calculation.scopes.map((scope, index) => (
-                                            <div key={index} className="bg-white rounded-lg shadow-md w-1/3">
-                                                <h2 className="text-lg font-semibold mb-4 p-4">{scope.scope}</h2>
-                                                <div className="flex justify-center">
-                                                    <Doughnut
-                                                        data={generateCategoryChartData(scope)}
-                                                        options={chartOptions}
-                                                    />
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className={"flex flex-col gap-6 w-full md:w-2/3 pl-3"}>
-                                    <div className="bg-white p-4 rounded-lg shadow-md">
-                                        <h2 className="text-lg font-semibold mb-4">Carbon Footprint</h2>
-                                        <div>
-                                            <Bar
-                                                data={generateMonthlyStackedChartData(calculation)}
-                                                options={barChartOptions}
-                                            />
+                                {/* Individual Scope Category Charts */}
+                                {calculation.scopes.map((scope, index) => (
+                                    <div key={index}
+                                         className="bg-white p-6 rounded-xl shadow-sm flex flex-col items-center">
+                                        <h3 className="text-lg font-semibold text-gray-800 mb-4">{scope.scope} Activities</h3>
+                                        <div className="w-full h-64 mx-auto">
+                                            <Doughnut className={"mx-auto"} data={generateCategoryChartData(scope)} options={chartOptions}/>
                                         </div>
                                     </div>
-                                </div>
+                                ))}
+                                {/* Add empty divs to maintain 2x2 grid if less than 3 scopes */}
+                                {Array.from({length: Math.max(0, 3 - calculation.scopes.length)}).map((_, index) => (
+                                    <div key={`empty-${index}`}
+                                         className="bg-white p-6 rounded-xl shadow-sm invisible"></div>
+                                ))}
                             </div>
                         </div>
                     </div>
                 )}
-            </section>
+            </div>
         </div>
     );
 }
