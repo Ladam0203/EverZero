@@ -3,7 +3,6 @@ using InvoiceService.Mappings;
 using InvoiceService.Repositories;
 using InvoiceService.Repositories.Interfaces;
 using InvoiceService.Repository;
-using InvoiceService.Repository.Interfaces;
 using InvoiceService.Services;
 using InvoiceService.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
