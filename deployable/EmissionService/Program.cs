@@ -50,6 +50,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Services
 builder.Services.AddScoped<IEmissionFactorService, EmissionService.Services.EmissionService>();
+builder.Services.AddScoped<ICalculationService, CalculationService>();
 
 // Request context
 builder.Services.AddScoped<RequestContext>();

@@ -11,12 +11,16 @@ namespace EmissionService.Controllers;
 public class EmissionController : ControllerBase
 {
     private readonly IEmissionFactorService _service;
+    private readonly ICalculationService _calculation;
     
     private readonly RequestContext _requestContext;
     
-    public EmissionController(IEmissionFactorService service, RequestContext requestContext)
+    public EmissionController(IEmissionFactorService service, 
+        ICalculationService calculation,
+        RequestContext requestContext)
     {
         _service = service;
+        _calculation = calculation;
         _requestContext = requestContext;
     }
     
@@ -34,7 +38,7 @@ public class EmissionController : ControllerBase
             return Unauthorized("User not authenticated or authorized");
         }
         
-        var result = await _service.CalculateEmission((Guid) userId, invoices);
+        var result = await _calculation.CalculateEmission((Guid) userId, invoices);
         return Ok(result);
     }
 }
