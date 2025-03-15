@@ -48,6 +48,7 @@ public class DbInitializer
                 UserName = "greentech.ceo",
                 Email = "ceo@greentechsolutions.com",
                 EmailConfirmed = true,
+                IsActive = true
             };
 
             // Create user with a password

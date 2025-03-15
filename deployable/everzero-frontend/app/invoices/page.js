@@ -113,11 +113,11 @@ export default function Invoices() {
         <div className="min-h-screen bg-base-200">
             <AppNavbar/>
 
-            <section className="p-8">
+            <div className="container mx-auto px-4 py-8">
 
                 <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-4xl font-bold">Invoices</h1>
-                    <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
+                    <h1 className="text-3xl font-bold text-gray-800">Invoices</h1>
+                    <button className="btn btn-sm btn-primary" onClick={() => setIsModalOpen(true)}>
                         <FaPlus className="mr-2"/> Add Invoice
                     </button>
                 </div>
@@ -197,7 +197,7 @@ export default function Invoices() {
                         ))}
                     </div>
                 )}
-            </section>
+            </div>
 
             {/* Add Invoice Modal */}
             <input

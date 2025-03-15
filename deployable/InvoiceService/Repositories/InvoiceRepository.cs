@@ -16,11 +16,8 @@ public class InvoiceRepository : IInvoiceRepository
     
     public async Task<IEnumerable<Invoice>> GetAllByUserId(Guid userId, DateTime startDate, DateTime endDate)
     {
-        var utcStartDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc);
-        var utcEndDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc);
-
         return await _context.Invoices
-            .Where(i => i.UserId == userId && i.Date >= utcStartDate && i.Date <= utcEndDate)
+            .Where(i => i.UserId == userId && i.Date >= startDate && i.Date <= endDate)
             .Include(i => i.Lines)
             .ToListAsync();
     }

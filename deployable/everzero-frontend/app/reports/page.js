@@ -108,10 +108,10 @@ export default function Reports() {
         <div className="min-h-screen bg-base-200">
             <AppNavbar />
 
-            <section className="p-8">
+            <div className="container mx-auto px-4 py-8">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-4xl font-bold">Reports</h1>
-                    <button className="btn btn-primary" onClick={openCreateReportModal}>
+                    <button className="btn btn-sm btn-primary" onClick={openCreateReportModal}>
                         <FaPlus className="mr-2" /> Create Report
                     </button>
                 </div>
@@ -159,7 +159,7 @@ export default function Reports() {
                         ))}
                     </div>
                 )}
-            </section>
+            </div>
 
             <CreateReportModal />
         </div>
