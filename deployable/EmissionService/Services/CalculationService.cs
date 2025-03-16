@@ -38,6 +38,7 @@ public class CalculationService : ICalculationService
         {
             Invoices = invoiceCalculations,
             Scopes = CalculateEmissionsPerScope(invoiceCalculations, emissionFactorLookup),
+            Years = CalculateEmissionsPerYear(invoiceCalculations, emissionFactorLookup),
             TotalEmission = invoiceCalculations.Sum(i => i.Emission)
         };
     }
@@ -129,5 +130,54 @@ public class CalculationService : ICalculationService
                 })
                 .ToList()
         };
+    }
+    
+    private IEnumerable<YearlyCalculationDTO> CalculateEmissionsPerYear(
+        IEnumerable<InvoiceCalculationDTO> invoiceCalcs,
+        IDictionary<Guid, EmissionFactor> emissionFactorLookup)
+    {
+        return invoiceCalcs
+            .GroupBy(i => i.Date.Year.ToString())
+            .Select(g => 
+            {
+                var monthsWithData = g.Select(i => i.Date.Month).Distinct().Count();
+                var totalEmission = g.Sum(i => i.Emission);
+            
+                return new YearlyCalculationDTO
+                {
+                    Year = g.Key,
+                    TotalEmission = totalEmission,
+                    AverageMonthlyEmission = monthsWithData > 0 ? totalEmission / monthsWithData : 0,
+                    Months = CalculateEmissionsPerMonth(g, emissionFactorLookup)
+                };
+            });
+    }
+
+    private IEnumerable<MonthlyCalculationDTO> CalculateEmissionsPerMonth(
+        IGrouping<string, InvoiceCalculationDTO> yearGroup,
+        IDictionary<Guid, EmissionFactor> emissionFactorLookup)
+    {
+        return yearGroup
+            .GroupBy(i => i.Date.ToString("MMMM")) // Full month name
+            .Select(g => new MonthlyCalculationDTO
+            {
+                Month = g.Key,
+                Emission = g.Sum(i => i.Emission),
+                Categories = CalculateCategoriesPerMonth(g, emissionFactorLookup)
+            });
+    }
+
+    private IEnumerable<CategoryEmissionDTO> CalculateCategoriesPerMonth(
+        IGrouping<string, InvoiceCalculationDTO> monthGroup,
+        IDictionary<Guid, EmissionFactor> emissionFactorLookup)
+    {
+        return monthGroup
+            .SelectMany(i => i.Lines)
+            .GroupBy(l => emissionFactorLookup[l.EmissionFactorId!.Value].Category)
+            .Select(g => new CategoryEmissionDTO
+            {
+                Category = g.Key,
+                Emission = g.Sum(l => l.Emission)
+            });
     }
 }
