@@ -7,5 +7,6 @@ public class EmissionCalculationDTO
 {
     public IEnumerable<InvoiceCalculationDTO> Invoices { get; set; }
     public IEnumerable<ScopeCalculationDTO> Scopes { get; set; }
+    public IEnumerable<YearlyCalculationDTO> Years { get; set; }
     public decimal TotalEmission { get; set; } = 0;
 }
