@@ -1,24 +1,79 @@
-import {useEffect} from "react";
-import {emissionFactorsAtom} from "@/app/atoms/emissionFactorsAtom";
-import {useAtom} from "jotai";
-import {FaFileInvoiceDollar, FaMagic, FaPlus, FaTrash} from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { emissionFactorsAtom } from "@/app/atoms/emissionFactorsAtom";
+import { useAtom } from "jotai";
+import { FaFileInvoiceDollar, FaPlus, FaTrash } from "react-icons/fa";
 
-export default function UpdateInvoiceModal({invoice, onSubmit, onClose}) {
-    const [emissionFactors, setEmissionFactors] = useAtom(emissionFactorsAtom); // Loaded by parent component
+export default function UpdateInvoiceModal({ invoice, onSubmit, onClose }) {
+    const [emissionFactors, setEmissionFactors] = useAtom(emissionFactorsAtom);
+    const [formData, setFormData] = useState(null); // Local state for form data
 
+    // Initialize formData when invoice prop changes
     useEffect(() => {
-        console.log("Invoice to be updated:", invoice)
+        if (invoice) {
+            setFormData({
+                ...invoice,
+                lines: invoice.lines ? [...invoice.lines] : [], // Deep copy of lines array
+            });
+            console.log("Invoice to be updated:", invoice);
+        }
     }, [invoice]);
+
+    // Handle changes to text inputs
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    // Handle changes to invoice line fields
+    const handleLineChange = (index, field, value) => {
+        setFormData((prev) => {
+            const updatedLines = [...prev.lines];
+            updatedLines[index] = {
+                ...updatedLines[index],
+                [field]: value,
+            };
+            return { ...prev, lines: updatedLines };
+        });
+    };
+
+    // Add a new empty line
+    const addLine = () => {
+        setFormData((prev) => ({
+            ...prev,
+            lines: [
+                ...prev.lines,
+                { description: "", quantity: 0, unit: "" }, // Default empty line
+            ],
+        }));
+    };
+
+    // Remove a line by index
+    const removeLine = (index) => {
+        setFormData((prev) => ({
+            ...prev,
+            lines: prev.lines.filter((_, i) => i !== index),
+        }));
+    };
+
+    // Handle form submission
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit(formData); // Pass the updated data to the parent
+    };
+
+    if (!formData) return <dialog id="update_invoice_modal" className="modal"></dialog>;
 
     return (
         <dialog id="update_invoice_modal" className="modal">
             <div className="modal-box w-11/12 max-w-5xl">
                 <div className="modal-header flex items-center gap-2 mb-4">
-                    <FaFileInvoiceDollar className="text-primary"/>
+                    <FaFileInvoiceDollar className="text-primary" />
                     <h3 className="text-lg font-bold">Edit Invoice</h3>
                 </div>
-                {/* Conditional rendering (only show when invoice is not null) */}
-                <form onSubmit={onSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="form-control">
                             <label className="label">
@@ -27,7 +82,8 @@ export default function UpdateInvoiceModal({invoice, onSubmit, onClose}) {
                             <input
                                 type="text"
                                 name="subject"
-                                value={invoice?.subject}
+                                value={formData.subject || ""}
+                                onChange={handleInputChange}
                                 className="input input-bordered"
                                 required
                             />
@@ -39,7 +95,8 @@ export default function UpdateInvoiceModal({invoice, onSubmit, onClose}) {
                             <input
                                 type="text"
                                 name="supplierName"
-                                value={invoice?.supplierName}
+                                value={formData.supplierName || ""}
+                                onChange={handleInputChange}
                                 className="input input-bordered"
                                 required
                             />
@@ -51,7 +108,8 @@ export default function UpdateInvoiceModal({invoice, onSubmit, onClose}) {
                             <input
                                 type="text"
                                 name="buyerName"
-                                value={invoice?.buyerName}
+                                value={formData.buyerName || ""}
+                                onChange={handleInputChange}
                                 className="input input-bordered"
                                 required
                             />
@@ -64,15 +122,18 @@ export default function UpdateInvoiceModal({invoice, onSubmit, onClose}) {
                                 type="date"
                                 name="date"
                                 value={
-                                    invoice?.date ? new Date(invoice.date).toISOString().split("T")[0] : ""
+                                    formData.date
+                                        ? new Date(formData.date).toISOString().split("T")[0]
+                                        : ""
                                 }
+                                onChange={handleInputChange}
                                 className="input input-bordered"
                                 required
                             />
                         </div>
                     </div>
                     <div className="divider">Invoice Lines</div>
-                    {invoice && invoice.lines.map((line, index) => (
+                    {formData.lines.map((line, index) => (
                         <div key={index} className="space-y-4 p-4 bg-base-200 rounded-lg mb-4">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="form-control">
@@ -81,8 +142,10 @@ export default function UpdateInvoiceModal({invoice, onSubmit, onClose}) {
                                     </label>
                                     <input
                                         type="text"
-                                        name={`line-description-${index}`}
-                                        value={line.description}
+                                        value={line.description || ""}
+                                        onChange={(e) =>
+                                            handleLineChange(index, "description", e.target.value)
+                                        }
                                         className="input input-bordered"
                                         required
                                     />
@@ -93,8 +156,10 @@ export default function UpdateInvoiceModal({invoice, onSubmit, onClose}) {
                                     </label>
                                     <input
                                         type="number"
-                                        name={`line-quantity-${index}`}
-                                        value={line.quantity}
+                                        value={line.quantity || 0}
+                                        onChange={(e) =>
+                                            handleLineChange(index, "quantity", e.target.value)
+                                        }
                                         className="input input-bordered"
                                         required
                                     />
@@ -105,22 +170,28 @@ export default function UpdateInvoiceModal({invoice, onSubmit, onClose}) {
                                     </label>
                                     <input
                                         type="text"
-                                        name={`line-unit-${index}`}
-                                        value={line.unit}
+                                        value={line.unit || ""}
+                                        onChange={(e) =>
+                                            handleLineChange(index, "unit", e.target.value)
+                                        }
                                         className="input input-bordered"
                                         required
                                     />
                                 </div>
                             </div>
                             <div className="form-control">
-                                <button type="button" className="btn btn-error">
-                                    <FaTrash className="mr-2"/> Remove Line
+                                <button
+                                    type="button"
+                                    className="btn btn-error"
+                                    onClick={() => removeLine(index)}
+                                >
+                                    <FaTrash className="mr-2" /> Remove Line
                                 </button>
                             </div>
                         </div>
                     ))}
-                    <button type="button" className="btn btn-secondary">
-                        <FaPlus className="mr-2"/> Add Line
+                    <button type="button" className="btn btn-secondary" onClick={addLine}>
+                        <FaPlus className="mr-2" /> Add Line
                     </button>
                     <div className="modal-action justify-between">
                         <button type="button" className="btn" onClick={onClose}>
@@ -133,5 +204,5 @@ export default function UpdateInvoiceModal({invoice, onSubmit, onClose}) {
                 </form>
             </div>
         </dialog>
-    )
+    );
 }
