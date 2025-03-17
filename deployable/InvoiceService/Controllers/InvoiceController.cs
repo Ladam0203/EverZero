@@ -83,6 +83,37 @@ public class InvoiceController : ControllerBase
         return Ok(suggestion);
     }
     
+    [HttpPut("invoices/{invoiceId}")]
+    public async Task<IActionResult> UpdateInvoice(Guid invoiceId, [FromBody] PutInvoiceDTO dto)
+    {
+        var userId = _requestContext.UserId;
+        if (userId is null) {
+            return Unauthorized("User not authenticated or authorized");
+        }
+        
+        if (invoiceId != dto.Id) {
+            return BadRequest("Invoice ID in URL does not match ID in body");
+        }
+
+        try
+        {
+            var invoice = await _service.Update((Guid) userId, dto);
+            return Ok(invoice);
+        }
+        catch (KeyNotFoundException e)
+        {
+            return NotFound();
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            return NotFound(); // Security through obscurity
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+    
     [HttpDelete("invoices/{invoiceId}")]
     public async Task<IActionResult> DeleteInvoice(Guid invoiceId)
     {

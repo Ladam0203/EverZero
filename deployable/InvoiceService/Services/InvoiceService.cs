@@ -12,7 +12,7 @@ public class InvoiceService : IInvoiceService
 {
     private readonly IInvoiceRepository _invoiceRepository;
     private readonly IMapper _mapper;
-    
+
     private readonly ILogger _logger;
 
     public InvoiceService(IInvoiceRepository invoiceRepository, IMapper mapper, ILogger logger)
@@ -24,36 +24,91 @@ public class InvoiceService : IInvoiceService
 
     public async Task<IEnumerable<InvoiceDTO>> GetAllByUserId(Guid userId, DateTime startDate, DateTime endDate)
     {
-        if (startDate > endDate) {
+        if (startDate > endDate)
+        {
             throw new ArgumentException("Start date must be before end date");
         }
-        
+
         var invoices = await _invoiceRepository.GetAllByUserId(userId, startDate, endDate);
-        
+
         var invoiceDTOs = invoices.Select(i => _mapper.Map<InvoiceDTO>(i));
-        
+
         return invoiceDTOs;
     }
-    
+
     public async Task<InvoiceDTO> Create(Guid userId, PostInvoiceDTO dto)
     {
         var invoice = _mapper.Map<Invoice>(dto);
         invoice.UserId = userId;
-        
+
         var createdInvoice = await _invoiceRepository.Create(invoice);
-        
+
         return _mapper.Map<InvoiceDTO>(createdInvoice);
     }
+
+    public async Task<InvoiceDTO> Update(Guid userId, PutInvoiceDTO dto)
+    {
+        var invoice = await _invoiceRepository.GetById(dto.Id);
+        if (invoice == null)
+        {
+            throw new KeyNotFoundException($"Invoice with ID {dto.Id} not found");
+        }
+
+        // Check authorization
+        if (invoice.UserId != userId)
+        {
+            _logger.Warning(
+                "User with ID {UserId1} attempted to update invoice with ID {invoiceId} which belongs to user with ID {UserId2}",
+                userId, dto.Id, invoice.UserId);
+            throw new UnauthorizedAccessException(
+                "User not authorized to update this invoice as it does not belong to them");
+        }
+
+        // Update scalar properties using AutoMapper
+        _mapper.Map(dto, invoice);
+        
+        // Identify lines to remove (in DB but not in DTO)
+        var dtoLineIds = dto.Lines.Select(l => l.Id).ToHashSet();
+        var linesToRemove = invoice.Lines.Where(l => !dtoLineIds.Contains(l.Id)).ToList();
+        foreach (var line in linesToRemove)
+        {
+            invoice.Lines.Remove(line);
+        }
+        
+        // Add or update lines from DTO
+        foreach (var dtoLine in dto.Lines)
+        {
+            var existingLine = invoice.Lines.FirstOrDefault(l => l.Id == dtoLine.Id);
     
+            if (existingLine != null)
+            {
+                _mapper.Map(dtoLine, existingLine); // Update existing line
+            }
+            else
+            {
+                invoice.Lines.Add(_mapper.Map<InvoiceLine>(dtoLine)); // Add new line
+            }
+        }
+
+        // Persist the updated invoice
+        await _invoiceRepository.Update(invoice);
+
+        return _mapper.Map<InvoiceDTO>(invoice);
+    }
+
     public async Task Delete(Guid userId, Guid id)
     {
         var invoice = await _invoiceRepository.GetById(id);
-        
-        if (invoice.UserId != userId) {
-            _logger.Warning("User with ID {UserId1} attempted to delete invoice with ID {invoiceId} which belongs to user with ID {UserId2}", userId, id, invoice.UserId);
-            throw new UnauthorizedAccessException("User not authorized to delete this invoice as it does not belong to them");
+
+        if (invoice.UserId != userId)
+        {
+            _logger.Warning(
+                "User with ID {UserId1} attempted to delete invoice with ID {invoiceId} which belongs to user with ID {UserId2}",
+                userId, id, invoice.UserId);
+            throw new UnauthorizedAccessException(
+                "User not authorized to delete this invoice as it does not belong to them");
         }
-        
+
         await _invoiceRepository.Delete(invoice);
     }
 }

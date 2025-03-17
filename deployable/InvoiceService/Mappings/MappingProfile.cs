@@ -26,5 +26,14 @@ public class MappingProfile : Profile
         // Mapping for PostInvoiceLineDTO to InvoiceLine
         CreateMap<PostInvoiceLineDTO, InvoiceLine>()
             .ReverseMap();
+        
+        // Mapping for PutInvoiceDTO to Invoice
+        CreateMap<PutInvoiceDTO, Invoice>()
+            .ForMember(dest => dest.Lines, opt => opt.MapFrom(src => src.Lines))
+            .ReverseMap();
+        
+        // Mapping for PutInvoiceLineDTO to InvoiceLine
+        CreateMap<PutInvoiceLineDTO, InvoiceLine>()
+            .ReverseMap();
     }
 }

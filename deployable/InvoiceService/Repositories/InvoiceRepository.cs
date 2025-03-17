@@ -36,6 +36,12 @@ public class InvoiceRepository : IInvoiceRepository
         return Task.FromResult(invoice);
     }
     
+    public async Task Update(Invoice invoice)
+    {
+        _context.Invoices.Update(invoice);
+        await _context.SaveChangesAsync();
+    }
+    
     public async Task Delete(Invoice invoice)
     {
         _context.Invoices.Remove(invoice);
