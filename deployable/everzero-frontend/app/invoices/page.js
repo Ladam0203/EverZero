@@ -124,7 +124,8 @@ export default function Invoices() {
     }
 
     const handleUpdate = async (updatedInvoice) => {
-        // TODO: Call SSF API to update the invoice
+        console.log("Updated invoice to be sent to backend:", updatedInvoice)
+        closeUpdateModal();
     }
 
     return (
