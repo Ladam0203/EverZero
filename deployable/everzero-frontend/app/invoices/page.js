@@ -17,11 +17,13 @@ import {useRouter} from "next/navigation"
 import {authorize} from "@/app/server/auth/authorize";
 import {postInvoice} from "@/app/server/invoice/postInvoice";
 import AppNavbar from "@/app/components/AppNavbar";
+import UpdateInvoiceModal from "@/app/components/update-invoice-modal";
 
 export default function Invoices() {
     const router = useRouter();
     const [invoices, setInvoices] = useAtom(invoicesAtom)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [invoiceToUpdate, setInvoiceToUpdate] = useState(null)
 
     useEffect(() => {
         const doAuthorize = async () => {
@@ -109,6 +111,22 @@ export default function Invoices() {
         })
     }
 
+    const openUpdateModal = async (invoice) => {
+        setInvoiceToUpdate(invoice);
+        const dialog = document.getElementById('update_invoice_modal');
+        dialog.showModal(invoice);
+    }
+
+    const closeUpdateModal = () => {
+        const dialog = document.getElementById('update_invoice_modal');
+        dialog.close();
+        setInvoiceToUpdate(null);
+    }
+
+    const handleUpdate = async (updatedInvoice) => {
+        // TODO: Call SSF API to update the invoice
+    }
+
     return (
         <div className="min-h-screen bg-base-200">
             <AppNavbar/>
@@ -153,7 +171,9 @@ export default function Invoices() {
                                             <ul tabIndex={0}
                                                 className="text-sm p-2 shadow menu dropdown-content bg-base-100 rounded-box w-32">
                                                 <li>
-                                                    <span>Edit</span>
+                                                    <span onClick={() => openUpdateModal(invoice)}>
+                                                        Edit
+                                                    </span>
                                                 </li>
                                                 <li>
                                                     <span className="hover:bg-error"
@@ -216,6 +236,8 @@ export default function Invoices() {
                     <InvoiceForm onSubmit={handleSubmit} onCancel={() => setIsModalOpen(false)}/>
                 </div>
             </div>
+
+            <UpdateInvoiceModal invoice={invoiceToUpdate} onSubmit={handleUpdate} onClose={closeUpdateModal}/>
         </div>
     )
 }
