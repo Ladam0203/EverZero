@@ -70,7 +70,7 @@ export default function Invoices() {
             });
     }, []);
 
-    const handleSubmit = async (newInvoice) => {
+    const handleCreate = async (newInvoice) => {
         console.log("New invoice to be sent to backend:", newInvoice)
         setIsModalOpen(false)
         const result = await postInvoice(newInvoice)
@@ -125,6 +125,37 @@ export default function Invoices() {
 
     const handleUpdate = async (updatedInvoice) => {
         console.log("Updated invoice to be sent to backend:", updatedInvoice)
+
+        // Call SSF API to update the invoice
+        await fetch(`/api/invoices/${updatedInvoice.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedInvoice),
+        }).then((res) => res.json()).then((result) => {
+            if (!result.success) {
+                console.error("Failed to update invoice", result)
+                return
+            }
+
+            // Update the invoices list
+            setInvoices((prevInvoices) => ({
+                ...prevInvoices,
+                invoices: prevInvoices.invoices.map((invoice) => {
+                    if (invoice.id === updatedInvoice.id) {
+                        return updatedInvoice;
+                    }
+                    return invoice;
+                }),
+            }))
+
+            console.log("Invoice updated successfully:", updatedInvoice)
+            closeUpdateModal();
+        }).catch((error) => {
+            console.error("Failed to update invoice:", error)
+        })
+
         closeUpdateModal();
     }
 
@@ -234,7 +265,7 @@ export default function Invoices() {
                         <FaFileInvoiceDollar className="text-primary"/>
                         <h3 className="text-lg font-bold">New Invoice</h3>
                     </div>
-                    <InvoiceForm onSubmit={handleSubmit} onCancel={() => setIsModalOpen(false)}/>
+                    <InvoiceForm onSubmit={handleCreate} onCancel={() => setIsModalOpen(false)}/>
                 </div>
             </div>
 

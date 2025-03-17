@@ -64,31 +64,15 @@ public class InvoiceService : IInvoiceService
                 "User not authorized to update this invoice as it does not belong to them");
         }
 
-        // Update scalar properties using AutoMapper
+        // Update the invoice
         _mapper.Map(dto, invoice);
-        
-        // Identify lines to remove (in DB but not in DTO)
-        var dtoLineIds = dto.Lines.Select(l => l.Id).ToHashSet();
-        var linesToRemove = invoice.Lines.Where(l => !dtoLineIds.Contains(l.Id)).ToList();
-        foreach (var line in linesToRemove)
+        // Make sure InvoiceLines have the correct InvoiceId
+        foreach (var line in invoice.Lines)
         {
-            invoice.Lines.Remove(line);
+            line.InvoiceId = invoice.Id;
         }
         
-        // Add or update lines from DTO
-        foreach (var dtoLine in dto.Lines)
-        {
-            var existingLine = invoice.Lines.FirstOrDefault(l => l.Id == dtoLine.Id);
-    
-            if (existingLine != null)
-            {
-                _mapper.Map(dtoLine, existingLine); // Update existing line
-            }
-            else
-            {
-                invoice.Lines.Add(_mapper.Map<InvoiceLine>(dtoLine)); // Add new line
-            }
-        }
+        // TODO: This throws an error when a new invoice line is added
 
         // Persist the updated invoice
         await _invoiceRepository.Update(invoice);

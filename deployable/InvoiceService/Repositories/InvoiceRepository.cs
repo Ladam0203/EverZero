@@ -41,6 +41,7 @@ public class InvoiceRepository : IInvoiceRepository
         _context.Invoices.Update(invoice);
         await _context.SaveChangesAsync();
     }
+
     
     public async Task Delete(Invoice invoice)
     {
