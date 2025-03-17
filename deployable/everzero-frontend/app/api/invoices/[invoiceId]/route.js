@@ -54,3 +54,57 @@ export async function DELETE(request, { params }) {
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
+
+export async function PUT(request, { params }) {
+    try {
+        // Retrieve the JWT token from cookies
+        const cookieStore = await cookies();
+        const token = cookieStore.get('auth_token');
+
+        if (!token) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: 'Authentication token is missing or expired.',
+                },
+                { status: 401 }
+            );
+        }
+
+        const { invoiceId } = await params;
+        const body = await request.json();
+
+        console.log('Updating invoice:', invoiceId, body);
+
+        // Make the API call with axios
+        const response = await axios.put(`${API_URL}/invoices/${invoiceId}`, body, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token.value}`,
+            },
+        });
+
+        return NextResponse.json({ success: true, data: response.data }, { status: 200 });
+    } catch (error) {
+        console.error(error);
+
+        if (axios.isAxiosError(error)) {
+            const status = error.response?.status;
+
+            if (status === 401) {
+                return NextResponse.json({ error: 'Unauthorized access' }, { status: 401 });
+            }
+
+            if (status === 404) {
+                return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
+            }
+
+            return NextResponse.json(
+                { error: error.response?.data?.message || 'Unexpected error occurred' },
+                { status: status || 500 }
+            );
+        }
+
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}

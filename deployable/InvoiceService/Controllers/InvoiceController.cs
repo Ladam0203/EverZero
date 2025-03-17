@@ -3,6 +3,7 @@ using InvoiceService.Core.DTOs;
 using InvoiceService.Services;
 using InvoiceService.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using ILogger = Serilog.ILogger;
 
 namespace InvoiceService.Controllers;
 
@@ -15,13 +16,17 @@ public class InvoiceController : ControllerBase
     
     private readonly RequestContext _requestContext;
     
+    private readonly ILogger _logger;
+    
     public InvoiceController(IInvoiceService service, 
         ISuggestionService suggestion,
-        RequestContext requestContext)
+        RequestContext requestContext,
+        ILogger logger)
     {
         _service = service;
         _suggestion = suggestion;
         _requestContext = requestContext;
+        _logger = logger;
     }
     
     [HttpGet("invoices")]
@@ -110,6 +115,7 @@ public class InvoiceController : ControllerBase
         }
         catch (Exception e)
         {
+            _logger.Error(e, "Error updating invoice");
             return StatusCode(500, e.Message);
         }
     }
