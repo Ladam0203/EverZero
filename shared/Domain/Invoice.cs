@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using InvoiceService.Core;
 
 public class Invoice
@@ -11,4 +12,7 @@ public class Invoice
     public Guid UserId { get; set; }  // Associated User
 
     public List<InvoiceLine> Lines { get; set; } = new();
+    
+    [Timestamp]
+    public byte[]? Version { get; set; }
 }

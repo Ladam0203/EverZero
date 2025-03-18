@@ -71,8 +71,6 @@ public class InvoiceService : IInvoiceService
         {
             line.InvoiceId = invoice.Id;
         }
-        
-        // TODO: This throws an error when a new invoice line is added
 
         // Persist the updated invoice
         await _invoiceRepository.Update(invoice);

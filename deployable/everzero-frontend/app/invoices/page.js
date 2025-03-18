@@ -139,18 +139,20 @@ export default function Invoices() {
                 return
             }
 
+            const data = result.data;
+
             // Update the invoices list
             setInvoices((prevInvoices) => ({
                 ...prevInvoices,
                 invoices: prevInvoices.invoices.map((invoice) => {
-                    if (invoice.id === updatedInvoice.id) {
-                        return updatedInvoice;
+                    if (invoice.id === data.id) {
+                        return data;
                     }
                     return invoice;
                 }),
             }))
 
-            console.log("Invoice updated successfully:", updatedInvoice)
+            console.log("Invoice updated successfully:", data)
             closeUpdateModal();
         }).catch((error) => {
             console.error("Failed to update invoice:", error)
