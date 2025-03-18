@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace InvoiceService.Core;
 
 public class InvoiceLine
@@ -11,4 +13,7 @@ public class InvoiceLine
 
     public Guid InvoiceId { get; set; }  // Foreign Key
     public Invoice Invoice { get; set; }  // Navigation Property
+    
+    [Timestamp]
+    public byte[]? Version { get; set; }
 }
