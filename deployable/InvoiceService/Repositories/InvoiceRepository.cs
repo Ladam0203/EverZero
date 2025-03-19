@@ -36,6 +36,13 @@ public class InvoiceRepository : IInvoiceRepository
         return Task.FromResult(invoice);
     }
     
+    public async Task<IEnumerable<Invoice>> CreateAll(IEnumerable<Invoice> invoices)
+    {
+        _context.Invoices.AddRange(invoices);
+        await _context.SaveChangesAsync();
+        return invoices;
+    }
+    
     public async Task Update(Invoice invoice)
     {
         _context.Invoices.Update(invoice);
