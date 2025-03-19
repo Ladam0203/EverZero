@@ -2,7 +2,6 @@
 
 import {useState, useEffect} from "react"
 import {FaPlus, FaTrash, FaMagic} from "react-icons/fa"
-import {getAllEmissionFactors} from "@/app/server/emission/getAllEmissionFactors"
 import {useAtom} from "jotai"
 import {emissionFactorsAtom} from "@/app/atoms/emissionFactorsAtom"
 
@@ -59,40 +58,6 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
 
     const [invoice, setInvoice] = useState(baseInvoice)
     const [emissionFactors, setEmissionFactors] = useAtom(emissionFactorsAtom)
-
-    useEffect(() => {
-        const fetchEmissionFactors = async () => {
-            if (emissionFactors.loading || emissionFactors.loaded) return;
-
-            setEmissionFactors((prev) => ({
-                ...prev,
-                loading: true,
-            }))
-
-            const result = await getAllEmissionFactors()
-
-            if (!result.success) {
-                setEmissionFactors((prev) => ({
-                    ...prev,
-                    loading: false,
-                    error: result.message,
-                    loaded: true,
-                }))
-                return;
-            }
-
-            setEmissionFactors({
-                emissionFactors: result.data.length > 0 ? result.data : [],
-                loading: false,
-                loaded: true,
-                error: null,
-            })
-
-            console.log("Emission factors loaded", result.data)
-        }
-
-        fetchEmissionFactors()
-    }, [emissionFactors, setEmissionFactors])
 
     const handleInputChange = (e, index) => {
         const {name, value} = e.target
