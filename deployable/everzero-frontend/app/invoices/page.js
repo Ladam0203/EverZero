@@ -104,24 +104,12 @@ export default function Invoices() {
             });
     }, []);
 
-    const handleCreate = async (newInvoice) => {
-        console.log("New invoice to be sent to backend:", newInvoice)
-        setIsModalOpen(false)
-        const result = await postInvoice(newInvoice)
-        console.log("Result of posting invoice:", result)
-        if (!result.success) {
-            // TODO: Display error (raise toast?)
-            console.error("Failed to post invoice:", result.message)
-            return
-        }
-
-        // Update the invoices list
+    const handleCreate = async (newInvoices) => {
+        // Add the new invoice to the list
         setInvoices((prevInvoices) => ({
             ...prevInvoices,
-            invoices: [...prevInvoices.invoices, result.data],
+            invoices: [...prevInvoices.invoices, newInvoices],
         }))
-
-        console.log("Invoice added successfully:", result.data)
     }
 
     const handleDelete = async (invoiceId) => {

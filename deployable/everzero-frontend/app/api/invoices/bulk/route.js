@@ -1,22 +1,10 @@
 import axios from 'axios';
-import axiosRetry from 'axios-retry';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// Configure axios-retry
-axiosRetry(axios, {
-    retries: 3,
-    retryDelay: (retryCount) => 1000 * Math.pow(2, retryCount), // Exponential backoff
-    retryCondition: (error) => {
-        // Retry only for network or 5xx errors
-        return error.response?.status === 502 || !error.response;
-    },
-});
-
-// GET handler for the API route
-export async function GET(request) {
+export async function POST(request) {
     try {
         // Retrieve the JWT token from cookies
         const cookieStore = await cookies();
@@ -32,19 +20,21 @@ export async function GET(request) {
             );
         }
 
-        const startDate = request.nextUrl.searchParams.get('startDate');
-        const endDate = request.nextUrl.searchParams.get('endDate');
+        // Parse the request body
+        const body = await request.json();
 
-        let url = `${API_URL}/invoices`;
-        if (startDate) {
-            url += `?startDate=${startDate}`;
-        }
-        if (endDate) {
-            url += `${startDate ? '&' : '?'}endDate=${endDate}`;
-        }
+        // Parse dates to PostInvoice DTO
+        body.forEach((invoice) => {
+            invoice.date = new Date(invoice.date).toISOString();
+
+            // Remove emissionFactorId if not provided
+            if (!invoice.emissionFactorId) {
+                delete invoice.emissionFactorId;
+            }
+        });
 
         // Make the API call with axios
-        const response = await axios.get(url, {
+        const response = await axios.post(`${API_URL}/invoices/bulk`, body, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token.value}`,
@@ -59,7 +49,7 @@ export async function GET(request) {
             { status: 200 }
         );
     } catch (error) {
-        console.error(error);
+        console.error('Error response:', error.response?.data || error.message);
 
         // Handle specific error cases
         if (error.response?.status === 401) {
@@ -76,9 +66,20 @@ export async function GET(request) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: 'Could not load invoices. Please try again later.',
+                    message: 'Could not upload invoices. Please try again later.',
                 },
                 { status: 502 }
+            );
+        }
+
+        // Handle body parsing errors
+        if (error instanceof SyntaxError && error.message.includes('JSON')) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: 'Invalid JSON in request body.',
+                },
+                { status: 400 }
             );
         }
 
