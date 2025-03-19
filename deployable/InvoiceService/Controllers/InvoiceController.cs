@@ -71,6 +71,20 @@ public class InvoiceController : ControllerBase
         return Ok(response);
     }
     
+    // Bulk Post
+    [HttpPost("invoices/bulk")]
+    public async Task<IActionResult> PostInvoices([FromBody] List<PostInvoiceDTO> dtos)
+    {
+        var userId = _requestContext.UserId;
+        if (userId is null) {
+            return Unauthorized("User not authenticated or authorized");
+        }
+        
+        var response = await _service.CreateAll((Guid) userId, dtos);
+        
+        return Ok(response);
+    }
+    
     [HttpGet("suggestions/emission-factor-id")]
     public async Task<IActionResult> SuggestEmissionFactorId([FromQuery] string supplierName, [FromQuery] string invoiceLineDescription, [FromQuery] string unit)
     {

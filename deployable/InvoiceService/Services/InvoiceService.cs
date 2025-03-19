@@ -45,6 +45,20 @@ public class InvoiceService : IInvoiceService
 
         return _mapper.Map<InvoiceDTO>(createdInvoice);
     }
+    
+    public async Task<IEnumerable<InvoiceDTO>> CreateAll(Guid userId, IEnumerable<PostInvoiceDTO> dtos)
+    {
+        var invoices = dtos.Select(dto =>
+        {
+            var invoice = _mapper.Map<Invoice>(dto);
+            invoice.UserId = userId;
+            return invoice;
+        });
+
+        var createdInvoices = await _invoiceRepository.CreateAll(invoices);
+
+        return createdInvoices.Select(i => _mapper.Map<InvoiceDTO>(i));
+    }
 
     public async Task<InvoiceDTO> Update(Guid userId, PutInvoiceDTO dto)
     {
