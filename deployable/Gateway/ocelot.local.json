@@ -79,6 +79,22 @@
       }
     },
     {
+      "UpstreamPathTemplate": "/api/invoices/bulk",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/invoice/invoices/bulk",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5120
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
+    },
+    {
       "UpstreamPathTemplate": "/api/invoices/{id}",
       "UpstreamHttpMethod": [ "Put" ],
       "DownstreamPathTemplate": "/invoice/invoices/{id}",
@@ -212,6 +228,22 @@
       "UpstreamPathTemplate": "/api/extract",
       "UpstreamHttpMethod": ["Post"],
       "DownstreamPathTemplate": "/extraction/extract",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 8000
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "RemoteAuthentication",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/extract/bulk",
+      "UpstreamHttpMethod": ["Post"],
+      "DownstreamPathTemplate": "/extraction/extract/bulk",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
