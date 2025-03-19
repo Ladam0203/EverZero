@@ -18,10 +18,13 @@ import {authorize} from "@/app/server/auth/authorize";
 import {postInvoice} from "@/app/server/invoice/postInvoice";
 import AppNavbar from "@/app/components/AppNavbar";
 import UpdateInvoiceModal from "@/app/components/update-invoice-modal";
+import {getAllEmissionFactors} from "@/app/server/emission/getAllEmissionFactors";
+import {emissionFactorsAtom} from "@/app/atoms/emissionFactorsAtom";
 
 export default function Invoices() {
     const router = useRouter();
     const [invoices, setInvoices] = useAtom(invoicesAtom)
+    const [emissionFactors, setEmissionFactors] = useAtom(emissionFactorsAtom)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [invoiceToUpdate, setInvoiceToUpdate] = useState(null)
 
@@ -62,8 +65,39 @@ export default function Invoices() {
             console.log("Invoices loaded:", result.data);
         };
 
+        const fetchEmissionFactors = async () => {
+            if (emissionFactors.loading || emissionFactors.loaded) return;
+
+            setEmissionFactors((prev) => ({
+                ...prev,
+                loading: true,
+            }))
+
+            const result = await getAllEmissionFactors()
+
+            if (!result.success) {
+                setEmissionFactors((prev) => ({
+                    ...prev,
+                    loading: false,
+                    error: result.message,
+                    loaded: true,
+                }))
+                return;
+            }
+
+            setEmissionFactors({
+                emissionFactors: result.data.length > 0 ? result.data : [],
+                loading: false,
+                loaded: true,
+                error: null,
+            })
+
+            console.log("Emission factors loaded", result.data)
+        }
+
         doAuthorize()
             .then(() => fetchInvoices())
+            .then(() => fetchEmissionFactors())
             .catch((error) => {
                 console.info('Authorization failed:', error.message);
                 router.push('/login');
