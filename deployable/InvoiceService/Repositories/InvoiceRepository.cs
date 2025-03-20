@@ -36,11 +36,11 @@ public class InvoiceRepository : IInvoiceRepository
         return Task.FromResult(invoice);
     }
     
-    public async Task<IEnumerable<Invoice>> CreateAll(IEnumerable<Invoice> invoices)
+    public Task<List<Invoice>> CreateAll(List<Invoice> invoices)
     {
         _context.Invoices.AddRange(invoices);
-        await _context.SaveChangesAsync();
-        return invoices;
+        _context.SaveChanges();
+        return Task.FromResult(invoices);
     }
     
     public async Task Update(Invoice invoice)
