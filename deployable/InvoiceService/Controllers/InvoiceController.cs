@@ -73,7 +73,7 @@ public class InvoiceController : ControllerBase
     
     // Bulk Post
     [HttpPost("invoices/bulk")]
-    public async Task<IActionResult> PostInvoices([FromBody] IEnumerable<PostInvoiceDTO> dtos)
+    public async Task<IActionResult> PostInvoices([FromBody] List<PostInvoiceDTO> dtos)
     {
         var userId = _requestContext.UserId;
         if (userId is null) {
