@@ -41,6 +41,22 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
 
     const currentInvoice = invoices[currentIndex]
 
+    // Add new invoice
+    const addNewInvoice = () => {
+        setInvoices([...invoices, baseInvoice])
+        setCurrentIndex(invoices.length)
+    }
+
+    // Delete invoice
+    const deleteInvoice = (index) => {
+        if (invoices.length <= 1) return
+        const updatedInvoices = invoices.filter((_, i) => i !== index)
+        setInvoices(updatedInvoices)
+        if (index <= currentIndex) {
+            setCurrentIndex(prev => Math.max(0, prev - 1))
+        }
+    }
+
     const handleInputChange = (e, lineIndex) => {
         const {name, value} = e.target
         const updatedInvoices = [...invoices]
@@ -239,6 +255,23 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
                         disabled={currentIndex === invoices.length - 1}
                     >
                         <FaArrowRight/>
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-sm btn-secondary"
+                        onClick={addNewInvoice}
+                        title="Add New Invoice"
+                    >
+                        <FaPlus/>
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-sm btn-error"
+                        onClick={() => deleteInvoice(currentIndex)}
+                        disabled={invoices.length <= 1}
+                        title={invoices.length <= 1 ? "Cannot delete the last invoice" : "Delete Current Invoice"}
+                    >
+                        <FaTrash/>
                     </button>
                 </div>
             </div>
