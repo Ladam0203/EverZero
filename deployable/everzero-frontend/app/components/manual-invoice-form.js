@@ -202,11 +202,12 @@ export default function ManualInvoiceForm({onSubmit, onCancel, extractedData}) {
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(invoices),
             })
+            const data = await response.json()
             if (!response.ok) {
-                const errorData = await response.json()
-                throw new Error(errorData.message)
+                throw new Error(data.message)
             }
-            onSubmit(invoices)
+            console.log("Invoices submitted successfully:", data.data)
+            onSubmit(data.data)
         } catch (error) {
             console.error("Error submitting invoices:", error.message)
             alert(`Submission failed: ${error.message}`)

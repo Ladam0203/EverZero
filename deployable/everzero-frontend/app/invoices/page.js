@@ -8,14 +8,12 @@ import {
     FaSpinner,
     FaPlus,
     FaExclamationTriangle,
-    FaEllipsisH,
-    FaRegCalendarAlt
+    FaEllipsisH
 } from "react-icons/fa"
 import {format} from "date-fns"
 import {InvoiceForm} from "@/app/components/invoice-form"
 import {useRouter} from "next/navigation"
 import {authorize} from "@/app/server/auth/authorize";
-import {postInvoice} from "@/app/server/invoice/postInvoice";
 import AppNavbar from "@/app/components/AppNavbar";
 import UpdateInvoiceModal from "@/app/components/update-invoice-modal";
 import {getAllEmissionFactors} from "@/app/server/emission/getAllEmissionFactors";
@@ -105,11 +103,13 @@ export default function Invoices() {
     }, []);
 
     const handleCreate = async (newInvoices) => {
-        // Add the new invoice to the list
+        // Insert new invoices at the end of the list
         setInvoices((prevInvoices) => ({
             ...prevInvoices,
-            invoices: [...prevInvoices.invoices, newInvoices],
-        }))
+            invoices: [...prevInvoices.invoices, ...newInvoices],
+        }));
+        // Close the modal
+        setIsModalOpen(false);
     }
 
     const handleDelete = async (invoiceId) => {
