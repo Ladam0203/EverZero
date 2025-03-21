@@ -3,144 +3,17 @@ version: '3.9'
 services:
   frontend:
     build:
-      context: ./everzero-frontend
+      context: ./deployable/everzero-frontend
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    depends_on:
-      - gateway
     environment:
+      - NODE_ENV=production
       - API_URL=http://gateway
     networks:
       - extranet
-
-  gateway:
-    build:
-      context: ./deployable
-      dockerfile: Gateway/Dockerfile
-    ports:
-      - "1000:80"
-      - "1001:443"
-    depends_on:
-      - auth-service
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-    networks:
-      - extranet
-      - intranet
-
-  auth-service:
-    build:
-      context: ./deployable
-      dockerfile: AuthService/Dockerfile
-    ports:
-      - "2000:80"
-      - "2001:443"
-    depends_on:
-      - auth-db
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__SecureNotes=Host=auth-db;Database=auth;Username=postgres;Password=root;Port=5432;
-      - Jwt__Secret=wOyy&%H&WiJRpmIfjVMwxh75&7iiCbcjYFXt7vxln8z!MelF
-      - Jwt__Issuer=https://everzero.co.uk
-      - Jwt__Audience=everzero.co.uk
-      - Jwt__ExpirationMinutes=1440
-    networks:
-      - intranet
-
-  invoice-service:
-    build:
-      context: ./deployable
-      dockerfile: InvoiceService/Dockerfile
-    ports:
-      - "3000:80"
-      - "3001:443"
-    depends_on:
-      - invoice-db
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__SecureNotes=Host=invoice-db;Database=invoice;Username=postgres;Password=root;Port=5432;
-    networks:
-      - intranet
-
-  emission-service:
-    build:
-      context: ./deployable
-      dockerfile: EmissionService/Dockerfile
-    ports:
-      - "4000:80"
-      - "4001:443"
-    depends_on:
-      - emission-db
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__SecureNotes=Host=emission-db;Database=emission;Username=postgres;Password=root;Port=5432;
-    networks:
-      - intranet
-      
-  report-service:
-    build:
-      context: ./deployable
-      dockerfile: ReportService/Dockerfile
-    ports:
-      - "5000:80"
-      - "5001:443"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__SQLiteConnection=Data Source=report.db
-    networks:
-      - intranet
-        
-  # Database services
-
-  auth-db:
-    image: postgres:17
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=auth
-    ports:
-      - "5200:5432"
-    volumes:
-      - auth_db_data:/var/lib/postgresql/data
-    networks:
-      - intranet
-  
-  invoice-db:
-    image: postgres:17
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=invoice
-    ports:
-      - "5300:5432"
-    volumes:
-      - invoice_db_data:/var/lib/postgresql/data
-    networks:
-      - intranet
-
-  emission-db:
-    image: mongo:8
-    ports:
-      - "5400:27017"
-    volumes:
-      - emission_db_data:/data/db
-    networks:
-      - intranet
-  
-  # Monitoring
-  
-  zipkin:
-    image: openzipkin/zipkin
-    ports:
-      - "9411:9411"
-  seq:
-    image: datalust/seq:latest
-    ports:
-      - "5341:5341"
-      - "5342:80"
-    environment:
-      ACCEPT_EULA: Y
+    #depends_on:
+      #- gateway
 
 networks:
   intranet:
