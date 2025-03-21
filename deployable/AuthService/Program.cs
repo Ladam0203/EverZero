@@ -9,8 +9,22 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Monitoring;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Tracing
+var serviceName = "AuthService";
+var serviceVersion = "1.0.0";
+var zipkinEndpoint = builder.Configuration["Zipkin:Endpoint"];
+builder.Services.AddOpenTelemetry().Setup(serviceName, serviceVersion, zipkinEndpoint);
+builder.Services.AddSingleton(TracerProvider.Default.GetTracer(serviceName));
+
+// Configure Logging
+var seqEndpoint = builder.Configuration["Seq:Endpoint"];
+Monitoring.Monitoring.ConfigureLogging(seqEndpoint);
+builder.Services.AddSingleton(Monitoring.Monitoring.Log);
 
 // DbContext
 builder.Services.AddDbContext<AppDbContext>(db => {
