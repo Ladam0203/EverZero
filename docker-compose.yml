@@ -1,19 +1,176 @@
 version: '3.9'
 
 services:
+  
+  # Frontend
+  
   frontend:
     build:
       context: ./deployable/everzero-frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "9999:3000"
     environment:
       - NODE_ENV=production
-      - API_URL=http://gateway
+      - NEXT_PUBLIC_API_URL=http://gateway:8080/api
     networks:
       - extranet
-    #depends_on:
-      #- gateway
+  
+  # Backend
+  
+  gateway:
+    build:
+      context: .
+      dockerfile: deployable/Gateway/Dockerfile
+    ports:
+      - "1000:8080"
+      - "1001:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    networks:
+      - extranet
+      - intranet
+    depends_on:
+      - zipkin
+      - seq
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+  
+  auth-service:
+    build:
+      context: .
+      dockerfile: deployable/AuthService/Dockerfile
+    ports:
+      - "2000:8080"
+      - "2001:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - RemoteAuthenticationUrl=http://auth-service:8080/auth/authorize
+    networks:
+      - intranet
+    depends_on:
+      - auth-db
+      - zipkin
+      - seq
+    command: ["dotnet", "AuthService.dll", "--db-reinit", "--swagger"]
+    
+  invoice-service:
+    build:
+      context: .
+      dockerfile: deployable/InvoiceService/Dockerfile
+    ports:
+      - "3000:8080"
+      - "3001:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__NpsqlConnection=Host=invoice-db;Database=invoice;Username=postgres;Password=root;Port=5432;
+    networks:
+      - intranet
+    depends_on:
+      - invoice-db
+      - zipkin
+      - seq
+    command: ["dotnet", "InvoiceService.dll", "--db-reinit", "--swagger"]
+    
+  emission-service:
+    build:
+      context: .
+      dockerfile: deployable/EmissionService/Dockerfile
+    ports:
+      - "4000:8080"
+      - "4001:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__mongo=mongodb://mongo:27017;
+    networks:
+      - intranet
+    depends_on:
+      - emission-db
+      - zipkin
+      - seq
+    command: ["dotnet", "EmissionService.dll", "--db-reinit", "--swagger"]
+        
+  report-service:
+    build:
+      context: .
+      dockerfile: deployable/ReportService/Dockerfile
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__SQLiteConnection=Data Source=report.db
+    networks:
+      - intranet
+    depends_on:
+      - zipkin
+      - seq
+    command: [ "dotnet", "ReportService.dll", "--db-reinit", "--swagger" ]
+        
+  invoice-extraction-service:
+    build:
+      context: .
+      dockerfile: deployable/InvoiceExtractionService/Dockerfile
+    ports:
+      - "6000:80"
+      - "6001:8081"
+    environment:
+      - OPENAI_API_KEY=<API_KEY>
+    networks:
+      - intranet
+    
+  # Databases
+  
+  auth-db:
+    image: postgres:17
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=auth
+    ports:
+      - "5200:5432"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    networks:
+      - intranet
+  
+  invoice-db:
+    image: postgres:17
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=invoice
+    ports:
+      - "5300:5432"
+    volumes:
+      - invoice_db_data:/var/lib/postgresql/data
+    networks:
+      - intranet
+        
+  emission-db:
+    image: mongo:8
+    ports:
+      - "5400:27017"
+    volumes:
+      - emission_db_data:/data/db
+    networks:
+      - intranet
+        
+  # Monitoring
+  
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+  seq:
+    image: datalust/seq:latest
+    ports:
+      - "5341:5341"
+      - "5342:80"
+    environment:
+      ACCEPT_EULA: Y
 
 networks:
   intranet:

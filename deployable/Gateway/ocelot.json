@@ -8,7 +8,7 @@
       "DownstreamHostAndPorts": [
           {
           "Host": "auth-service",
-          "Port": 80
+          "Port": 8080
           }
       ]
     },
@@ -20,7 +20,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "auth-service",
-          "Port": 80
+          "Port": 8080
         }
       ]
     },
@@ -32,7 +32,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "auth-service",
-          "Port": 80
+          "Port": 8080
         }
       ]
     },
@@ -44,7 +44,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "invoice-service",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "AuthenticationOptions": {
@@ -60,7 +60,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "invoice-service",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "AuthenticationOptions": {
@@ -76,7 +76,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "invoice-service",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "AuthenticationOptions": {
@@ -92,7 +92,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "invoice-service",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "AuthenticationOptions": {
@@ -108,7 +108,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "invoice-service",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "AuthenticationOptions": {
@@ -124,7 +124,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "invoice-service",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "AuthenticationOptions": {
@@ -140,7 +140,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "emission-service",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "AuthenticationOptions": {
@@ -156,7 +156,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "emission-service",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "AuthenticationOptions": {
@@ -172,7 +172,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "report-service",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "AuthenticationOptions": {
@@ -188,7 +188,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "report-service",
-          "Port": 80
+          "Port": 8080
         }
       ],
       "AuthenticationOptions": {
@@ -204,7 +204,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "report-service",
-          "Port": 80
+          "Port": 8080
         }
       ]
     },
