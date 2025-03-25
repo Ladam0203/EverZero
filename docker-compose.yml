@@ -33,10 +33,6 @@ services:
     depends_on:
       - zipkin
       - seq
-    deploy:
-      replicas: 3
-      restart_policy:
-        condition: on-failure
   
   auth-service:
     build:
@@ -83,7 +79,7 @@ services:
       - "4001:8081"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__mongo=mongodb://mongo:27017;
+      - ConnectionStrings__mongo=mongodb://emission-db:27017
     networks:
       - intranet
     depends_on:
@@ -119,6 +115,7 @@ services:
     environment:
       - OPENAI_API_KEY=<API_KEY>
     networks:
+      - extranet # Exposed for API access
       - intranet
     
   # Databases
