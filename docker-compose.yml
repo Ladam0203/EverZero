@@ -111,8 +111,8 @@ services:
         
   invoice-extraction-service:
     build:
-      context: .
-      dockerfile: deployable/InvoiceExtractionService/Dockerfile
+      context: ./deployable/everzero-invoice-extraction
+      dockerfile: Dockerfile
     ports:
       - "6000:80"
       - "6001:8081"
