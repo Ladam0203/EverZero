@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmissionServiceTest", "test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Context", "library\Context\Context.csproj", "{67F928A6-FC77-4BA7-844B-B14AF3677FD9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvoiceServiceTest", "test\InvoiceServiceTest\InvoiceServiceTest.csproj", "{94E05F8C-1B33-4263-B5CB-6CF5DDAD9E3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,7 @@ Global
 		{3E9EADE0-83D2-4507-B60D-F3090BF1E390} = {7DE52966-C7DD-4AD8-9260-E2EC705C7E78}
 		{3C63D4BD-0244-4A23-A60E-51AFF335FA20} = {B83A8F7D-99AB-420B-A14C-F86265E78C23}
 		{67F928A6-FC77-4BA7-844B-B14AF3677FD9} = {0188CDF9-1A3E-4812-B7DA-7E349587D696}
+		{94E05F8C-1B33-4263-B5CB-6CF5DDAD9E3F} = {B83A8F7D-99AB-420B-A14C-F86265E78C23}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{ED48652A-DA07-4F71-BE00-09FD8FB89D13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -91,5 +94,9 @@ Global
 		{67F928A6-FC77-4BA7-844B-B14AF3677FD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67F928A6-FC77-4BA7-844B-B14AF3677FD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67F928A6-FC77-4BA7-844B-B14AF3677FD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94E05F8C-1B33-4263-B5CB-6CF5DDAD9E3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94E05F8C-1B33-4263-B5CB-6CF5DDAD9E3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94E05F8C-1B33-4263-B5CB-6CF5DDAD9E3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94E05F8C-1B33-4263-B5CB-6CF5DDAD9E3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
