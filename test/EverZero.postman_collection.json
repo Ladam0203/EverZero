@@ -1,0 +1,1474 @@
+{
+	"info": {
+		"_postman_id": "ccaa2770-a04c-4f80-abbc-0b182c03aa5d",
+		"name": "EverZero",
+		"description": "Collection to tests the backend infrastructure of EverZero, piping the calls through the API.\n\nTests are to be ran while running the components in development mode and starting the necessary database containers locally or through Docker",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23086914"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const randomString = Math.random().toString(36).substring(2, 8); // 6-char random string",
+							"",
+							"// Generate unique email and username",
+							"const uniqueEmail = `employee-${randomString}@greentechsolutions.com`;",
+							"const uniqueUsername = `greentech.employee-${randomString}`;",
+							"",
+							"// Set variables in Postman environment",
+							"pm.environment.set('email', uniqueEmail);",
+							"pm.environment.set('username', uniqueUsername);",
+							"pm.environment.set('password', 'GreenTech#2025!');"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response body as JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200); // Adjust to 200 if your API returns 200",
+							"});",
+							"",
+							"pm.test(\"Response contains a valid 'id'\", function () {",
+							"    pm.expect(jsonData.id).to.exist; // Check if 'id' exists",
+							"    pm.expect(jsonData.id).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format",
+							"});",
+							"",
+							"pm.test(\"Response contains the correct 'email'\", function () {",
+							"    pm.expect(jsonData.email).to.exist; // Check if 'email' exists",
+							"    pm.expect(jsonData.email).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.email).to.equal(pm.environment.get('email')); // Matches the email from pre-request",
+							"});",
+							"",
+							"pm.test(\"Response contains the correct 'username'\", function () {",
+							"    pm.expect(jsonData.username).to.exist; // Check if 'username' exists",
+							"    pm.expect(jsonData.username).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.username).to.equal(pm.environment.get('username')); // Matches the username from pre-request",
+							"});",
+							"",
+							"pm.test(\"Response contains 'roles' array\", function () {",
+							"    pm.expect(jsonData.roles).to.exist; // Check if 'roles' exists",
+							"    pm.expect(jsonData.roles).to.be.an('array'); // Ensure it's an array",
+							"    pm.expect(jsonData.roles).to.have.lengthOf.at.least(1); // Ensure it has at least one role",
+							"    pm.expect(jsonData.roles).to.include('User'); // Check if 'User' role is present",
+							"});",
+							"",
+							"pm.test(\"Response contains 'tokenType' as 'Bearer'\", function () {",
+							"    pm.expect(jsonData.tokenType).to.exist; // Check if 'tokenType' exists",
+							"    pm.expect(jsonData.tokenType).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.tokenType).to.equal('Bearer'); // Ensure it’s 'Bearer'",
+							"});",
+							"",
+							"pm.test(\"Response contains a valid 'token'\", function () {",
+							"    pm.expect(jsonData.token).to.exist; // Check if 'token' exists",
+							"    pm.expect(jsonData.token).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.token.split('.').length).to.equal(3); // JWT has 3 parts (header.payload.signature)",
+							"});",
+							"",
+							"pm.environment.set('token', jsonData.token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{email}}\",\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5246/api/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5246",
+					"path": [
+						"api",
+						"register"
+					]
+				},
+				"description": "Register a new user."
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response body as JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200); // Adjust to 200 if your API returns 200",
+							"});",
+							"",
+							"pm.test(\"Response contains a valid 'id'\", function () {",
+							"    pm.expect(jsonData.id).to.exist; // Check if 'id' exists",
+							"    pm.expect(jsonData.id).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format",
+							"});",
+							"",
+							"pm.test(\"Response contains the correct 'email'\", function () {",
+							"    pm.expect(jsonData.email).to.exist; // Check if 'email' exists",
+							"    pm.expect(jsonData.email).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.email).to.equal(pm.environment.get('email')); // Matches the email from pre-request",
+							"});",
+							"",
+							"pm.test(\"Response contains the correct 'username'\", function () {",
+							"    pm.expect(jsonData.username).to.exist; // Check if 'username' exists",
+							"    pm.expect(jsonData.username).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.username).to.equal(pm.environment.get('username')); // Matches the username from pre-request",
+							"});",
+							"",
+							"pm.test(\"Response contains 'roles' array\", function () {",
+							"    pm.expect(jsonData.roles).to.exist; // Check if 'roles' exists",
+							"    pm.expect(jsonData.roles).to.be.an('array'); // Ensure it's an array",
+							"    pm.expect(jsonData.roles).to.have.lengthOf.at.least(1); // Ensure it has at least one role",
+							"    pm.expect(jsonData.roles).to.include('User'); // Check if 'User' role is present",
+							"});",
+							"",
+							"pm.test(\"Response contains 'tokenType' as 'Bearer'\", function () {",
+							"    pm.expect(jsonData.tokenType).to.exist; // Check if 'tokenType' exists",
+							"    pm.expect(jsonData.tokenType).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.tokenType).to.equal('Bearer'); // Ensure it’s 'Bearer'",
+							"});",
+							"",
+							"pm.test(\"Response contains a valid 'token'\", function () {",
+							"    pm.expect(jsonData.token).to.exist; // Check if 'token' exists",
+							"    pm.expect(jsonData.token).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.token.split('.').length).to.equal(3); // JWT has 3 parts (header.payload.signature)",
+							"});",
+							"",
+							"pm.environment.set('token', jsonData.token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Set variables in Postman environment",
+							"pm.environment.set('email', 'ceo@greentechsolutions.com');",
+							"pm.environment.set('username', 'greentech.ceo');",
+							"pm.environment.set('password', 'GreenTech#2025!');"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{email}}\",\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5246/api/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5246",
+					"path": [
+						"api",
+						"login"
+					]
+				},
+				"description": "Login a user."
+			},
+			"response": []
+		},
+		{
+			"name": "Authorize",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response body as JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"// Test 1: Check if the response status is 200 (OK)",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Check if 'claims' property exists and is an array",
+							"pm.test(\"Response contains 'claimDtos' array\", function () {",
+							"    pm.expect(jsonData.claimDtos).to.exist; // Check if 'claims' exists",
+							"    pm.expect(jsonData.claimDtos).to.be.an('array'); // Ensure it's an array",
+							"    pm.expect(jsonData.claimDtos.length).to.be.greaterThan(0); // Ensure it has at least one claim",
+							"});",
+							"",
+							"// Test 3: Check if each claim has 'type' and 'value' properties",
+							"pm.test(\"Each claim has 'type' and 'value' properties\", function () {",
+							"    jsonData.claimDtos.forEach(claim => {",
+							"        pm.expect(claim.type).to.exist; // Check if 'type' exists",
+							"        pm.expect(claim.type).to.be.a('string'); // Ensure it's a string",
+							"        pm.expect(claim.value).to.exist; // Check if 'value' exists",
+							"        pm.expect(claim.value).to.be.a('string'); // Ensure it's a string",
+							"    });",
+							"});",
+							"",
+							"// Test 4: Check for specific expected claims (e.g., user ID, email, role)",
+							"pm.test(\"Response contains expected claims\", function () {",
+							"    const claimTypes = jsonData.claimDtos.map(claim => claim.type);",
+							"    const claimValues = jsonData.claimDtos.map(claim => claim.value);",
+							"",
+							"    // Check for user ID claim",
+							"    pm.expect(claimTypes).to.include(\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier\");",
+							"    const userIdClaim = jsonData.claimDtos.find(c => c.type === \"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier\");",
+							"    pm.expect(userIdClaim.value).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format",
+							"",
+							"    // Check for email claim",
+							"    pm.expect(claimTypes).to.include(\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress\");",
+							"    const emailClaim = jsonData.claimDtos.find(c => c.type === \"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress\");",
+							"",
+							"    // Check for role claim",
+							"    pm.expect(claimTypes).to.include(\"http://schemas.microsoft.com/ws/2008/06/identity/claims/role\");",
+							"    pm.expect(claimValues).to.include(\"User\"); // Ensure 'User' role is present",
+							"});",
+							"",
+							"// Test 5: Verify no unexpected properties in the response",
+							"pm.test(\"Response has no unexpected properties\", function () {",
+							"    const expectedKeys = [\"claimDtos\"];",
+							"    const actualKeys = Object.keys(jsonData);",
+							"    pm.expect(actualKeys).to.have.members(expectedKeys); // Only 'claims' should be present",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5246/api/authorize",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5246",
+					"path": [
+						"api",
+						"authorize"
+					]
+				},
+				"description": "Authorize a user."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Invoices",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Set default startDate (beginning of current year) and endDate (today)",
+							"const currentYear = new Date().getFullYear();",
+							"const defaultStartDate = `${currentYear}-01-01`; // YYYY-MM-DD",
+							"const defaultEndDate = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD",
+							"",
+							"// Allow overriding via environment variables, or use defaults",
+							"const startDate = pm.environment.get('startDate') || defaultStartDate;",
+							"const endDate = pm.environment.get('endDate') || defaultEndDate;",
+							"",
+							"// Validate and set dates in environment",
+							"const startDateObj = new Date(startDate);",
+							"const endDateObj = new Date(endDate);",
+							"",
+							"if (isNaN(startDateObj) || isNaN(endDateObj)) {",
+							"    console.error('Invalid date format for startDate or endDate');",
+							"} else if (startDateObj > endDateObj) {",
+							"    console.error('startDate cannot be after endDate');",
+							"} else {",
+							"    pm.environment.set('startDate', startDate);",
+							"    pm.environment.set('endDate', endDate);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response body as JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"// Test 1: Check if the response status is 200 (OK)",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Check if response is an array",
+							"pm.test(\"Response is an array of invoices\", function () {",
+							"    pm.expect(jsonData).to.be.an('array'); // Ensure it's an array",
+							"});",
+							"",
+							"// Test 3: Check if invoices have required fields (id, userId, amount, date)",
+							"pm.test(\"Invoices have required fields\", function () {",
+							"    if (jsonData.length > 0) {",
+							"        jsonData.forEach(invoice => {",
+							"            pm.expect(invoice.id).to.exist; // Check 'Id' exists",
+							"            pm.expect(invoice.id).to.be.a('string'); // Ensure it's a string (GUID)",
+							"            pm.expect(invoice.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format",
+							"",
+							"            pm.expect(invoice.subject).to.exist; // Check 'Subject' exists",
+							"            pm.expect(invoice.subject).to.be.a('string'); // Ensure it's a string",
+							"",
+							"            pm.expect(invoice.supplierName).to.exist; // Check 'SupplierName' exists",
+							"            pm.expect(invoice.supplierName).to.be.a('string'); // Ensure it's a string",
+							"",
+							"            pm.expect(invoice.buyerName).to.exist; // Check 'BuyerName' exists",
+							"            pm.expect(invoice.buyerName).to.be.a('string'); // Ensure it's a string",
+							"",
+							"            pm.expect(invoice.date).to.exist; // Check 'Date' exists",
+							"            pm.expect(invoice.date).to.be.a('string'); // Ensure it's a string",
+							"",
+							"            pm.expect(invoice.userId).to.exist; // Check 'UserId' exists",
+							"            pm.expect(invoice.userId).to.be.a('string'); // Ensure it's a string (GUID)",
+							"            pm.expect(invoice.userId).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format",
+							"",
+							"            pm.expect(invoice.lines).to.exist; // Check 'Lines' exists",
+							"            pm.expect(invoice.lines).to.be.an('array'); // Ensure it's an array",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"// Test 4: Verify dates fall within the requested range",
+							"pm.test(\"Invoices are within date range\", function () {",
+							"    const startDate = new Date(pm.environment.get('startDate'));",
+							"    const endDate = new Date(pm.environment.get('endDate')).setHours(23, 59, 59, 999); // End of day",
+							"",
+							"    if (jsonData.length > 0) {",
+							"        jsonData.forEach(invoice => {",
+							"            const invoiceDate = new Date(invoice.date);",
+							"            pm.expect(invoiceDate >= startDate, `Invoice date ${invoice.date} is before startDate`).to.be.true;",
+							"            pm.expect(invoiceDate <= endDate, `Invoice date ${invoice.date} is after endDate`).to.be.true;",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"// Test 5: Verify userId matches the authenticated user (if token info is available)",
+							"pm.test(\"Invoices belong to the authenticated user\", function () {",
+							"    const token = pm.environment.get('token');",
+							"    if (token && jsonData.length > 0) {",
+							"        const tokenPayload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload",
+							"        const userIdFromToken = tokenPayload[\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier\"];",
+							"        jsonData.forEach(invoice => {",
+							"            pm.expect(invoice.userId).to.equal(userIdFromToken, `Invoice userId ${invoice.userId} does not match token userId`);",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"pm.collectionVariables.set('invoices', JSON.stringify(jsonData));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": "Add your Bearer token here",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5246/api/invoices?startDate={{startDate}}&endDate={{endDate}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5246",
+					"path": [
+						"api",
+						"invoices"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "{{startDate}}"
+						},
+						{
+							"key": "endDate",
+							"value": "{{endDate}}"
+						}
+					]
+				},
+				"description": "Retrieve a list of invoices."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Invoice",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response body as JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"// Test 1: Check if the response status is 200 (OK)",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Check if response has required fields from InvoiceDTO (camelCase)",
+							"pm.test(\"Response has required fields\", function () {",
+							"    pm.expect(jsonData.id).to.exist; // Check 'id' exists",
+							"    pm.expect(jsonData.id).to.be.a('string'); // Ensure it's a string (GUID)",
+							"    pm.expect(jsonData.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format",
+							"",
+							"    pm.expect(jsonData.subject).to.exist; // Check 'subject' exists",
+							"    pm.expect(jsonData.subject).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.subject).to.equal(\"March Gas Utility Bill\"); // Matches static request",
+							"",
+							"    pm.expect(jsonData.supplierName).to.exist; // Check 'supplierName' exists",
+							"    pm.expect(jsonData.supplierName).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.supplierName).to.equal(\"Acme Corp\"); // Matches static request",
+							"",
+							"    pm.expect(jsonData.buyerName).to.exist; // Check 'buyerName' exists",
+							"    pm.expect(jsonData.buyerName).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.buyerName).to.equal(\"GreenTech Solutions\"); // Matches static request",
+							"",
+							"    pm.expect(jsonData.date).to.exist; // Check 'date' exists",
+							"    pm.expect(jsonData.date).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.date).to.equal(\"2025-03-26T00:00:00\"); // Matches static request",
+							"",
+							"    pm.expect(jsonData.userId).to.exist; // Check 'userId' exists",
+							"    pm.expect(jsonData.userId).to.be.a('string'); // Ensure it's a string (GUID)",
+							"    pm.expect(jsonData.userId).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format",
+							"",
+							"    pm.expect(jsonData.lines).to.exist; // Check 'lines' exists",
+							"    pm.expect(jsonData.lines).to.be.an('array'); // Ensure it's an array",
+							"});",
+							"",
+							"// Test 3: Verify lines match the request (assuming lines are returned unchanged)",
+							"pm.test(\"Response lines match request lines\", function () {",
+							"    pm.expect(jsonData.lines.length).to.equal(1); // Matches static request length",
+							"});",
+							"",
+							"// Test 4: Verify userId matches the authenticated user",
+							"pm.test(\"Invoice belongs to the authenticated user\", function () {",
+							"    const token = pm.environment.get('token');",
+							"    if (token) {",
+							"        const tokenPayload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload",
+							"        const userIdFromToken = tokenPayload[\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier\"];",
+							"        pm.expect(jsonData.userId).to.equal(userIdFromToken, `Invoice userId ${jsonData.userId} does not match token userId`);",
+							"    }",
+							"});",
+							"",
+							"pm.collectionVariables.set('invoiceId', jsonData.id)",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": "Add your Bearer token here",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"subject\": \"March Gas Utility Bill\",\n    \"supplierName\": \"Acme Corp\",\n    \"buyerName\": \"GreenTech Solutions\",\n    \"date\": \"2025-03-26\",\n    \"lines\": [\n        {\n            \"description\": \"Office Heating - Natural Gas\",\n            \"quantity\": 500,\n            \"unit\": \"cubic metres\",\n            \"emissionFactorId\": \"f47ac10b-58cc-4372-a567-0e02b2c3d479\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5246/api/invoices",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5246",
+					"path": [
+						"api",
+						"invoices"
+					]
+				},
+				"description": "Create a new invoice."
+			},
+			"response": []
+		},
+		{
+			"name": "Bulk Create Invoices",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response body as JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"// Test 1: Check if the response status is 200 (OK)",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Check if response is an array with 2 invoices",
+							"pm.test(\"Response is an array with 2 invoices\", function () {",
+							"    pm.expect(jsonData).to.be.an('array'); // Ensure it's an array",
+							"    pm.expect(jsonData.length).to.equal(2); // Matches the 2 invoices sent",
+							"});",
+							"",
+							"// Test 3: Check if invoices have required fields from InvoiceDTO (camelCase)",
+							"pm.test(\"Invoices have required fields\", function () {",
+							"    jsonData.forEach((invoice, index) => {",
+							"        pm.expect(invoice.id).to.exist; // Check 'id' exists",
+							"        pm.expect(invoice.id).to.be.a('string'); // Ensure it's a string (GUID)",
+							"        pm.expect(invoice.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format",
+							"",
+							"        pm.expect(invoice.subject).to.exist; // Check 'subject' exists",
+							"        pm.expect(invoice.subject).to.be.a('string'); // Ensure it's a string",
+							"",
+							"        pm.expect(invoice.supplierName).to.exist; // Check 'supplierName' exists",
+							"        pm.expect(invoice.supplierName).to.be.a('string'); // Ensure it's a string",
+							"",
+							"        pm.expect(invoice.buyerName).to.exist; // Check 'buyerName' exists",
+							"        pm.expect(invoice.buyerName).to.be.a('string'); // Ensure it's a string",
+							"",
+							"        pm.expect(invoice.date).to.exist; // Check 'date' exists",
+							"        pm.expect(invoice.date).to.be.a('string'); // Ensure it's a string",
+							"",
+							"        pm.expect(invoice.userId).to.exist; // Check 'userId' exists",
+							"        pm.expect(invoice.userId).to.be.a('string'); // Ensure it's a string (GUID)",
+							"        pm.expect(invoice.userId).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format",
+							"",
+							"        pm.expect(invoice.lines).to.exist; // Check 'lines' exists",
+							"        pm.expect(invoice.lines).to.be.an('array'); // Ensure it's an array",
+							"        pm.expect(invoice.lines.length).to.equal(1); // Matches 1 line per invoice",
+							"    });",
+							"});",
+							"",
+							"// Test 4: Verify response matches request data",
+							"pm.test(\"Response matches request data\", function () {",
+							"    const expectedInvoices = [",
+							"        {",
+							"            subject: \"March Gas Utility Bill\",",
+							"            supplierName: \"National Gas Co\",",
+							"            buyerName: \"GreenTech Solutions\",",
+							"            date: \"2025-04-15T00:00:00\",",
+							"            lines: [",
+							"                {",
+							"                    description: \"Office Heating - Natural Gas\",",
+							"                    quantity: 500,",
+							"                    unit: \"cubic metres\",",
+							"                    emissionFactorId: \"f47ac10b-58cc-4372-a567-0e02b2c3d479\"",
+							"                }",
+							"            ]",
+							"        },",
+							"        {",
+							"            subject: \"March Electricity Bill\",",
+							"            supplierName: \"UK Power Ltd\",",
+							"            buyerName: \"GreenTech Solutions\",",
+							"            date: \"2025-04-20T00:00:00\",",
+							"            lines: [",
+							"                {",
+							"                    description: \"Office Electricity Usage\",",
+							"                    quantity: 2000,",
+							"                    unit: \"kWh\",",
+							"                    emissionFactorId: \"6ba7b816-9dad-11d1-80b4-00c04fd430c8\"",
+							"                }",
+							"            ]",
+							"        }",
+							"    ];",
+							"",
+							"    jsonData.forEach((invoice, index) => {",
+							"        const expected = expectedInvoices[index];",
+							"        pm.expect(invoice.subject).to.equal(expected.subject);",
+							"        pm.expect(invoice.supplierName).to.equal(expected.supplierName);",
+							"        pm.expect(invoice.buyerName).to.equal(expected.buyerName);",
+							"        pm.expect(invoice.date).to.equal(expected.date);",
+							"",
+							"        invoice.lines.forEach((line, lineIndex) => {",
+							"            const expectedLine = expected.lines[lineIndex];",
+							"            pm.expect(line.description).to.exist;",
+							"            pm.expect(line.description).to.be.a('string');",
+							"            pm.expect(line.description).to.equal(expectedLine.description);",
+							"",
+							"            pm.expect(line.quantity).to.exist;",
+							"            pm.expect(line.quantity).to.be.a('number');",
+							"            pm.expect(line.quantity).to.equal(expectedLine.quantity);",
+							"",
+							"            pm.expect(line.unit).to.exist;",
+							"            pm.expect(line.unit).to.be.a('string');",
+							"            pm.expect(line.unit).to.equal(expectedLine.unit);",
+							"",
+							"            if (expectedLine.emissionFactorId) {",
+							"                pm.expect(line.emissionFactorId).to.exist;",
+							"                pm.expect(line.emissionFactorId).to.be.a('string');",
+							"                pm.expect(line.emissionFactorId).to.equal(expectedLine.emissionFactorId);",
+							"            } else {",
+							"                pm.expect(line.emissionFactorId).to.be.oneOf([null, undefined]);",
+							"            }",
+							"        });",
+							"    });",
+							"});",
+							"",
+							"// Test 5: Verify userId matches the authenticated user",
+							"pm.test(\"Invoices belong to the authenticated user\", function () {",
+							"    const token = pm.environment.get('token');",
+							"    if (token) {",
+							"        const tokenPayload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload",
+							"        const userIdFromToken = tokenPayload[\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier\"];",
+							"        jsonData.forEach(invoice => {",
+							"            pm.expect(invoice.userId).to.equal(userIdFromToken, `Invoice userId ${invoice.userId} does not match token userId`);",
+							"        });",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": "Add your Bearer token here",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"subject\": \"March Gas Utility Bill\",\n        \"supplierName\": \"National Gas Co\",\n        \"buyerName\": \"GreenTech Solutions\",\n        \"date\": \"2025-04-15\",\n        \"lines\": [\n            {\n                \"description\": \"Office Heating - Natural Gas\",\n                \"quantity\": 500,\n                \"unit\": \"cubic metres\",\n                \"emissionFactorId\": \"f47ac10b-58cc-4372-a567-0e02b2c3d479\"\n            }\n        ]\n    },\n    {\n        \"subject\": \"March Electricity Bill\",\n        \"supplierName\": \"UK Power Ltd\",\n        \"buyerName\": \"GreenTech Solutions\",\n        \"date\": \"2025-04-20\",\n        \"lines\": [\n            {\n                \"description\": \"Office Electricity Usage\",\n                \"quantity\": 2000,\n                \"unit\": \"kWh\",\n                \"emissionFactorId\": \"6ba7b816-9dad-11d1-80b4-00c04fd430c8\"\n            }\n        ]\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5246/api/invoices/bulk",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5246",
+					"path": [
+						"api",
+						"invoices",
+						"bulk"
+					]
+				},
+				"description": "Create multiple invoices in bulk."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Invoice",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response body as JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"// Test 1: Check if the response status is 200 (OK)",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Check if response has required fields from InvoiceDTO (camelCase)",
+							"pm.test(\"Response has required fields\", function () {",
+							"    pm.expect(jsonData.id).to.exist; // Check 'id' exists",
+							"    pm.expect(jsonData.id).to.be.a('string'); // Ensure it's a string (GUID)",
+							"    pm.expect(jsonData.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format",
+							"    pm.expect(jsonData.id).to.equal(pm.environment.get('invoiceId')); // Matches invoiceId from env",
+							"",
+							"    pm.expect(jsonData.subject).to.exist; // Check 'subject' exists",
+							"    pm.expect(jsonData.subject).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.subject).to.equal(\"Updated January Gas Utility Bill\"); // Matches request",
+							"",
+							"    pm.expect(jsonData.supplierName).to.exist; // Check 'supplierName' exists",
+							"    pm.expect(jsonData.supplierName).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.supplierName).to.equal(\"National Gas Co\"); // Matches request",
+							"",
+							"    pm.expect(jsonData.buyerName).to.exist; // Check 'buyerName' exists",
+							"    pm.expect(jsonData.buyerName).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.buyerName).to.equal(\"GreenTech Solutions\"); // Matches request",
+							"",
+							"    pm.expect(jsonData.date).to.exist; // Check 'date' exists",
+							"    pm.expect(jsonData.date).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData.date).to.equal(\"2025-01-15\"); // Matches request",
+							"",
+							"    pm.expect(jsonData.userId).to.exist; // Check 'userId' exists",
+							"    pm.expect(jsonData.userId).to.be.a('string'); // Ensure it's a string (GUID)",
+							"    pm.expect(jsonData.userId).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format",
+							"",
+							"    pm.expect(jsonData.lines).to.exist; // Check 'lines' exists",
+							"    pm.expect(jsonData.lines).to.be.an('array'); // Ensure it's an array",
+							"    pm.expect(jsonData.lines.length).to.equal(1); // Matches request length",
+							"});",
+							"",
+							"// Test 3: Verify lines match the request",
+							"pm.test(\"Response lines match request lines\", function () {",
+							"    const expectedLines = [",
+							"        {",
+							"            description: \"Updated Office Heating - Natural Gas\",",
+							"            quantity: 550,",
+							"            unit: \"cubic metres\",",
+							"            emissionFactorId: \"f47ac10b-58cc-4372-a567-0e02b2c3d479\"",
+							"        }",
+							"    ];",
+							"",
+							"    jsonData.lines.forEach((line, index) => {",
+							"        pm.expect(line.description).to.exist; // Check 'description' exists",
+							"        pm.expect(line.description).to.be.a('string'); // Ensure it's a string",
+							"        pm.expect(line.description).to.equal(expectedLines[index].description); // Matches request",
+							"",
+							"        pm.expect(line.quantity).to.exist; // Check 'quantity' exists",
+							"        pm.expect(line.quantity).to.be.a('number'); // Ensure it's a number",
+							"        pm.expect(line.quantity).to.equal(expectedLines[index].quantity); // Matches request",
+							"",
+							"        pm.expect(line.unit).to.exist; // Check 'unit' exists",
+							"        pm.expect(line.unit).to.be.a('string'); // Ensure it's a string",
+							"        pm.expect(line.unit).to.equal(expectedLines[index].unit); // Matches request",
+							"",
+							"        pm.expect(line.emissionFactorId).to.exist; // Check 'emissionFactorId' exists",
+							"        pm.expect(line.emissionFactorId).to.be.a('string'); // Ensure it's a string",
+							"        pm.expect(line.emissionFactorId).to.equal(expectedLines[index].emissionFactorId); // Matches request",
+							"    });",
+							"});",
+							"",
+							"// Test 4: Verify userId matches the authenticated user",
+							"pm.test(\"Invoice belongs to the authenticated user\", function () {",
+							"    const token = pm.environment.get('token');",
+							"    if (token) {",
+							"        const tokenPayload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload",
+							"        const userIdFromToken = tokenPayload[\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier\"];",
+							"        pm.expect(jsonData.userId).to.equal(userIdFromToken, `Invoice userId ${jsonData.userId} does not match token userId`);",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": "Add your Bearer token here",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"{{invoiceId}}\",\n    \"subject\": \"Updated January Gas Utility Bill\",\n    \"supplierName\": \"National Gas Co\",\n    \"buyerName\": \"GreenTech Solutions\",\n    \"date\": \"2025-01-15\",\n    \"lines\": [\n        {\n            \"description\": \"Updated Office Heating - Natural Gas\",\n            \"quantity\": 550,\n            \"unit\": \"cubic metres\",\n            \"emissionFactorId\": \"f47ac10b-58cc-4372-a567-0e02b2c3d479\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5246/api/invoices/{{invoiceId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5246",
+					"path": [
+						"api",
+						"invoices",
+						"{{invoiceId}}"
+					]
+				},
+				"description": "Update an existing invoice by ID."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Invoice",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Check if the response status is 204 (No Content)",
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});",
+							"",
+							"// Test 2: Verify no response body is returned",
+							"pm.test(\"No response body is returned\", function () {",
+							"    pm.expect(pm.response.text()).to.be.empty; // Ensure body is empty for 204",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": "Add your Bearer token here",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5246/api/invoices/{{invoiceId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5246",
+					"path": [
+						"api",
+						"invoices",
+						"{{invoiceId}}"
+					]
+				},
+				"description": "Delete an invoice by ID."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Emission Factor ID Suggestions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response body as JSON (assuming it's a string GUID)",
+							"const jsonData = pm.response.json();",
+							"",
+							"// Test 1: Check if the response status is 200 (OK)",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Check if response is a valid GUID string",
+							"pm.test(\"Response is a valid emission factor ID\", function () {",
+							"    pm.expect(jsonData).to.be.a('string'); // Ensure it's a string",
+							"    pm.expect(jsonData).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": "Add your Bearer token here",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5246/api/invoices/suggestions/emission-factor-id?supplierName=National%20Gas%20Co&invoiceLineDescription=Office%20Heating%20-%20Natural%20Gas&unit=cubic%20metres",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5246",
+					"path": [
+						"api",
+						"invoices",
+						"suggestions",
+						"emission-factor-id"
+					],
+					"query": [
+						{
+							"key": "supplierName",
+							"value": "National%20Gas%20Co"
+						},
+						{
+							"key": "invoiceLineDescription",
+							"value": "Office%20Heating%20-%20Natural%20Gas"
+						},
+						{
+							"key": "unit",
+							"value": "cubic%20metres"
+						}
+					]
+				},
+				"description": "Get emission factor ID suggestions for invoices."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Emission Factors",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response body as JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"// Test 1: Check if the response status is 200 (OK)",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Check if response is an array",
+							"pm.test(\"Response is an array of emission factors\", function () {",
+							"    pm.expect(jsonData).to.be.an('array'); // Ensure it's an array",
+							"    pm.expect(jsonData.length).to.be.greaterThan(0); // Ensure at least one item",
+							"});",
+							"",
+							"// Test 3: Check if emission factors have required fields",
+							"pm.test(\"Emission factors have required fields\", function () {",
+							"    jsonData.forEach(factor => {",
+							"        pm.expect(factor.id).to.exist; // Check 'id' exists",
+							"        pm.expect(factor.id).to.be.a('string'); // Ensure it's a string",
+							"        pm.expect(factor.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": "Add your Bearer token here",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5246/api/emission-factors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5246",
+					"path": [
+						"api",
+						"emission-factors"
+					]
+				},
+				"description": "Retrieve a list of emission factors."
+			},
+			"response": []
+		},
+		{
+			"name": "Calculate Emission",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response body as JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"// Test 1: Check if the response status is 200 (OK)",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Check if response has required EmissionCalculationDTO fields",
+							"pm.test(\"Response has required EmissionCalculationDTO fields\", function () {",
+							"    pm.expect(jsonData.invoices).to.exist; // Check 'invoices' exists",
+							"    pm.expect(jsonData.invoices).to.be.an('array'); // Ensure it's an array",
+							"",
+							"    pm.expect(jsonData.scopes).to.exist; // Check 'scopes' exists",
+							"    pm.expect(jsonData.scopes).to.be.an('array'); // Ensure it's an array",
+							"",
+							"    pm.expect(jsonData.years).to.exist; // Check 'years' exists",
+							"    pm.expect(jsonData.years).to.be.an('array'); // Ensure it's an array",
+							"",
+							"    pm.expect(jsonData.totalEmission).to.exist; // Check 'totalEmission' exists",
+							"    pm.expect(jsonData.totalEmission).to.be.a('number'); // Ensure it's a number",
+							"});",
+							"",
+							"pm.collectionVariables.set('emissionCalculation', JSON.stringify(jsonData));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": "Add your Bearer token here",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{invoices}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5246/api/calculate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5246",
+					"path": [
+						"api",
+						"calculate"
+					]
+				},
+				"description": "Calculate emissions based on provided data."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Report",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"With the provided PostReportDTO definition, which includes EmissionCalculation (an EmissionCalculationDTO) and ShouldIncludePerInvoiceEmissionDetails (a boolean), I’ll update the POST /api/report request in Postman. The EmissionCalculation will come from an environment variable (emissionCalculation), assumed to be set from the POST /api/calculate response. I’ll use a static value for shouldIncludePerInvoiceEmissionDetails and create a Tests script to validate the response based on the Report structure from your snippet.",
+							"",
+							"The endpoint:",
+							"",
+							"Expects a POST request with a PostReportDTO in the body.",
+							"Requires a Bearer token in the Authorization header.",
+							"Returns 200 OK with a Report object (UserId, Path, TotalInvoices, TotalEmission, StartDate, EndDate).",
+							"Step 1: Configure the \"Create Report\" Request",
+							"Method: POST",
+							"URL: http://localhost:5246/api/report",
+							"Headers:",
+							"Key: Authorization, Value: Bearer {{token}} (assuming token is set from /api/register)",
+							"Key: Content-Type, Value: application/json",
+							"Step 2: Set the Request Body",
+							"Go to the Body tab.",
+							"Select raw and set the type to JSON.",
+							"Paste the following:",
+							"json",
+							"",
+							"Collapse",
+							"",
+							"Wrap",
+							"",
+							"Copy",
+							"{",
+							"    \"emissionCalculation\": {{emissionCalculation}},",
+							"    \"shouldIncludePerInvoiceEmissionDetails\": true",
+							"}",
+							"Explanation:",
+							"emissionCalculation: Uses the emissionCalculation environment variable directly. Ensure it’s a valid JSON string (e.g., from POST /api/calculate).",
+							"shouldIncludePerInvoiceEmissionDetails: Static true to test including details. Change to false for another test case if needed.",
+							"Uses camelCase to match previous conventions.",
+							"Step 3: Add the Tests Script",
+							"Go to the Tests tab.",
+							"Paste the following JavaScript code:",
+							"javascript",
+							"",
+							"Collapse",
+							"",
+							"Wrap",
+							"",
+							"Copy",
+							"// Parse the response body as JSON",
+							"const jsonData = pm.response.json();",
+							"const requestBody = JSON.parse(pm.request.body.raw); // Parse the sent body",
+							"",
+							"// Test 1: Check if the response status is 200 (OK)",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Check if response has required Report fields (camelCase)",
+							"pm.test(\"Response has required Report fields\", function () {",
+							"    pm.expect(jsonData.userId).to.exist; // Check 'userId' exists",
+							"    pm.expect(jsonData.userId).to.be.a('string'); // Ensure it's a string (GUID)",
+							"    pm.expect(jsonData.userId).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format",
+							"",
+							"    pm.expect(jsonData.path).to.exist; // Check 'path' exists",
+							"    pm.expect(jsonData.path).to.be.a('string'); // Ensure it's a string",
+							"",
+							"    pm.expect(jsonData.totalInvoices).to.exist; // Check 'totalInvoices' exists",
+							"    pm.expect(jsonData.totalInvoices).to.be.a('number'); // Ensure it's a number",
+							"",
+							"    pm.expect(jsonData.totalEmission).to.exist; // Check 'totalEmission' exists",
+							"    pm.expect(jsonData.totalEmission).to.be.a('number'); // Ensure it's a number",
+							"",
+							"    pm.expect(jsonData.startDate).to.exist; // Check 'startDate' exists",
+							"    pm.expect(jsonData.startDate).to.be.a('string'); // Ensure it's a string",
+							"",
+							"    pm.expect(jsonData.endDate).to.exist; // Check 'endDate' exists",
+							"    pm.expect(jsonData.endDate).to.be.a('string'); // Ensure it's a string",
+							"});",
+							"",
+							"// Test 3: Verify userId matches the authenticated user",
+							"pm.test(\"Report belongs to the authenticated user\", function () {",
+							"    const token = pm.environment.get('token');",
+							"    if (token) {",
+							"        const tokenPayload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload",
+							"        const userIdFromToken = tokenPayload[\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier\"];",
+							"        pm.expect(jsonData.userId).to.equal(userIdFromToken, `Report userId ${jsonData.userId} does not match token userId`);",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": "Add your Bearer token here",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"emissionCalculation\": {{emissionCalculation}},\n    \"shouldIncludePerInvoiceEmissionDetails\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5246/api/reports",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5246",
+					"path": [
+						"api",
+						"reports"
+					]
+				},
+				"description": "Create a new report."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Reports",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response body as JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"// Test 1: Check if the response status is 200 (OK)",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Check if response is an array",
+							"pm.test(\"Response is an array of reports\", function () {",
+							"    pm.expect(jsonData).to.be.an('array'); // Ensure it's an array",
+							"});",
+							"",
+							"// Test 3: Check if reports have required fields (camelCase)",
+							"pm.test(\"Reports have required fields\", function () {",
+							"    if (jsonData.length > 0) {",
+							"        jsonData.forEach(report => {",
+							"            pm.expect(report.userId).to.exist; // Check 'userId' exists",
+							"            pm.expect(report.userId).to.be.a('string'); // Ensure it's a string (GUID)",
+							"            pm.expect(report.userId).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/); // UUID format",
+							"",
+							"            pm.expect(report.path).to.exist; // Check 'path' exists",
+							"            pm.expect(report.path).to.be.a('string'); // Ensure it's a string",
+							"",
+							"            pm.expect(report.totalInvoices).to.exist; // Check 'totalInvoices' exists",
+							"            pm.expect(report.totalInvoices).to.be.a('number'); // Ensure it's a number",
+							"",
+							"            pm.expect(report.totalEmission).to.exist; // Check 'totalEmission' exists",
+							"            pm.expect(report.totalEmission).to.be.a('number'); // Ensure it's a number",
+							"",
+							"            pm.expect(report.startDate).to.exist; // Check 'startDate' exists",
+							"            pm.expect(report.startDate).to.be.a('string'); // Ensure it's a string",
+							"",
+							"            pm.expect(report.endDate).to.exist; // Check 'endDate' exists",
+							"            pm.expect(report.endDate).to.be.a('string'); // Ensure it's a string",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"// Test 4: Verify all reports belong to the authenticated user",
+							"pm.test(\"Reports belong to the authenticated user\", function () {",
+							"    const token = pm.environment.get('token');",
+							"    if (token && jsonData.length > 0) {",
+							"        const tokenPayload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload",
+							"        const userIdFromToken = tokenPayload[\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier\"];",
+							"        jsonData.forEach(report => {",
+							"            pm.expect(report.userId).to.equal(userIdFromToken, `Report userId ${report.userId} does not match token userId`);",
+							"        });",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": "Add your Bearer token here",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5246/api/reports",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5246",
+					"path": [
+						"api",
+						"reports"
+					]
+				},
+				"description": "Retrieve a list of reports."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "invoices",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "invoiceId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "emissionCalculation",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

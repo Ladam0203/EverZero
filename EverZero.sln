@@ -5,6 +5,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "library", "library", "{0188CDF9-1A3E-4812-B7DA-7E349587D696}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B83A8F7D-99AB-420B-A14C-F86265E78C23}"
+	ProjectSection(SolutionItems) = preProject
+		test\EverZero.postman_collection.json = test\EverZero.postman_collection.json
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{7DE52966-C7DD-4AD8-9260-E2EC705C7E78}"
 EndProject
